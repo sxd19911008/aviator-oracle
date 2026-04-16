@@ -1,0 +1,258 @@
+package com.eredar.aviatororacle.runtime.uitls;
+
+import com.eredar.aviatororacle.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.number.OraDecimal;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+
+public class OracleFunctionUtils {
+
+
+    /**
+     * 模拟 Oracle 数据库: Date对象 + 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return Instant类型的日期对象
+     */
+    public static Instant oraclePlusDays(Instant date, Number days) {
+        if (date == null || days == null) {
+            throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
+        }
+
+        // 计算总秒数
+        long seconds = daysToSeconds(days);
+        // 添加总秒数并返回新日期对象
+        return date.plus(seconds, ChronoUnit.SECONDS);
+    }
+
+    /**
+     * 模拟 Oracle 数据库: Date对象 - 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return Instant类型的日期对象
+     */
+    public static Instant oracleMinusDays(Instant date, Number days) {
+        if (date == null || days == null) {
+            throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
+        }
+        // 计算总秒数
+        long seconds = daysToSeconds(days);
+        // 添加总秒数并返回新日期对象
+        return date.minus(seconds, ChronoUnit.SECONDS);
+    }
+
+    /**
+     * 将天数换算成 {@code Long} 型的秒数
+     * <p>必定返回整数，如果有小数部分，则四舍五入
+     *
+     * @param days 天数，可以带小数
+     * @return 天数对应的秒数
+     */
+    private static long daysToSeconds(Number days) {
+        if (days instanceof Long || days instanceof Integer || days instanceof BigInteger) {
+            return days.longValue() * AviatorOracleConstants.SECONDS_OF_DAY_LONG;
+        } else if (days instanceof OraDecimal) {
+            return ((OraDecimal) days).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
+                    .setScale(0) // 四舍五入保留整数
+                    .longValueExact(); // 转换成long类型，如果溢出则报错
+        } else if (days instanceof BigDecimal) {
+            return new OraDecimal((BigDecimal) days).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
+                    .setScale(0) // 四舍五入保留整数
+                    .longValueExact(); // 转换成long类型，如果溢出则报错
+        } else {
+            return new OraDecimal(String.valueOf(days)).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
+                    .setScale(0) // 四舍五入保留整数
+                    .longValueExact(); // 转换成long类型，如果溢出则报错
+        }
+    }
+
+    /**
+     * 计算两个 {@code Instant} 之间的天数差 (date2 - date1)
+     *
+     * @param beginDate 减数 (起始时间)
+     * @param endDate   被减数 (结束时间)
+     * @return 差值天数 ({@code OraDecimal})
+     */
+    public static OraDecimal oracleDaysBetween(Instant beginDate, Instant endDate) {
+        // 校验参数，为 null 直接报错
+        if (beginDate == null || endDate == null) {
+            throw new IllegalArgumentException("Date parameters cannot be null");
+        }
+        // 获取秒数
+        long beginSeconds = beginDate.getEpochSecond();
+        long endSeconds = endDate.getEpochSecond();
+        // 获取总秒数差
+        OraDecimal secondsDiff = OraDecimal.valueOf(endSeconds - beginSeconds);
+        // 计算天数，Oracle日期相减场景违反正常的精度逻辑，强行保留40位小数
+        return secondsDiff.divide(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL, 40);
+        /*
+         * 【存疑】计算逻辑为先按照 Oracle 的 number 类型四舍五入保留小数，再强行保留40位小数。
+         * 无法验证 Oracle 处理方式是否相同，因为找不到合适的临界小数。
+         * 由于 Oracle 计算时一定除以一天的秒数 86400，且 number 的无整数位的小数如果开头有0，
+         * 一定是偶数0不占用数字位数（number是20位的内存单位，每一位内存单位代表2位数字），
+         * 导致我用任何办法都无法找出临界数字。我尝试过 11、29 等数字，都不行。
+         * 由于这里的精度差异可以忽略不计，且目前的逻辑未必错误，所以等遇到这个临界数字时再做处理。
+         */
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 DECODE 函数实现。
+     * <p>
+     * <b>语法：</b><br/>
+     * {@code decode(expression, search1, result1, search2, result2, ..., [default])}
+     * </p>
+     * <p>
+     * <b>功能说明：</b><br/>
+     * 该函数逐个比较 {@code expression} 和 {@code search}。
+     * 如果 {@code expression} 等于某个 {@code search}，则返回对应的 {@code result}。
+     * 如果没有匹配项，则返回 {@code default}。
+     * 如果没有匹配项且未指定 {@code default}，则返回 {@code null}。
+     * </p>
+     * <p>
+     * <b>特殊处理：</b><br/>
+     * 1. <b>Null 值比较：</b> 与 Oracle 的 DECODE 一致，本方法认为 {@code null} 等于 {@code null}。<br/>
+     * 2. <b>数值比较：</b> 内部使用 {@link OraDecimal} 进行数值比较，以确保不同类型数字（如 Integer、Long、OraDecimal）在数值相等时能正确匹配。
+     * </p>
+     *
+     * @param args 变长参数。
+     *             args[0]: 待比较的表达式。
+     *             args[1, 2, ...]: 成对出现的 search 和 result。
+     *             最后一位（可选）: 默认值（当参数总数为偶数时存在）。
+     * @return 匹配到的结果对象，或者默认值，或者 null。
+     */
+    public static Object decode(Object... args) {
+        // 至少需要 3 个参数。
+        if (args == null || args.length < 3) {
+            int argsLength = 0;
+            if (args != null) {
+                argsLength = args.length;
+            }
+            throw new IllegalArgumentException("入参数量只有" + argsLength + "个，少于3个");
+        }
+
+        Object expression = args[0];
+        int length = args.length;
+
+        /*
+         * 遍历参数列表，寻找匹配项。
+         * i 从 1 开始，步长为 2。
+         * args[i] 是 search 值，args[i+1] 是对应的 result 值。
+         */
+        for (int i = 1; i < length - 1; i += 2) {
+            Object search = args[i];
+            Object result = args[i + 1];
+
+            /* 调用内部相等判断逻辑 */
+            if (isEqualForDecode(expression, search)) {
+                return result;
+            }
+        }
+
+        /*
+         * 如果未匹配到任何 search 项，则尝试返回默认值。
+         * 根据 Oracle 规范，如果参数总数是偶数（例如 4, 6, 8...），
+         * 则最后一个参数就是默认值。
+         */
+        if (length % 2 == 0) {
+            return args[length - 1];
+        }
+
+        /* 无匹配项且无默认值，返回 null */
+        return null;
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 NVL 函数实现。
+     * <p>
+     * <b>语法：</b><br/>
+     * {@code nvl(expr1, replace_with)}
+     * </p>
+     * <p>
+     * <b>功能说明：</b><br/>
+     * 如果 {@code expr1} 为 null，则返回 {@code replace_with}；否则返回 {@code expr1}。
+     * </p>
+     *
+     * @param expr1        待检查的表达式
+     * @param replace_with 当 expr1 为 null 时返回的替换值
+     * @return 结果对象
+     */
+    public static Object nvl(Object expr1, Object replace_with) {
+        return expr1 == null ? replace_with : expr1;
+    }
+
+    /**
+     * 取整数，小数位直接舍去
+     */
+    public static OraDecimal floor(Object n) {
+        if (n == null) {
+            return null;
+        } else if (n instanceof Number) {
+            OraDecimal oraDecimal = toOraDecimal((Number) n);
+            return oraDecimal.setScale(0, RoundingMode.FLOOR);
+        } else {
+            throw new IllegalArgumentException(String.format("floor方法不能传入[%s]类型", n.getClass().getName()));
+        }
+    }
+
+    /**
+     * 对象相等比较逻辑，增强对数字类型和 Null 的支持。
+     *
+     * @param o1 第一个对象
+     * @param o2 第二个对象
+     * @return 是否逻辑相等
+     */
+    private static boolean isEqualForDecode(Object o1, Object o2) {
+        /* 处理 Null：如果两者皆为 Null，认为相等；如果其一为 Null，不相等 */
+        if (o1 == null && o2 == null) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+
+        /* 引用相等判断 */
+        if (o1 == o2) {
+            return true;
+        }
+
+        /* 数值类型增强比较 */
+        if (o1 instanceof Number && o2 instanceof Number) {
+            Number n1 = (Number) o1;
+            Number n2 = (Number) o2;
+            OraDecimal b1 = toOraDecimal(n1);
+            OraDecimal b2 = toOraDecimal(n2);
+            // 使用 compareTo 而非 equals，因为 compareTo 忽略 Scale（例如 1.0 等于 1.00）
+            return b1.compareTo(b2) == 0;
+        }
+
+        /* 4. 其他类型使用标准 equals 比较 */
+        return Objects.equals(o1, o2);
+    }
+
+    /**
+     * 将 Number 统一转换为 OraDecimal 以便进行高精度比较。
+     *
+     * @param n 数字对象（仅限 Integer, Long, OraDecimal）
+     * @return 对应的 OraDecimal 对象
+     */
+    private static OraDecimal toOraDecimal(Number n) {
+        if (n == null) {
+            return null;
+        } else if (n instanceof OraDecimal) {
+            return (OraDecimal) n;
+        } else if (n instanceof BigDecimal) {
+            return new OraDecimal((BigDecimal) n);
+        } else {
+            return new OraDecimal(String.valueOf(n));
+        }
+    }
+}

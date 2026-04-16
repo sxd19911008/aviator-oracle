@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.object;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.CalcUtils;
+import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import com.googlecode.aviator.runtime.type.*;
@@ -81,7 +81,7 @@ public abstract class AOAviatorNumber extends AviatorObject {
                     if (thisValue == null) {
                         thisValue = this.longValue;
                     }
-                    return AOAviatorRuntimeJavaType.valueOf(CalcUtils.oraclePlusDays((Instant) otherValue, thisValue));
+                    return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.oraclePlusDays((Instant) otherValue, thisValue));
                 } else {
                     return super.add(other, env);
                 }

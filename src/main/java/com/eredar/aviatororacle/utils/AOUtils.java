@@ -1,6 +1,9 @@
 package com.eredar.aviatororacle.utils;
 
 
+import com.eredar.aviatororacle.number.OraDecimal;
+
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -117,5 +120,18 @@ public class AOUtils {
      */
     public static <T> T defaultIfNull(final T object, final T defaultValue) {
         return object != null ? object : defaultValue;
+    }
+
+    /**
+     * Number 类型预处理，将带有小数的情况都转换成 {@code OraDecimal} 类型
+     */
+    public static Number preprocessNumber(Number n) {
+        if (n instanceof Double || n instanceof Float) {
+            return new OraDecimal(String.valueOf(n));
+        } else if (n instanceof BigDecimal) {
+            return new OraDecimal((BigDecimal) n);
+        } else {
+            return n;
+        }
     }
 }

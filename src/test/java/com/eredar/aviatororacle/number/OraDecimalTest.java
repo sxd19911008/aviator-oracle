@@ -53,7 +53,7 @@ public class OraDecimalTest {
     @DisplayName("divide 方法测试")
     @ParameterizedTest(name = "【{index}】{0}: {1} / {2}")
     @MethodSource("divideProvider")
-    void divideTest(String caseId, String decimal1, String decimal2, String expected) {
+    public void divideTest(String caseId, String decimal1, String decimal2, String expected) {
         OraDecimal actual = new OraDecimal(decimal1).divide(new OraDecimal(decimal2));
         Assertions.assertEquals(0, actual.compareTo(new OraDecimal(expected)), actual + " / " + expected);
     }
@@ -77,7 +77,7 @@ public class OraDecimalTest {
     @DisplayName("divide 指定精度测试")
     @ParameterizedTest(name = "【{index}】{0}: {1} / {2}; scale={3}")
     @MethodSource("divideScaleTestProvider")
-    void divideScaleTest(String caseId, String decimal1, String decimal2, Integer scale, String expected) {
+    public void divideScaleTest(String caseId, String decimal1, String decimal2, Integer scale, String expected) {
         OraDecimal actual = new OraDecimal(decimal1).divide(new OraDecimal(decimal2), scale);
         Assertions.assertEquals(new OraDecimal(expected), actual);
     }

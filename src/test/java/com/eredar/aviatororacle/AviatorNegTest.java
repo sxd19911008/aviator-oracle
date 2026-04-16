@@ -2,7 +2,6 @@ package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
-import com.googlecode.aviator.AviatorEvaluatorInstance;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,8 +20,6 @@ import java.util.stream.Stream;
  */
 @DisplayName("AviatorOracle 一元取负测试")
 public class AviatorNegTest {
-
-    private final AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder().build();
 
     static Stream<Arguments> testNegProvider() {
         return Stream.of(
@@ -90,14 +87,14 @@ public class AviatorNegTest {
     @DisplayName("testNeg")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testNegProvider")
-    public void testNeg(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testNeg(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 }

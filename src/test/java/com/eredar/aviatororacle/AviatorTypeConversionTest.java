@@ -3,7 +3,6 @@ package com.eredar.aviatororacle;
 import com.eredar.aviatororacle.dto.DateFormatCacheKey;
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
-import com.googlecode.aviator.AviatorEvaluatorInstance;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,8 +23,6 @@ import java.util.stream.Stream;
  */
 @DisplayName("AviatorOracle数据转换Function 测试")
 public class AviatorTypeConversionTest {
-
-    private final AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder().build();
 
     static Stream<Arguments> testTypeConversionProvider() {
         return Stream.of(
@@ -103,14 +100,14 @@ public class AviatorTypeConversionTest {
     @DisplayName("数据转换测试")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testTypeConversionProvider")
-    public void testTypeConversion(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testTypeConversion(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 }

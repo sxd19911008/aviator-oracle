@@ -6,6 +6,8 @@ import com.googlecode.aviator.utils.LRUMap;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 /**
  * DateFormat cache
@@ -32,7 +34,14 @@ public class AODateFormatCache {
         DateFormatCacheKey key = new DateFormatCacheKey(format, zoneID);
         DateTimeFormatter dtf = cache.get(key);
         if (dtf == null) {
-            dtf = DateTimeFormatter.ofPattern(format).withZone(ZoneId.of(zoneID));
+            dtf = new DateTimeFormatterBuilder()
+                    .appendPattern(format)
+                    .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)   // 默认 1号
+                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)    // 默认 0点
+                    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0) // 默认 0分
+                    .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0) // 默认 0秒
+                    .toFormatter()
+                    .withZone(ZoneId.of(zoneID));
             cache.put(key, dtf);
         }
         return dtf;

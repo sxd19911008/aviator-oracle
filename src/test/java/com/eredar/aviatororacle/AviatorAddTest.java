@@ -1,7 +1,6 @@
 package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
-import com.googlecode.aviator.AviatorEvaluatorInstance;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +19,6 @@ import java.util.stream.Stream;
  */
 @DisplayName("AviatorOracle 加法测试")
 public class AviatorAddTest {
-
-    private final AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder().build();
 
     // ========================= Long =========================
 
@@ -86,14 +83,14 @@ public class AviatorAddTest {
     @DisplayName("Long")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testLongProvider")
-    public void testLong(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testLong(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -161,14 +158,14 @@ public class AviatorAddTest {
     @DisplayName("Integer")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testIntegerProvider")
-    public void testInteger(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testInteger(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -236,14 +233,14 @@ public class AviatorAddTest {
     @DisplayName("BigInteger")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testBigIntegerProvider")
-    public void testBigInteger(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testBigInteger(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -311,14 +308,14 @@ public class AviatorAddTest {
     @DisplayName("Double")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testDoubleProvider")
-    public void testDouble(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testDouble(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -386,14 +383,14 @@ public class AviatorAddTest {
     @DisplayName("BigDecimal")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testBigDecimalProvider")
-    public void testBigDecimal(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testBigDecimal(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -461,14 +458,14 @@ public class AviatorAddTest {
     @DisplayName("OraDecimal")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testOraDecimalProvider")
-    public void testOraDecimal(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testOraDecimal(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -536,14 +533,14 @@ public class AviatorAddTest {
     @DisplayName("String")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testStringProvider")
-    public void testString(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testString(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -613,14 +610,14 @@ public class AviatorAddTest {
     @DisplayName("Instant")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testInstantProvider")
-    public void testInstant(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testInstant(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 
@@ -688,14 +685,14 @@ public class AviatorAddTest {
     @DisplayName("Boolean")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testBooleanProvider")
-    public void testBoolean(String expression, Map<String, Object> vars, Object excepted) {
-        if (excepted instanceof Class) {
+    public void testBoolean(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
-            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) excepted;
-            Assertions.assertThrows(exceptionClass, () -> aviator.execute(expression, vars));
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
         } else {
-            Object actual = aviator.execute(expression, vars);
-            Assertions.assertEquals(excepted, actual);
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
         }
     }
 }

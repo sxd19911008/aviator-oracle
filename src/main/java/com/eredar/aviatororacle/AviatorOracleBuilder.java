@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.runtime.function.*;
-import com.eredar.aviatororacle.runtime.uitls.Utils;
+import com.eredar.aviatororacle.runtime.function.orafunc.FloorFunction;
 import com.eredar.aviatororacle.utils.AOUtils;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
@@ -61,13 +61,6 @@ public class AviatorOracleBuilder {
         // 设置最大缓存表达式数量
         aviator.useLRUExpressionCache(AOUtils.defaultIfNull(this.useLRUExpressionCache, 2048));
 
-        // 添加工具方法
-        try {
-            aviator.importFunctions(Utils.class);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-
         // 设置decimal数字精度，四舍五入
         aviator.setOption(Options.MATH_CONTEXT, new MathContext(100, RoundingMode.HALF_UP));
 
@@ -103,6 +96,9 @@ public class AviatorOracleBuilder {
         aviator.addFunction(new AODecimalFunction());
         aviator.addFunction(new AOString2DateFunction());
         aviator.addFunction(new AODate2StringFunction());
+
+        // 新增模拟Oracle数据库的方法
+        aviator.addFunction(new FloorFunction());
 
         // 调试日志
         aviator.setOption(Options.TRACE_EVAL, AOUtils.defaultIfNull(this.traceEval, Boolean.FALSE));
