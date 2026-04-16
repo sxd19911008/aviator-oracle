@@ -22,6 +22,7 @@ import java.util.stream.Stream;
  * <p>2. {@code AODate2StringFunction}，对应 {@code date_to_string()}。
  * <p>3. {@code AOString2DateFunction}，对应 {@code string_to_date()}。
  */
+@DisplayName("AviatorOracle数据转换Function 测试")
 public class AviatorTypeConversionTest {
 
     private final AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder().build();
@@ -99,7 +100,7 @@ public class AviatorTypeConversionTest {
         );
     }
 
-    @DisplayName("Long")
+    @DisplayName("数据转换测试")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testTypeConversionProvider")
     public void testTypeConversion(String expression, Map<String, Object> vars, Object excepted) {
