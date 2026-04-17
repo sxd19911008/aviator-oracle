@@ -186,10 +186,11 @@ public class OracleFunctionUtils {
 
     /**
      * 对象相等比较逻辑，增强对数字类型和 Null 的支持。
+     * <p>比对2个不支持的类型，会抛出异常。</p>
      *
      * @param o1 第一个对象
      * @param o2 第二个对象
-     * @return 是否逻辑相等
+     * @return 是否相等
      */
     private static boolean isEqualForDecode(Object o1, Object o2) {
         /* 处理 Null：如果两者皆为 Null，认为相等；如果其一为 Null，不相等 */
@@ -215,8 +216,39 @@ public class OracleFunctionUtils {
             return b1.compareTo(b2) == 0;
         }
 
-        /* 4. 其他类型使用标准 equals 比较 */
-        return Objects.equals(o1, o2);
+        /* Number 与 String: 转换成Number比较 */
+        if (o1 instanceof Number && o2 instanceof String) {
+            return numberEqualsString((Number) o1, (String) o2);
+        }
+        if (o1 instanceof String && o2 instanceof Number) {
+            return numberEqualsString((Number) o2, (String) o1);
+        }
+
+        /* String、Boolean、Instant: 直接比较 */
+        if (o1 instanceof String && o2 instanceof String
+                || o1 instanceof Boolean && o2 instanceof Boolean
+                || o1 instanceof Instant && o2 instanceof Instant) {
+            return Objects.equals(o1, o2);
+        }
+
+        throw new IllegalArgumentException(String.format(
+                "无法比较[%s]类型与[%s]类型",
+                o1.getClass().getName(),
+                o2.getClass().getName()
+        ));
+    }
+
+    /**
+     * 可解析为数字的字符串与 Number 是否数值相等
+     */
+    private static boolean numberEqualsString(Number n, String s) {
+        try {
+            OraDecimal on = toOraDecimal(n);
+            OraDecimal os = new OraDecimal(s.trim());
+            return on.compareTo(os) == 0;
+        } catch (Throwable t) {
+            throw new IllegalArgumentException(String.format("数字[%s]和字符串[%s]不能比较", n, s), t);
+        }
     }
 
     /**
