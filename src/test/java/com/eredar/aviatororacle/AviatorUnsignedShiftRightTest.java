@@ -30,11 +30,21 @@ public class AviatorUnsignedShiftRightTest {
                         HashMapBuilder.<String, Object>builder().put("a", 16L).put("b", 3L).build(),
                         2L
                 ),
+                Arguments.of(
+                        "a >>> b",
+                        HashMapBuilder.<String, Object>builder().put("a", -16L).put("b", 3L).build(),
+                        2305843009213693950L
+                ),
                 // a(Long) >>> b(Integer) → Long
                 Arguments.of(
                         "a >>> b",
                         HashMapBuilder.<String, Object>builder().put("a", 16L).put("b", 3).build(),
                         2L
+                ),
+                Arguments.of(
+                        "a >>> b",
+                        HashMapBuilder.<String, Object>builder().put("a", -16L).put("b", 3).build(),
+                        2305843009213693950L
                 ),
                 // a(Long) >>> b(BigInteger) → 抛出异常
                 Arguments.of(
@@ -105,11 +115,21 @@ public class AviatorUnsignedShiftRightTest {
                         HashMapBuilder.<String, Object>builder().put("a", 16).put("b", 3L).build(),
                         2L
                 ),
+                Arguments.of(
+                        "a >>> b",
+                        HashMapBuilder.<String, Object>builder().put("a", -16).put("b", 3L).build(),
+                        2305843009213693950L
+                ),
                 // a(Integer) >>> b(Integer) → Long
                 Arguments.of(
                         "a >>> b",
                         HashMapBuilder.<String, Object>builder().put("a", 16).put("b", 3).build(),
                         2L
+                ),
+                Arguments.of(
+                        "a >>> b",
+                        HashMapBuilder.<String, Object>builder().put("a", -16).put("b", 3).build(),
+                        2305843009213693950L
                 ),
                 // a(Integer) >>> b(BigInteger) → 抛出异常
                 Arguments.of(
@@ -178,13 +198,13 @@ public class AviatorUnsignedShiftRightTest {
                 Arguments.of(
                         "a >>> b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("16")).put("b", 3L).build(),
-                        new BigInteger("2")
+                        ExpressionRuntimeException.class
                 ),
                 // a(BigInteger) >>> b(Integer) → BigInteger
                 Arguments.of(
                         "a >>> b",
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("16")).put("b", 3).build(),
-                        new BigInteger("2")
+                        ExpressionRuntimeException.class
                 ),
                 // a(BigInteger) >>> b(BigInteger) → 抛出异常
                 Arguments.of(

@@ -1,5 +1,6 @@
 package com.eredar.aviatororacle.runtime.object;
 
+import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorType;
 
@@ -176,7 +177,8 @@ public class AOAviatorBigInt extends AOAviatorLong {
 
     @Override
     protected AviatorObject innerUnsignedShiftRight(AviatorObject other) {
-        return this.innerShiftRight(other);
+        // BigInteger 没有无符号右移API，报错防止误导开发者，强制开发者使用普通右移操作
+        throw new ExpressionRuntimeException("BigInteger不能执行[>>>]运算");
     }
 
 
@@ -184,5 +186,4 @@ public class AOAviatorBigInt extends AOAviatorLong {
     public AviatorType getAviatorType() {
         return AviatorType.BigInt;
     }
-
 }

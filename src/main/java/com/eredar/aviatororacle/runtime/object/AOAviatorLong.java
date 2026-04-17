@@ -96,7 +96,7 @@ public class AOAviatorLong extends AOAviatorNumber {
     public AviatorObject innerDiv(final Map<String, Object> env, final AOAviatorNumber other) {
         switch (other.getAviatorType()) {
             case BigInt:
-                return AviatorBigInt.valueOf(toBigInt().divide(other.toBigInt()));
+                return AOAviatorBigInt.valueOf(toBigInt().divide(other.toBigInt()));
             case Long:
                 return AOAviatorLong.valueOf(this.longValue / other.longValue());
 //            case Decimal:
@@ -110,7 +110,7 @@ public class AOAviatorLong extends AOAviatorNumber {
     public AviatorObject innerAdd(final Map<String, Object> env, final AOAviatorNumber other) {
         switch (other.getAviatorType()) {
             case BigInt:
-                return AviatorBigInt.valueOf(toBigInt().add(other.toBigInt()));
+                return AOAviatorBigInt.valueOf(toBigInt().add(other.toBigInt()));
             case Long:
                 return AOAviatorLong.valueOf(this.longValue + other.longValue());
 //            case Decimal:
@@ -124,7 +124,7 @@ public class AOAviatorLong extends AOAviatorNumber {
     public AviatorObject innerMod(final Map<String, Object> env, final AOAviatorNumber other) {
         switch (other.getAviatorType()) {
             case BigInt:
-                return AviatorBigInt.valueOf(toBigInt().mod(other.toBigInt()));
+                return AOAviatorBigInt.valueOf(toBigInt().mod(other.toBigInt()));
             case Long:
                 return AOAviatorLong.valueOf(this.longValue % other.longValue());
 //            case Decimal:
@@ -138,7 +138,7 @@ public class AOAviatorLong extends AOAviatorNumber {
     public AviatorObject innerMult(final Map<String, Object> env, final AOAviatorNumber other) {
         switch (other.getAviatorType()) {
             case BigInt:
-                return AviatorBigInt.valueOf(toBigInt().multiply(other.toBigInt()));
+                return AOAviatorBigInt.valueOf(toBigInt().multiply(other.toBigInt()));
             case Long:
                 return AOAviatorLong.valueOf(this.longValue * other.longValue());
 //            case Decimal:
@@ -247,8 +247,7 @@ public class AOAviatorLong extends AOAviatorNumber {
             case Double:
                 return innerBitOr(other);
             case JavaType:
-                AviatorJavaType otherJavaType = (AviatorJavaType) other;
-                final Object otherValue = otherJavaType.getValue(env);
+                final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerBitOr(AOAviatorNumber.valueOf(otherValue));
                 } else {
@@ -269,8 +268,7 @@ public class AOAviatorLong extends AOAviatorNumber {
             case Double:
                 return innerBitXor(other);
             case JavaType:
-                AviatorJavaType otherJavaType = (AviatorJavaType) other;
-                final Object otherValue = otherJavaType.getValue(env);
+                final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerBitXor(AOAviatorNumber.valueOf(otherValue));
                 } else {
@@ -291,8 +289,7 @@ public class AOAviatorLong extends AOAviatorNumber {
             case Double:
                 return innerShiftLeft(other);
             case JavaType:
-                AviatorJavaType otherJavaType = (AviatorJavaType) other;
-                final Object otherValue = otherJavaType.getValue(env);
+                final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerShiftLeft(AOAviatorNumber.valueOf(otherValue));
                 } else {
@@ -313,8 +310,7 @@ public class AOAviatorLong extends AOAviatorNumber {
             case Double:
                 return innerShiftRight(other);
             case JavaType:
-                AviatorJavaType otherJavaType = (AviatorJavaType) other;
-                final Object otherValue = otherJavaType.getValue(env);
+                final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerShiftRight(AOAviatorNumber.valueOf(otherValue));
                 } else {
@@ -336,8 +332,7 @@ public class AOAviatorLong extends AOAviatorNumber {
             case Double:
                 return innerUnsignedShiftRight(other);
             case JavaType:
-                AviatorJavaType otherJavaType = (AviatorJavaType) other;
-                final Object otherValue = otherJavaType.getValue(env);
+                final Object otherValue = other.getValue(env);
                 if (otherValue instanceof Number) {
                     return innerUnsignedShiftRight(AOAviatorNumber.valueOf(otherValue));
                 } else {
@@ -353,7 +348,7 @@ public class AOAviatorLong extends AOAviatorNumber {
     public AviatorObject innerSub(final Map<String, Object> env, final AOAviatorNumber other) {
         switch (other.getAviatorType()) {
             case BigInt:
-                return AviatorBigInt.valueOf(toBigInt().subtract(other.toBigInt()));
+                return AOAviatorBigInt.valueOf(toBigInt().subtract(other.toBigInt()));
             case Long:
                 return AOAviatorLong.valueOf(this.longValue - other.longValue());
 //            case Decimal:
