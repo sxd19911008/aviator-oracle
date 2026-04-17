@@ -93,6 +93,9 @@ public class AviatorOracleBuilder {
         aviator.addOpFunction(OperatorType.GE, new GeFunction());
         aviator.addOpFunction(OperatorType.EQ, new EqFunction());
         aviator.addOpFunction(OperatorType.NEQ, new NeqFunction());
+        aviator.addOpFunction(OperatorType.SHIFT_LEFT, new ShiftLeftFunction());
+        aviator.addOpFunction(OperatorType.SHIFT_RIGHT, new ShiftRightFunction());
+        aviator.addOpFunction(OperatorType.U_SHIFT_RIGHT, new UnsignedShiftRightFunction());
 
         // 使用自定义方法，替换框架方法
         aviator.addFunction(new AODecimalFunction());
