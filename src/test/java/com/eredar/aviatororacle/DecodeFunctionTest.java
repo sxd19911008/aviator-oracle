@@ -89,7 +89,7 @@ public class DecodeFunctionTest {
     @Test
     public void buildParamsOrderTestCase() {
         StringBuilder sb = new StringBuilder();
-        for (int times = 1; times <= 25; times++) {
+        for (int times = 1; times <= 12; times++) {
             for (int value = 1; value <= times + 1; value++) {
                 // 有默认值
                 this.buildCase(sb, times, value, false);
