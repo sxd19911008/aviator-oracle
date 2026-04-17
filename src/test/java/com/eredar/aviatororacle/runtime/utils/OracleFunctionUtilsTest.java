@@ -124,23 +124,6 @@ public class OracleFunctionUtilsTest {
         assertThrows(IllegalArgumentException.class, executable);
     }
 
-    // -------------------------------------------------------------------------
-    // nvl
-    // -------------------------------------------------------------------------
-
-    static Stream<Arguments> testNvlProvider() {
-        return Stream.of(
-                Arguments.of("expr1 为 null 时返回替换值", (Supplier<Object>) () -> OracleFunctionUtils.nvl(null, "Default"), "Default"),
-                Arguments.of("expr1 非 null 时返回自身", (Supplier<Object>) () -> OracleFunctionUtils.nvl("Value", "Default"), "Value")
-        );
-    }
-
-    @DisplayName("nvl 方法测试")
-    @ParameterizedTest(name = "【{index}】{0}")
-    @MethodSource("testNvlProvider")
-    public void testNvl(String caseId, Supplier<Object> nvlCall, Object expected) {
-        Assertions.assertEquals(expected, nvlCall.get());
-    }
 
     // -------------------------------------------------------------------------
     // floor

@@ -19,6 +19,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- AviatorScript 版本 -->
         <aviator.version>${project.version}</aviator.version>
+        <!-- jackson 版本 -->
+        <jackson.version>2.13.5</jackson.version>
         <!-- slf4j 版本 -->
         <slf4j.version>1.7.36</slf4j.version>
         <!-- 编译器插件版本：集中维护 -->
@@ -49,6 +51,20 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- 支持 LocalDateTime -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- Lombok -->

@@ -136,7 +136,7 @@ public class OracleFunctionUtils {
             if (args != null) {
                 argsLength = args.length;
             }
-            throw new IllegalArgumentException("入参数量只有" + argsLength + "个，少于3个");
+            throw new IllegalArgumentException("decode方法入参数量只有" + argsLength + "个，少于3个");
         }
 
         Object expression = args[0];
@@ -168,25 +168,6 @@ public class OracleFunctionUtils {
 
         /* 无匹配项且无默认值，返回 null */
         return null;
-    }
-
-    /**
-     * 模拟 Oracle 数据库的 NVL 函数实现。
-     * <p>
-     * <b>语法：</b><br/>
-     * {@code nvl(expr1, replace_with)}
-     * </p>
-     * <p>
-     * <b>功能说明：</b><br/>
-     * 如果 {@code expr1} 为 null，则返回 {@code replace_with}；否则返回 {@code expr1}。
-     * </p>
-     *
-     * @param expr1        待检查的表达式
-     * @param replace_with 当 expr1 为 null 时返回的替换值
-     * @return 结果对象
-     */
-    public static Object nvl(Object expr1, Object replace_with) {
-        return expr1 == null ? replace_with : expr1;
     }
 
     /**

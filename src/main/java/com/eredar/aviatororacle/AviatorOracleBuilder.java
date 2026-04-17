@@ -1,7 +1,9 @@
 package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.runtime.function.*;
+import com.eredar.aviatororacle.runtime.function.orafunc.DecodeFunction;
 import com.eredar.aviatororacle.runtime.function.orafunc.FloorFunction;
+import com.eredar.aviatororacle.runtime.function.orafunc.NvlFunction;
 import com.eredar.aviatororacle.utils.AOUtils;
 import com.googlecode.aviator.AviatorEvaluator;
 import com.googlecode.aviator.AviatorEvaluatorInstance;
@@ -98,6 +100,8 @@ public class AviatorOracleBuilder {
         aviator.addFunction(new AODate2StringFunction());
 
         // 新增模拟Oracle数据库的方法
+        aviator.addFunction(new DecodeFunction());
+        aviator.addFunction(new NvlFunction());
         aviator.addFunction(new FloorFunction());
 
         // 调试日志
