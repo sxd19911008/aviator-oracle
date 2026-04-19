@@ -1,7 +1,6 @@
 package com.eredar.aviatororacle.runtime.utils;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
 import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -376,13 +375,7 @@ public class OracleFunctionUtilsTest {
     @MethodSource("testRoundTwoArgsProvider")
     public void testRoundTwoArgs(String caseId, Object number, Object newScale, Object expected) {
         Number actual = OracleFunctionUtils.round((Number) number, (Number) newScale);
-        if (number instanceof OraDecimal && newScale instanceof OraDecimal
-                && ((OraDecimal) newScale).compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_POS) >= 0) {
-            // newScale>=40 时实现直接返回入参 number 的引用，单独断言引用相等以锁定契约
-            Assertions.assertSame(number, actual);
-        } else {
-            Assertions.assertEquals(expected, actual);
-        }
+        Assertions.assertEquals(expected, actual);
     }
 
     /**
@@ -390,6 +383,7 @@ public class OracleFunctionUtilsTest {
      * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。
      */
     static Stream<Arguments> testRoundTwoArgsInvalidProvider() {
+        //noinspection DataFlowIssue
         return Stream.of(
                 Arguments.of("newScale 为 null", (Executable) () -> OracleFunctionUtils.round(1.0, null)),
                 Arguments.of(
@@ -416,6 +410,7 @@ public class OracleFunctionUtilsTest {
     private static void invokeRoundReflectSecondArg(Number number, Object newScaleRuntime) {
         try {
             Method m = OracleFunctionUtils.class.getMethod("round", Number.class, Number.class);
+            //noinspection JavaReflectionInvocation
             m.invoke(null, number, newScaleRuntime);
         } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();

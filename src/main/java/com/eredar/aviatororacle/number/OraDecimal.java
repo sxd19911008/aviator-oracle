@@ -329,22 +329,12 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      * @return true-是整数；false-不是
      */
     public boolean isInteger() {
-        if (this.decimal == null) return false;
-
-        // 如果 scale <= 0，它在物理存储上就是一个整数 (例如 100E+2)
-        if (this.decimal.scale() <= 0) {
-            return true;
-        }
-
-        // 如果 scale > 0，我们需要检查小数位是否全是 0
-        // 使用 signum 快速排除 0 的情况（0.00... 也是整数）
-        if (this.decimal.signum() == 0) {
-            return true;
-        }
-
-        // 核心性能点：使用 remainder(ONE) 的替代逻辑，但避免创建新对象
-        // 通过判断 stripTrailingZeros 后的 scale 是否 <= 0
-        // 注意：在高性能场景下，直接访问 scale 属性最快
-        return this.decimal.stripTrailingZeros().scale() <= 0;
+        /*
+         * 如果 scale <= 0，它在物理存储上就是一个整数
+         * 由于 decimal 必定执行过 stripTrailingZeros，所以不需要重复执行。
+         * 科学计数法会导致 scale 为负数
+         * 例如 10000，scale 为 0；stripTrailingZeros 之后为 1E+4，scale 为 -4
+         */
+        return this.decimal.scale() <= 0;
     }
 }

@@ -210,6 +210,7 @@ public class OracleFunctionUtils {
         }
 
         if (newScale == null) {
+            // 与 Oracle 的 round 方法不同，第2个入参不允许为null
             throw new IllegalArgumentException("[newScale] cannot be null");
         }
 
