@@ -31,7 +31,7 @@ public abstract class AOAviatorNumber extends AviatorObject {
     public AOAviatorNumber(final Number number) {
         super();
         if (number instanceof Double || number instanceof Float) {
-            this.number = new OraDecimal(String.valueOf(number));
+            this.number = OraDecimal.valueOf(number);
         } else {
             this.number = number;
         }
@@ -47,7 +47,7 @@ public abstract class AOAviatorNumber extends AviatorObject {
         if (TypeUtils.isLong(value)) {
             return AOAviatorLong.valueOf(((Number) value).longValue());
         } else if (TypeUtils.isDouble(value)) {
-            return new AOAviatorDecimal(new OraDecimal(String.valueOf(value)));
+            return new AOAviatorDecimal(OraDecimal.valueOf((double) value));
         } else if (TypeUtils.isBigInt(value)) {
             return AOAviatorBigInt.valueOf((BigInteger) value);
         } else if (TypeUtils.isDecimal(value)) {
@@ -248,9 +248,9 @@ public abstract class AOAviatorNumber extends AviatorObject {
         } else if (this.number instanceof BigDecimal) {
             return new OraDecimal((BigDecimal) this.number);
         } else if (this.number != null) {
-            return new OraDecimal(String.valueOf(this.number));
+            return OraDecimal.valueOf(this.number);
         } else {
-            return new OraDecimal(String.valueOf(this.longValue));
+            return OraDecimal.valueOf(this.longValue);
         }
     }
 

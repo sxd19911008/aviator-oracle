@@ -69,7 +69,7 @@ public class OracleFunctionUtils {
                     .setScale(0) // 四舍五入保留整数
                     .longValueExact(); // 转换成long类型，如果溢出则报错
         } else {
-            return new OraDecimal(String.valueOf(days)).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
+            return OraDecimal.valueOf(days).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
                     .setScale(0) // 四舍五入保留整数
                     .longValueExact(); // 转换成long类型，如果溢出则报错
         }
@@ -177,11 +177,131 @@ public class OracleFunctionUtils {
         if (n == null) {
             return null;
         } else if (n instanceof Number) {
-            OraDecimal oraDecimal = toOraDecimal((Number) n);
+            OraDecimal oraDecimal = OraDecimal.valueOf((Number) n);
             return oraDecimal.setScale(0, RoundingMode.FLOOR);
         } else {
             throw new IllegalArgumentException(String.format("floor方法不能传入[%s]类型", n.getClass().getName()));
         }
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n)}：将数字四舍五入到 0 位小数（最接近的整数）。
+     * <p>仅支持 {@link Integer}，与 {@link #oracleRound(Integer, int)} 中 {@code places == 0} 等价。
+     *
+     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
+     * @return 舍入后的 {@link Integer}；若结果超出 int 范围则抛出 {@link ArithmeticException}
+     */
+    public static Integer oracleRound(Integer n) {
+        return oracleRound(n, 0);
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n, integer)}：按指定位数四舍五入（HALF_UP）。
+     * <p>{@code places >= 0} 表示保留的小数位数；{@code places &lt; 0} 表示在整数部分左侧舍入（如 -1 表示舍入到十位）。
+     *
+     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
+     * @param places  目标精度（可为负），与 Oracle 的第二个参数含义一致
+     * @return 舍入后的 {@link Integer}；若结果非整数或无法放入 int，则抛出异常
+     */
+    public static Integer oracleRound(Integer n, int places) {
+        if (n == null) {
+            return null;
+        }
+        // Integer 无小数，用字符串构造 OraDecimal，避免 double 误差
+        OraDecimal value = OraDecimal.valueOf(n);
+        OraDecimal rounded = roundOraDecimal(value, places);
+        // 与 Oracle NUMBER 一致：整数类型承载时要求结果为精确整数且在范围内
+        return rounded.getDecimal().intValueExact();
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n)}，参见 {@link #oracleRound(Integer)}。
+     *
+     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
+     * @return 舍入后的 {@link Long}
+     */
+    public static Long oracleRound(Long n) {
+        return oracleRound(n, 0);
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n, integer)}，参见 {@link #oracleRound(Integer, int)}。
+     *
+     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
+     * @param places  目标精度（可为负）
+     * @return 舍入后的 {@link Long}；若结果非整数或无法放入 long，则抛出异常
+     */
+    public static Long oracleRound(Long n, int places) {
+        if (n == null) {
+            return null;
+        }
+        OraDecimal value = OraDecimal.valueOf(n);
+        OraDecimal rounded = roundOraDecimal(value, places);
+        return rounded.getDecimal().longValueExact();
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n)}。
+     *
+     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
+     * @return 舍入后的 {@link BigInteger}
+     */
+    public static BigInteger oracleRound(BigInteger n) {
+        return oracleRound(n, 0);
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n, integer)}。
+     *
+     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
+     * @param places  目标精度（可为负）
+     * @return 舍入后的 {@link BigInteger}；若舍入结果存在非零小数部分则抛出异常
+     */
+    public static BigInteger oracleRound(BigInteger n, int places) {
+        if (n == null) {
+            return null;
+        }
+        OraDecimal value = new OraDecimal(n.toString());
+        OraDecimal rounded = roundOraDecimal(value, places);
+        return rounded.getDecimal().toBigIntegerExact();
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n)}：四舍五入到整数位。
+     *
+     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
+     * @return 舍入后的 {@link OraDecimal}
+     */
+    public static OraDecimal oracleRound(OraDecimal n) {
+        return oracleRound(n, 0);
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(n, integer)}：对 {@link OraDecimal} 按精度四舍五入，可保留小数或向左舍入。
+     * <p>返回类型仍为 {@link OraDecimal}，以兼容舍入后仍含小数位的场景（如 {@code ROUND(1.235, 2)}）。
+     *
+     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
+     * @param places  目标精度（可为负）
+     * @return 舍入后的 {@link OraDecimal}，经 {@link OraDecimal} 的 Oracle NUMBER 规则规范化
+     */
+    public static OraDecimal oracleRound(OraDecimal n, int places) {
+        if (n == null) {
+            return null;
+        }
+        return roundOraDecimal(n, places);
+    }
+
+    /**
+     * 对 {@link OraDecimal} 应用与 Oracle {@code ROUND} 一致的舍入：{@link RoundingMode#HALF_UP}。
+     * <p>{@link OraDecimal#setScale(int)} 默认即为 HALF_UP，与 Oracle 数值 {@code ROUND} 行为一致。
+     *
+     * @param value   非 null 的数值
+     * @param places  {@code setScale} 的目标标度，允许为负（对应 Oracle 对小数点左侧舍入）
+     * @return 舍入并规范化后的 {@link OraDecimal}
+     */
+    private static OraDecimal roundOraDecimal(OraDecimal value, int places) {
+        // setScale 内部使用 HALF_UP，对齐 Oracle ROUND
+        return value.setScale(places);
     }
 
     /**
@@ -210,8 +330,8 @@ public class OracleFunctionUtils {
         if (o1 instanceof Number && o2 instanceof Number) {
             Number n1 = (Number) o1;
             Number n2 = (Number) o2;
-            OraDecimal b1 = toOraDecimal(n1);
-            OraDecimal b2 = toOraDecimal(n2);
+            OraDecimal b1 = OraDecimal.valueOf(n1);
+            OraDecimal b2 = OraDecimal.valueOf(n2);
             // 使用 compareTo 而非 equals，因为 compareTo 忽略 Scale（例如 1.0 等于 1.00）
             return b1.compareTo(b2) == 0;
         }
@@ -243,29 +363,11 @@ public class OracleFunctionUtils {
      */
     private static boolean numberEqualsString(Number n, String s) {
         try {
-            OraDecimal on = toOraDecimal(n);
+            OraDecimal on = OraDecimal.valueOf(n);
             OraDecimal os = new OraDecimal(s.trim());
             return on.compareTo(os) == 0;
         } catch (Throwable t) {
             throw new IllegalArgumentException(String.format("数字[%s]和字符串[%s]不能比较", n, s), t);
-        }
-    }
-
-    /**
-     * 将 Number 统一转换为 OraDecimal 以便进行高精度比较。
-     *
-     * @param n 数字对象（仅限 Integer, Long, OraDecimal）
-     * @return 对应的 OraDecimal 对象
-     */
-    private static OraDecimal toOraDecimal(Number n) {
-        if (n == null) {
-            return null;
-        } else if (n instanceof OraDecimal) {
-            return (OraDecimal) n;
-        } else if (n instanceof BigDecimal) {
-            return new OraDecimal((BigDecimal) n);
-        } else {
-            return new OraDecimal(String.valueOf(n));
         }
     }
 }

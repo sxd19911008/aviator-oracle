@@ -33,6 +33,24 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         return new OraDecimal(bigDecimal);
     }
 
+    /**
+     * 将 {@link Number} 转换为 {@code OraDecimal}
+     *
+     * @param n 数字对象
+     * @return 对应的 {@code OraDecimal} 对象
+     */
+    public static OraDecimal valueOf(Number n) {
+        if (n == null) {
+            return null;
+        } else if (n instanceof OraDecimal) {
+            return (OraDecimal) n;
+        } else if (n instanceof BigDecimal) {
+            return new OraDecimal((BigDecimal) n);
+        } else {
+            return new OraDecimal(String.valueOf(n));
+        }
+    }
+
     public OraDecimal add(OraDecimal augend) {
         BigDecimal result = this.decimal.add(augend.getDecimal());
         return new OraDecimal(result);
@@ -106,7 +124,7 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
     /**
      * 设置精度
      *
-     * @param newScale 新精度
+     * @param newScale     新精度
      * @param roundingMode 舍弃规则
      * @return 新的OraDecimal对象
      */
@@ -153,7 +171,7 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      *
      * @return this {@code OraDecimal} converted to a {@code long}.
      * @throws ArithmeticException if {@code this} has a nonzero
-     *         fractional part, or will not fit in a {@code long}.
+     *                             fractional part, or will not fit in a {@code long}.
      */
     public long longValueExact() {
         return this.decimal.longValueExact();
@@ -252,5 +270,30 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         if (obj == this) return true;
         OraDecimal other = (OraDecimal) obj;
         return this.decimal.equals(other.decimal);
+    }
+
+    /**
+     * 是否是整数
+     *
+     * @return true-是整数；false-不是
+     */
+    public boolean isInteger() {
+        if (this.decimal == null) return false;
+
+        // 如果 scale <= 0，它在物理存储上就是一个整数 (例如 100E+2)
+        if (this.decimal.scale() <= 0) {
+            return true;
+        }
+
+        // 如果 scale > 0，我们需要检查小数位是否全是 0
+        // 使用 signum 快速排除 0 的情况（0.00... 也是整数）
+        if (this.decimal.signum() == 0) {
+            return true;
+        }
+
+        // 核心性能点：使用 remainder(ONE) 的替代逻辑，但避免创建新对象
+        // 通过判断 stripTrailingZeros 后的 scale 是否 <= 0
+        // 注意：在高性能场景下，直接访问 scale 属性最快
+        return this.decimal.stripTrailingZeros().scale() <= 0;
     }
 }
