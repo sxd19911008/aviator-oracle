@@ -273,11 +273,11 @@ public class OracleFunctionUtils {
 
         /* newScale 超过极限值，直接返回对应的值 */
         if (isGE_40) {
-            // newScale >= 40，返回 0
-            return 0;
-        } else if (isLE_NEG40) {
-            // newScale <= -40，返回 number，不需要处理
+            // newScale >= 40，返回 number，不需要处理
             return number;
+        } else if (isLE_NEG40) {
+            // newScale <= -40，返回 0
+            return 0;
         }
 
         /* newScale 处于合理范围内，正常计算 */
