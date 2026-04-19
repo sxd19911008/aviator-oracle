@@ -27,18 +27,18 @@ public class RoundFunctionTest {
      */
     static Stream<Arguments> testRoundOneArgProvider() {
         return Stream.of(
-//                Arguments.of(
-//                        "入参为 null",
-//                        "round(a)",
-//                        HashMapBuilder.<String, Object>builder().put("a", null).build(),
-//                        null
-//                ),
-//                Arguments.of(
-//                        "Long 已为整数且 scale=0 时直接返回原装箱对象",
-//                        "round(a)",
-//                        HashMapBuilder.<String, Object>builder().put("a", 42L).build(),
-//                        42L
-//                ),
+                Arguments.of(
+                        "入参为 null",
+                        "round(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", null).build(),
+                        null
+                ),
+                Arguments.of(
+                        "Long 已为整数且 scale=0 时直接返回原装箱对象",
+                        "round(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", 42L).build(),
+                        42L
+                ),
                 Arguments.of(
                         "Integer 已为整数且 scale=0 时直接返回原装箱对象",
                         "round(a)",

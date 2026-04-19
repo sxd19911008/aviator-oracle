@@ -8,21 +8,21 @@ import com.googlecode.aviator.runtime.type.AviatorObject;
 import java.util.Map;
 
 /**
- * Oracle数据库的 {@code floor()} 方法
+ * Oracle数据库的 {@code ceil()} 方法
  */
-public class FloorFunction extends AbstractFunction {
+public class CeilFunction extends AbstractFunction {
 
-    private static final long serialVersionUID = -7028857170933522482L;
+    private static final long serialVersionUID = -3672366972743210403L;
 
     @Override
     public String getName() {
-        return "floor";
+        return "ceil";
     }
 
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1) {
         Object obj = arg1.getValue(env);
-        Number res = OracleFunctionUtils.floor(obj);
+        Number res = OracleFunctionUtils.ceil(obj);
         return AORuntimeUtils.wrapAviatorObject(res);
     }
 }

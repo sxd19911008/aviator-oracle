@@ -133,9 +133,9 @@ public class OracleFunctionUtilsTest {
 
     static Stream<Arguments> testFloorProvider() {
         return Stream.of(
-                Arguments.of("Long", 1342534967873799582L, new OraDecimal("1342534967873799582")),
-                Arguments.of("Integer", 143262, new OraDecimal("143262")),
-                Arguments.of("BigInteger", new BigInteger("1342534967873799582"), new OraDecimal("1342534967873799582")),
+                Arguments.of("Long", 1342534967873799582L, 1342534967873799582L),
+                Arguments.of("Integer", 143262, 143262),
+                Arguments.of("BigInteger", new BigInteger("1342534967873799582"), new BigInteger("1342534967873799582")),
                 Arguments.of("Double", 1.993565624, new OraDecimal("1")),
                 Arguments.of("BigDecimal", new BigDecimal("1.9999431565624544763765735"), new OraDecimal("1")),
                 Arguments.of("OraDecimal", new OraDecimal("1.9999431565624544763765735"), new OraDecimal("1")),
@@ -154,7 +154,7 @@ public class OracleFunctionUtilsTest {
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
             Assertions.assertThrows(exceptionClass, () -> OracleFunctionUtils.floor(n));
         } else {
-            OraDecimal actual = OracleFunctionUtils.floor(n);
+            Number actual = OracleFunctionUtils.floor(n);
             Assertions.assertEquals(expected, actual);
         }
     }

@@ -15,82 +15,92 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * 测试：模拟Oracle数据库 {@code floor()} 方法
+ * 测试：模拟Oracle数据库 {@code ceil()} 方法
  */
-@DisplayName("floor 方法测试")
-public class FloorFunctionTest {
+@DisplayName("ceil 方法测试")
+public class CeilFunctionTest {
 
-    static Stream<Arguments> testFloorProvider() {
+    static Stream<Arguments> testCeilProvider() {
         return Stream.of(
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", (byte) 2).build(),
+                        2L
+                ),
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", (short) 2).build(),
+                        2L
+                ),
                 // Long
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder().put("a", 2L).build(),
                         2L
                 ),
                 // Integer
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder().put("a", 2).build(),
                         2L
                 ),
                 // BigInteger
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder().put("a", new BigInteger("2")).build(),
                         new BigInteger("2")
                 ),
                 // Double
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", 1.993565624)
+                                .put("a", 1.193565624)
                                 .build(),
-                        new OraDecimal("1")
+                        new OraDecimal("2")
                 ),
                 // BigDecimal
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", new BigDecimal("1.9999431565624544763765735"))
+                                .put("a", new BigDecimal("1.1999431565624544763765735"))
                                 .build(),
-                        new OraDecimal("1")
+                        new OraDecimal("2")
                 ),
                 // OraDecimal
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", new OraDecimal("1.9999431565624544763765735"))
+                                .put("a", new OraDecimal("1.1999431565624544763765735"))
                                 .build(),
-                        new OraDecimal("1")
+                        new OraDecimal("2")
                 ),
-                // String：非数值，无法 floor
+                // String：非数值，无法 ceil
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder().put("a", "2").build(),
                         IllegalArgumentException.class
                 ),
-                // Instant：非数值，无法 floor
+                // Instant：非数值，无法 ceil
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder()
                                 .put("a", Instant.parse("2020-02-01T03:36:19Z"))
                                 .build(),
                         IllegalArgumentException.class
                 ),
-                // Boolean：非数值，无法 floor
+                // Boolean：非数值，无法 ceil
                 Arguments.of(
-                        "floor(a)",
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder().put("a", true).build(),
                         IllegalArgumentException.class
                 )
         );
     }
 
-    @DisplayName("testFloor")
+    @DisplayName("testCeil")
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
-    @MethodSource("testFloorProvider")
-    public void testFloor(String expression, Map<String, Object> vars, Object expected) {
+    @MethodSource("testCeilProvider")
+    public void testCeil(String expression, Map<String, Object> vars, Object expected) {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;

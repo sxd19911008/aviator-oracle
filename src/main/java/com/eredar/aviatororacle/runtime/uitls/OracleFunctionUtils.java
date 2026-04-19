@@ -173,15 +173,41 @@ public class OracleFunctionUtils {
     /**
      * 取整数，小数位直接舍去
      */
-    public static OraDecimal floor(Object n) {
+    public static Number floor(Object n) {
         if (n == null) {
             return null;
-        } else if (n instanceof Number) {
-            OraDecimal oraDecimal = OraDecimal.valueOf((Number) n);
-            return oraDecimal.setScale(0, RoundingMode.FLOOR);
-        } else {
-            throw new IllegalArgumentException(String.format("floor方法不能传入[%s]类型", n.getClass().getName()));
         }
+        if (n instanceof Long || n instanceof Integer || n instanceof Short || n instanceof Byte
+                || n instanceof BigInteger) {
+            // 整数类型，直接返回
+            return (Number) n;
+        }
+        if ( n instanceof OraDecimal || n instanceof BigDecimal || n instanceof Double || n instanceof Float) {
+            return OraDecimal.valueOf((Number) n).setScale(0, RoundingMode.FLOOR);
+        }
+        throw new IllegalArgumentException(String.format("floor方法不能传入[%s]类型", n.getClass().getName()));
+    }
+
+    /**
+     * 模拟 Oracle {@code CEIL(n)}：返回大于或等于 {@code n} 的最小整数（向正无穷方向取整）。
+     * <p>{@link java.math.RoundingMode#CEILING} 一致：正数小数部分进位，负数向零靠近（例如 {@code ceil(-2.1) = -2}）。
+     *
+     * @param n 目标数字；为 {@code null} 时返回 {@code null}
+     * @return 上取整后的数字
+     */
+    public static Number ceil(Object n) {
+        if (n == null) {
+            return null;
+        }
+        if (n instanceof Long || n instanceof Integer || n instanceof Short || n instanceof Byte
+                || n instanceof BigInteger) {
+            // 整数类型，直接返回
+            return (Number) n;
+        }
+        if ( n instanceof OraDecimal || n instanceof BigDecimal || n instanceof Double || n instanceof Float) {
+            return OraDecimal.valueOf((Number) n).setScale(0, RoundingMode.CEILING);
+        }
+        throw new IllegalArgumentException(String.format("ceil方法不能传入[%s]类型", n.getClass().getName()));
     }
 
     /**
