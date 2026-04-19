@@ -220,9 +220,9 @@ public class AOAviatorJavaType extends AviatorJavaType {
                         // a - b，a 作为 endDate
                         Instant endDate = (Instant) value;
                         Instant beginDate = (Instant) otherValue;
-                        return AOAviatorDecimal.valueOf(OracleFunctionUtils.oracleDaysBetween(beginDate, endDate));
+                        return AOAviatorDecimal.valueOf(OracleFunctionUtils.daysBetween(beginDate, endDate));
                     } else if (otherValue instanceof Number) { // 日期减数字，减去对应的天数，得到新的日期
-                        return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.oracleMinusDays((Instant) value, (Number) otherValue));
+                        return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.instantMinusDays((Instant) value, (Number) otherValue));
                     } else {
                         // 类型错误，抛出异常
                         super.sub(other, env);
@@ -336,7 +336,7 @@ public class AOAviatorJavaType extends AviatorJavaType {
         } else if (value instanceof Instant) {
             otherValue = other.getValue(env);
             if (otherValue instanceof Number) { // 日期加数字，加上对应的天数，得到新的日期
-                return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.oraclePlusDays((Instant) value, (Number) otherValue));
+                return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.instantPlusDays((Instant) value, (Number) otherValue));
             } else {
                 // 类型错误，抛出异常
                 return super.sub(other, env);

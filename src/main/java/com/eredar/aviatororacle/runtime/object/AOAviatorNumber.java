@@ -81,7 +81,7 @@ public abstract class AOAviatorNumber extends AviatorObject {
                     if (thisValue == null) {
                         thisValue = this.longValue;
                     }
-                    return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.oraclePlusDays((Instant) otherValue, thisValue));
+                    return AOAviatorRuntimeJavaType.valueOf(OracleFunctionUtils.instantPlusDays((Instant) otherValue, thisValue));
                 } else {
                     return super.add(other, env);
                 }

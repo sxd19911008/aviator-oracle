@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class OracleFunctionUtilsTest {
 
     // -------------------------------------------------------------------------
-    // oracleDaysBetween
+    // daysBetween
     // -------------------------------------------------------------------------
 
     /**
-     * oracleDaysBetween 场景数据：caseId 为可读说明，便于参数化测试报告展示。
+     * daysBetween 场景数据：caseId 为可读说明，便于参数化测试报告展示。
      */
-    static Stream<Arguments> testOracleDaysBetweenProvider() {
+    static Stream<Arguments> testDaysBetweenProvider() {
         return Stream.of(
                 Arguments.of(
                         "结果为正，跨年多日",
@@ -68,11 +68,11 @@ public class OracleFunctionUtilsTest {
         );
     }
 
-    @DisplayName("oracleDaysBetween 方法测试")
+    @DisplayName("daysBetween 方法测试")
     @ParameterizedTest(name = "【{index}】{0}: beginDate={1}, endDate={2}")
-    @MethodSource("testOracleDaysBetweenProvider")
-    public void testOracleDaysBetween(String caseId, Instant beginDate, Instant endDate, OraDecimal expected) {
-        OraDecimal actual = OracleFunctionUtils.oracleDaysBetween(beginDate, endDate);
+    @MethodSource("testDaysBetweenProvider")
+    public void testDaysBetween(String caseId, Instant beginDate, Instant endDate, OraDecimal expected) {
+        OraDecimal actual = OracleFunctionUtils.daysBetween(beginDate, endDate);
         Assertions.assertEquals(expected, actual);
     }
 

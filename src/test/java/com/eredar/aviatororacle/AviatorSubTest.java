@@ -70,7 +70,7 @@ public class AviatorSubTest {
                         HashMapBuilder.<String, Object>builder().put("a", 12L).put("b", "10").build(),
                         ExpressionRuntimeException.class
                 ),
-                // a(Long) - b(Instant) → Instant（AOAviatorNumber#sub：oracleMinusDays(Instant, Long)）
+                // a(Long) - b(Instant) → Instant（AOAviatorNumber#sub：instantMinusDays(Instant, Long)）
                 Arguments.of(
                         "a - b",
                         HashMapBuilder.<String, Object>builder().put("a", 2L).put("b", Instant.parse("2020-02-01T03:36:19Z")).build(),
@@ -298,7 +298,7 @@ public class AviatorSubTest {
                         HashMapBuilder.<String, Object>builder().put("a", d0).put("b", "2").build(),
                         ExpressionRuntimeException.class
                 ),
-                // a(Double) - b(Instant) → Instant（oracleMinusDays(Instant, Double)）
+                // a(Double) - b(Instant) → Instant（instantMinusDays(Instant, Double)）
                 Arguments.of(
                         "a - b",
                         HashMapBuilder.<String, Object>builder().put("a", 31.57349857284537940384752204323255406344).put("b", Instant.parse("2020-02-01T00:00:00Z")).build(),

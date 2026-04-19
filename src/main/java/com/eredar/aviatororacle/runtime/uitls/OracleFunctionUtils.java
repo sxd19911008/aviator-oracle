@@ -21,7 +21,7 @@ public class OracleFunctionUtils {
      * @param days 天数，可以带小数
      * @return Instant类型的日期对象
      */
-    public static Instant oraclePlusDays(Instant date, Number days) {
+    public static Instant instantPlusDays(Instant date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -40,7 +40,7 @@ public class OracleFunctionUtils {
      * @param days 天数，可以带小数
      * @return Instant类型的日期对象
      */
-    public static Instant oracleMinusDays(Instant date, Number days) {
+    public static Instant instantMinusDays(Instant date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -82,7 +82,7 @@ public class OracleFunctionUtils {
      * @param endDate   被减数 (结束时间)
      * @return 差值天数 ({@code OraDecimal})
      */
-    public static OraDecimal oracleDaysBetween(Instant beginDate, Instant endDate) {
+    public static OraDecimal daysBetween(Instant beginDate, Instant endDate) {
         // 校验参数，为 null 直接报错
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("Date parameters cannot be null");
@@ -186,13 +186,13 @@ public class OracleFunctionUtils {
 
     /**
      * 模拟 Oracle {@code ROUND(n)}：将数字四舍五入到 0 位小数（最接近的整数）。
-     * <p>仅支持 {@link Integer}，与 {@link #oracleRound(Integer, int)} 中 {@code places == 0} 等价。
+     * <p>仅支持 {@link Integer}，与 {@link #round(Integer, int)} 中 {@code places == 0} 等价。
      *
      * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
      * @return 舍入后的 {@link Integer}；若结果超出 int 范围则抛出 {@link ArithmeticException}
      */
-    public static Integer oracleRound(Integer n) {
-        return oracleRound(n, 0);
+    public static Integer round(Integer n) {
+        return round(n, 0);
     }
 
     /**
@@ -203,7 +203,7 @@ public class OracleFunctionUtils {
      * @param places  目标精度（可为负），与 Oracle 的第二个参数含义一致
      * @return 舍入后的 {@link Integer}；若结果非整数或无法放入 int，则抛出异常
      */
-    public static Integer oracleRound(Integer n, int places) {
+    public static Integer round(Integer n, int places) {
         if (n == null) {
             return null;
         }
@@ -215,23 +215,23 @@ public class OracleFunctionUtils {
     }
 
     /**
-     * 模拟 Oracle {@code ROUND(n)}，参见 {@link #oracleRound(Integer)}。
+     * 模拟 Oracle {@code ROUND(n)}，参见 {@link #round(Integer)}。
      *
      * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
      * @return 舍入后的 {@link Long}
      */
-    public static Long oracleRound(Long n) {
-        return oracleRound(n, 0);
+    public static Long round(Long n) {
+        return round(n, 0);
     }
 
     /**
-     * 模拟 Oracle {@code ROUND(n, integer)}，参见 {@link #oracleRound(Integer, int)}。
+     * 模拟 Oracle {@code ROUND(n, integer)}，参见 {@link #round(Integer, int)}。
      *
      * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
      * @param places  目标精度（可为负）
      * @return 舍入后的 {@link Long}；若结果非整数或无法放入 long，则抛出异常
      */
-    public static Long oracleRound(Long n, int places) {
+    public static Long round(Long n, int places) {
         if (n == null) {
             return null;
         }
@@ -246,8 +246,8 @@ public class OracleFunctionUtils {
      * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
      * @return 舍入后的 {@link BigInteger}
      */
-    public static BigInteger oracleRound(BigInteger n) {
-        return oracleRound(n, 0);
+    public static BigInteger round(BigInteger n) {
+        return round(n, 0);
     }
 
     /**
@@ -257,7 +257,7 @@ public class OracleFunctionUtils {
      * @param places  目标精度（可为负）
      * @return 舍入后的 {@link BigInteger}；若舍入结果存在非零小数部分则抛出异常
      */
-    public static BigInteger oracleRound(BigInteger n, int places) {
+    public static BigInteger round(BigInteger n, int places) {
         if (n == null) {
             return null;
         }
@@ -272,8 +272,8 @@ public class OracleFunctionUtils {
      * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
      * @return 舍入后的 {@link OraDecimal}
      */
-    public static OraDecimal oracleRound(OraDecimal n) {
-        return oracleRound(n, 0);
+    public static OraDecimal round(OraDecimal n) {
+        return round(n, 0);
     }
 
     /**
@@ -284,7 +284,7 @@ public class OracleFunctionUtils {
      * @param places  目标精度（可为负）
      * @return 舍入后的 {@link OraDecimal}，经 {@link OraDecimal} 的 Oracle NUMBER 规则规范化
      */
-    public static OraDecimal oracleRound(OraDecimal n, int places) {
+    public static OraDecimal round(OraDecimal n, int places) {
         if (n == null) {
             return null;
         }
