@@ -5,7 +5,7 @@
 
     <groupId>com.eredar</groupId>
     <artifactId>aviator-oracle</artifactId>
-    <version>5.4.3</version>
+    <version>5.4.3.0</version>
 
     <name>aviator-oracle</name>
     <description>Oracle-compatible expression engine powered by Aviator.</description>
@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- AviatorScript 版本 -->
-        <aviator.version>${project.version}</aviator.version>
+        <aviator.version>5.4.3</aviator.version>
         <!-- jackson 版本 -->
         <jackson.version>2.13.5</jackson.version>
         <!-- slf4j 版本 -->

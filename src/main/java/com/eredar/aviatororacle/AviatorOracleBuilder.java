@@ -86,6 +86,7 @@ public class AviatorOracleBuilder {
         aviator.addOpFunction(OperatorType.SUB, new SubFunction());
         aviator.addOpFunction(OperatorType.MULT, new MultFunction());
         aviator.addOpFunction(OperatorType.DIV, new DivFunction());
+        aviator.addOpFunction(OperatorType.MOD, new ModFunction());
         aviator.addOpFunction(OperatorType.NEG, new NegFunction());
         aviator.addOpFunction(OperatorType.LT, new LtFunction());
         aviator.addOpFunction(OperatorType.LE, new LeFunction());
