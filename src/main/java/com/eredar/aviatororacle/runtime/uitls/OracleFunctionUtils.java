@@ -185,17 +185,17 @@ public class OracleFunctionUtils {
     }
 
     /**
-     * 模拟 Oracle {@code ROUND(n)}：四舍五入到 0 位小数，等价于 {@link #round(Number, Number) round(n, 0)}。
+     * 模拟 Oracle {@code ROUND(number)}：四舍五入保留整数，等价于 {@link #round(Number, Number) round(n, 0)}。
      *
      * @param n 待舍入的 {@link Number}；为 {@code null} 时返回 {@code null}
-     * @return 舍入结果，具体类型取决于入参类别（见 {@link #round(Number, Number)}）
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
      */
     public static Number round(Number n) {
         return round(n, 0);
     }
 
     /**
-     * 模拟 Oracle {@code ROUND(n, integer)}：按指定位数四舍五入（{@link RoundingMode#HALF_UP}）。
+     * 模拟 Oracle {@code ROUND(number, integer)}：按指定位数四舍五入（{@link RoundingMode#HALF_UP}）。
      * <p>{@code newScale > 0} 表示保留的小数位数；
      * <p>{@code newScale = 0} 表示保留整数；
      * <p>{@code newScale < 0} 表示在小数点左侧按数量级舍入（如 -1 表示十位）。
