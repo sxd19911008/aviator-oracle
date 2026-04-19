@@ -24,6 +24,11 @@ public class CeilFunctionTest {
         return Stream.of(
                 Arguments.of(
                         "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", null).build(),
+                        null
+                ),
+                Arguments.of(
+                        "ceil(a)",
                         HashMapBuilder.<String, Object>builder().put("a", (byte) 2).build(),
                         2L
                 ),

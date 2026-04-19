@@ -22,6 +22,12 @@ public class FloorFunctionTest {
 
     static Stream<Arguments> testFloorProvider() {
         return Stream.of(
+                // null
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", null).build(),
+                        null
+                ),
                 // Long
                 Arguments.of(
                         "floor(a)",
