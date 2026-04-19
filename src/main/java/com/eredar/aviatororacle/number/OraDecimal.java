@@ -1,6 +1,7 @@
 package com.eredar.aviatororacle.number;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 public class OraDecimal extends Number implements Comparable<OraDecimal> {
@@ -10,12 +11,28 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
     public static final OraDecimal ZERO = new OraDecimal(BigDecimal.ZERO);
     public static final OraDecimal ONE = new OraDecimal(BigDecimal.ONE);
 
-    public OraDecimal(BigDecimal decimal) {
-        this.decimal = this.oracleDecimal(decimal);
+    public OraDecimal(int val) {
+        this(new BigDecimal(val));
+    }
+
+    public OraDecimal(long val) {
+        this(new BigDecimal(val));
+    }
+
+    public OraDecimal(BigInteger bigInteger) {
+        this(new BigDecimal(bigInteger));
+    }
+
+    public OraDecimal(BigInteger bigInteger, int scale) {
+        this(new BigDecimal(bigInteger, scale));
     }
 
     public OraDecimal(String val) {
         this(new BigDecimal(val));
+    }
+
+    public OraDecimal(BigDecimal decimal) {
+        this.decimal = this.oracleDecimal(decimal);
     }
 
     public static OraDecimal valueOf(long unscaledVal, int scale) {
@@ -46,6 +63,8 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
             return (OraDecimal) n;
         } else if (n instanceof BigDecimal) {
             return new OraDecimal((BigDecimal) n);
+        } else if (n instanceof Byte || n instanceof Short) {
+            return OraDecimal.valueOf(n.longValue());
         } else {
             return new OraDecimal(String.valueOf(n));
         }
@@ -157,9 +176,28 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         return this.decimal.doubleValue();
     }
 
+    public BigInteger toBigInteger() {
+        return this.decimal.toBigInteger();
+    }
+
     @Override
     public String toString() {
         return this.decimal.stripTrailingZeros().toPlainString();
+    }
+
+    /**
+     * Converts this {@code OraDecimal} to an {@code int}, checking
+     * for lost information.  If this {@code OraDecimal} has a
+     * nonzero fractional part or is out of the possible range for an
+     * {@code int} result then an {@code ArithmeticException} is
+     * thrown.
+     *
+     * @return this {@code OraDecimal} converted to an {@code int}.
+     * @throws ArithmeticException if {@code this} has a nonzero
+     *         fractional part, or will not fit in an {@code int}.
+     */
+    public int intValueExact() {
+        return this.decimal.intValueExact();
     }
 
     /**
@@ -175,6 +213,19 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      */
     public long longValueExact() {
         return this.decimal.longValueExact();
+    }
+
+    /**
+     * Converts this {@code OraDecimal} to a {@code BigInteger},
+     * checking for lost information.  An exception is thrown if this
+     * {@code OraDecimal} has a nonzero fractional part.
+     *
+     * @return this {@code OraDecimal} converted to a {@code BigInteger}.
+     * @throws ArithmeticException if {@code this} has a nonzero
+     *         fractional part.
+     */
+    public BigInteger toBigIntegerExact() {
+        return this.decimal.toBigIntegerExact();
     }
 
     /**

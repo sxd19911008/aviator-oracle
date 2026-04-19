@@ -1,6 +1,6 @@
 package com.eredar.aviatororacle.runtime.uitls;
 
-import com.eredar.aviatororacle.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
 import com.eredar.aviatororacle.number.OraDecimal;
 
 import java.math.BigDecimal;
@@ -185,123 +185,127 @@ public class OracleFunctionUtils {
     }
 
     /**
-     * 模拟 Oracle {@code ROUND(n)}：将数字四舍五入到 0 位小数（最接近的整数）。
-     * <p>仅支持 {@link Integer}，与 {@link #round(Integer, int)} 中 {@code places == 0} 等价。
+     * 模拟 Oracle {@code ROUND(n)}：四舍五入到 0 位小数，等价于 {@link #round(Number, Number) round(n, 0)}。
      *
-     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
-     * @return 舍入后的 {@link Integer}；若结果超出 int 范围则抛出 {@link ArithmeticException}
+     * @param n 待舍入的 {@link Number}；为 {@code null} 时返回 {@code null}
+     * @return 舍入结果，具体类型取决于入参类别（见 {@link #round(Number, Number)}）
      */
-    public static Integer round(Integer n) {
+    public static Number round(Number n) {
         return round(n, 0);
     }
 
     /**
-     * 模拟 Oracle {@code ROUND(n, integer)}：按指定位数四舍五入（HALF_UP）。
-     * <p>{@code places >= 0} 表示保留的小数位数；{@code places &lt; 0} 表示在整数部分左侧舍入（如 -1 表示舍入到十位）。
+     * 模拟 Oracle {@code ROUND(n, integer)}：按指定位数四舍五入（{@link RoundingMode#HALF_UP}）。
+     * <p>{@code newScale > 0} 表示保留的小数位数；
+     * <p>{@code newScale = 0} 表示保留整数；
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级舍入（如 -1 表示十位）。
      *
-     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
-     * @param places  目标精度（可为负），与 Oracle 的第二个参数含义一致
-     * @return 舍入后的 {@link Integer}；若结果非整数或无法放入 int，则抛出异常
+     * @param number   待舍入的值；为 {@code null} 时返回 {@code null}
+     * @param newScale 目标标度（可为负）
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
      */
-    public static Integer round(Integer n, int places) {
-        if (n == null) {
+    public static Number round(Number number, Number newScale) {
+        if (number == null) {
             return null;
         }
-        // Integer 无小数，用字符串构造 OraDecimal，避免 double 误差
-        OraDecimal value = OraDecimal.valueOf(n);
-        OraDecimal rounded = roundOraDecimal(value, places);
-        // 与 Oracle NUMBER 一致：整数类型承载时要求结果为精确整数且在范围内
-        return rounded.getDecimal().intValueExact();
-    }
 
-    /**
-     * 模拟 Oracle {@code ROUND(n)}，参见 {@link #round(Integer)}。
-     *
-     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
-     * @return 舍入后的 {@link Long}
-     */
-    public static Long round(Long n) {
-        return round(n, 0);
-    }
-
-    /**
-     * 模拟 Oracle {@code ROUND(n, integer)}，参见 {@link #round(Integer, int)}。
-     *
-     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
-     * @param places  目标精度（可为负）
-     * @return 舍入后的 {@link Long}；若结果非整数或无法放入 long，则抛出异常
-     */
-    public static Long round(Long n, int places) {
-        if (n == null) {
-            return null;
+        if (newScale == null) {
+            throw new IllegalArgumentException("[newScale] cannot be null");
         }
-        OraDecimal value = OraDecimal.valueOf(n);
-        OraDecimal rounded = roundOraDecimal(value, places);
-        return rounded.getDecimal().longValueExact();
-    }
 
-    /**
-     * 模拟 Oracle {@code ROUND(n)}。
-     *
-     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
-     * @return 舍入后的 {@link BigInteger}
-     */
-    public static BigInteger round(BigInteger n) {
-        return round(n, 0);
-    }
+        /* 校验并与处理 newScale */
+        // newScale >= 40，直接返回0
+        boolean isGE_40 = false;
+        // newScale <= -40，直接返回 n 本身
+        boolean isLE_NEG40 = false;
+        // scale = newScale的int类型
+        int scale = 0;
 
-    /**
-     * 模拟 Oracle {@code ROUND(n, integer)}。
-     *
-     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
-     * @param places  目标精度（可为负）
-     * @return 舍入后的 {@link BigInteger}；若舍入结果存在非零小数部分则抛出异常
-     */
-    public static BigInteger round(BigInteger n, int places) {
-        if (n == null) {
-            return null;
+        if (newScale instanceof Long || newScale instanceof Integer || newScale instanceof Short
+                || newScale instanceof Byte || newScale instanceof Double || newScale instanceof Float) {
+            long l = newScale.longValue();
+            if (l >= 40) {
+                isGE_40 = true;
+            } else if (l <= -40) {
+                isLE_NEG40 = true;
+            } else {
+                // 强行转换成整数，丢弃小数部分
+                scale = (int) l;
+            }
+        } else if (newScale instanceof BigInteger) {
+            BigInteger bi = (BigInteger) newScale;
+            if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_POS) >= 0) {
+                // newScale >= 40
+                isGE_40 = true;
+            } else if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_NEG) <= 0) {
+                // newScale <= -40
+                isLE_NEG40 = true;
+            } else {
+                scale = bi.intValue();
+            }
+        } else if (newScale instanceof BigDecimal) {
+            BigDecimal decimal = (BigDecimal) newScale;
+            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_POS) >= 0) {
+                // newScale >= 40
+                isGE_40 = true;
+            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_NEG) <= 0) {
+                // newScale <= -40
+                isLE_NEG40 = true;
+            } else {
+                // 强行转换成整数，丢弃小数部分
+                scale = decimal.intValue();
+            }
+        } else if (newScale instanceof OraDecimal) {
+            OraDecimal decimal = (OraDecimal) newScale;
+            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_POS) >= 0) {
+                // newScale >= 40
+                isGE_40 = true;
+            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_NEG) <= 0) {
+                // newScale <= -40
+                isLE_NEG40 = true;
+            } else {
+                // 强行转换成整数，丢弃小数部分
+                scale = decimal.intValue();
+            }
+        } else {
+            throw new IllegalArgumentException(String.format("newScale 是未知类型[%s]", newScale.getClass().getName()));
         }
-        OraDecimal value = new OraDecimal(n.toString());
-        OraDecimal rounded = roundOraDecimal(value, places);
-        return rounded.getDecimal().toBigIntegerExact();
-    }
 
-    /**
-     * 模拟 Oracle {@code ROUND(n)}：四舍五入到整数位。
-     *
-     * @param n 待舍入的值；为 {@code null} 时返回 {@code null}
-     * @return 舍入后的 {@link OraDecimal}
-     */
-    public static OraDecimal round(OraDecimal n) {
-        return round(n, 0);
-    }
-
-    /**
-     * 模拟 Oracle {@code ROUND(n, integer)}：对 {@link OraDecimal} 按精度四舍五入，可保留小数或向左舍入。
-     * <p>返回类型仍为 {@link OraDecimal}，以兼容舍入后仍含小数位的场景（如 {@code ROUND(1.235, 2)}）。
-     *
-     * @param n       待舍入的值；为 {@code null} 时返回 {@code null}
-     * @param places  目标精度（可为负）
-     * @return 舍入后的 {@link OraDecimal}，经 {@link OraDecimal} 的 Oracle NUMBER 规则规范化
-     */
-    public static OraDecimal round(OraDecimal n, int places) {
-        if (n == null) {
-            return null;
+        /* newScale 超过极限值，直接返回对应的值 */
+        if (isGE_40) {
+            // newScale >= 40，返回 0
+            return 0;
+        } else if (isLE_NEG40) {
+            // newScale <= -40，返回 number，不需要处理
+            return number;
         }
-        return roundOraDecimal(n, places);
-    }
 
-    /**
-     * 对 {@link OraDecimal} 应用与 Oracle {@code ROUND} 一致的舍入：{@link RoundingMode#HALF_UP}。
-     * <p>{@link OraDecimal#setScale(int)} 默认即为 HALF_UP，与 Oracle 数值 {@code ROUND} 行为一致。
-     *
-     * @param value   非 null 的数值
-     * @param places  {@code setScale} 的目标标度，允许为负（对应 Oracle 对小数点左侧舍入）
-     * @return 舍入并规范化后的 {@link OraDecimal}
-     */
-    private static OraDecimal roundOraDecimal(OraDecimal value, int places) {
-        // setScale 内部使用 HALF_UP，对齐 Oracle ROUND
-        return value.setScale(places);
+        /* newScale 处于合理范围内，正常计算 */
+        // OraDecimal：直接走 Oracle NUMBER 舍入与规范化（setScale 默认为 HALF_UP）
+        if (number instanceof OraDecimal) {
+            return ((OraDecimal) number).setScale(scale);
+        }
+        // BigDecimal：必须转为 OraDecimal 再计算
+        if (number instanceof BigDecimal) {
+            return new OraDecimal((BigDecimal) number).setScale(scale);
+        }
+        // Byte / Short / Integer / Long
+        if (number instanceof Long || number instanceof Integer || number instanceof Short || number instanceof Byte) {
+            if (scale >= 0) {
+                return number;
+            }
+            return OraDecimal.valueOf(number.longValue()).setScale(scale, RoundingMode.HALF_UP);
+        }
+        if (number instanceof BigInteger) {
+            // 整数无小数部分，非负 newScale 不改变数值
+            if (scale >= 0) {
+                return number;
+            }
+            return new OraDecimal((BigInteger) number).setScale(scale, RoundingMode.HALF_UP);
+        }
+
+        /* 其余 Number 类型：统一走 OraDecimal */
+        return OraDecimal.valueOf(number).setScale(scale);
     }
 
     /**
