@@ -69,6 +69,12 @@ public class MonthsBetweenFunctionTest {
                         new OraDecimal("1")
                 ),
                 Arguments.of(
+                        "闰年，2月28日不是月末",
+                        Instant.parse("2024-02-28T01:14:22Z"),
+                        Instant.parse("2024-01-31T15:47:39Z"),
+                        new OraDecimal("0.8836630077658303464755077658303464755078")
+                ),
+                Arguments.of(
                         "同一天",
                         Instant.parse("2023-01-31T15:47:39Z"),
                         Instant.parse("2023-01-31T01:14:22Z"),
@@ -130,6 +136,13 @@ public class MonthsBetweenFunctionTest {
                         Instant.parse("2023-01-31T15:47:39Z"),
                         "Europe/Berlin",
                         new OraDecimal("1")
+                ),
+                Arguments.of(
+                        "闰年，2月28日不是月末",
+                        Instant.parse("2024-02-28T15:14:22Z"),
+                        Instant.parse("2024-01-31T15:47:39Z"),
+                        "Europe/Berlin",
+                        new OraDecimal("0.9024802120669056152927120669056152927121")
                 ),
                 Arguments.of(
                         "同一天",
@@ -199,6 +212,12 @@ public class MonthsBetweenFunctionTest {
                         new OraDecimal("-1")
                 ),
                 Arguments.of(
+                        "闰年，2月28日不是月末",
+                        Instant.parse("2024-01-31T15:47:39Z"),
+                        Instant.parse("2024-02-28T01:14:22Z"),
+                        new OraDecimal("-0.8836630077658303464755077658303464755078")
+                ),
+                Arguments.of(
                         "同一天",
                         Instant.parse("2023-01-31T01:14:22Z"),
                         Instant.parse("2023-01-31T15:47:39Z"),
@@ -260,6 +279,13 @@ public class MonthsBetweenFunctionTest {
                         Instant.parse("2023-02-28T15:14:22Z"),
                         "Europe/Berlin",
                         new OraDecimal("-1")
+                ),
+                Arguments.of(
+                        "闰年，2月28日不是月末",
+                        Instant.parse("2024-01-31T15:47:39Z"),
+                        Instant.parse("2024-02-28T15:14:22Z"),
+                        "Europe/Berlin",
+                        new OraDecimal("-0.9024802120669056152927120669056152927121")
                 ),
                 Arguments.of(
                         "同一天",
