@@ -51,7 +51,7 @@ public class MonthsBetweenFunction extends AbstractFunction {
         }
 
         throw new IllegalArgumentException(String.format(
-                "months_between方法入参endDate[%s]和beginDate[%s]必须满足其中一个条件：\n" +
+                "months_between方法不传入时区zoneId的场景，入参endDate[%s]和beginDate[%s]必须满足其中一个条件：\n" +
                         "1. 都是Instant\n" +
                         "2. 都是LocalDateTime\n" +
                         "3. 都是Date",
@@ -85,19 +85,8 @@ public class MonthsBetweenFunction extends AbstractFunction {
             return AOAviatorDecimal.valueOf(months);
         }
 
-        if (obj1 instanceof LocalDateTime && obj2 instanceof LocalDateTime ) {
-            // TODO 完成LocalDateTime类型
-        }
-
-        if (obj1 instanceof Date && obj2 instanceof Date ) {
-            // TODO 完成Date类型
-        }
-
         throw new IllegalArgumentException(String.format(
-                "months_between方法入参endDate[%s]和beginDate[%s]必须满足其中一个条件：\n" +
-                        "1. 都是Instant\n" +
-                        "2. 都是LocalDateTime\n" +
-                        "3. 都是Date",
+                "months_between方法传入时区zoneId的场景，入参endDate[%s]和beginDate[%s]必须都是Instant",
                 obj1.getClass().getName(),
                 obj2.getClass().getName()
         ));
