@@ -5,9 +5,7 @@ import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -106,31 +104,16 @@ public class OracleDateUtils {
     }
 
     /**
-     * 2个日期之间间隔的月份，默认使用 UTC 时区
+     * 2个日期之间间隔的月份
      *
      * @param endDate   结束日期
      * @param beginDate 起始日期
      * @return 间隔月份
      */
     public static OraDecimal monthsBetween(Date endDate, Date beginDate) {
-        return monthsBetween(endDate, beginDate, ZoneOffset.UTC);
-    }
-
-    /**
-     * 2个日期之间间隔的月份
-     *
-     * @param endDate   结束日期
-     * @param beginDate 起始日期
-     * @param zoneId    时区
-     * @return 间隔月份
-     */
-    public static OraDecimal monthsBetween(Date endDate, Date beginDate, ZoneId zoneId) {
         /* 入参校验 */
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
-        }
-        if (zoneId == null) {
-            throw new IllegalArgumentException("时区zoneId不能为空");
         }
 
         // 支持负数计算
@@ -143,37 +126,42 @@ public class OracleDateUtils {
             sign = AviatorOracleConstants.NEG; // 设置为 -1
         }
 
-        /* 将 Date 转换为 ZonedDateTime，以便进行日历层面的月份/天/时间计算 */
-        ZonedDateTime begin = beginDate.toInstant().atZone(zoneId);
-        ZonedDateTime end = endDate.toInstant().atZone(zoneId);
+        /* 使用 Calendar 解析日历字段，自动适配系统时区 */
+        Calendar begin = Calendar.getInstance();
+        begin.setTime(beginDate);
+        Calendar end = Calendar.getInstance();
+        end.setTime(endDate);
 
         /* 计算基础月份差 (年差 * 12 + 月差) */
-        int yearsDiff = end.getYear() - begin.getYear();
-        int monthsDiff = end.getMonthValue() - begin.getMonthValue();
+        int yearsDiff = end.get(Calendar.YEAR) - begin.get(Calendar.YEAR);
+        int monthsDiff = end.get(Calendar.MONTH) - begin.get(Calendar.MONTH);
         int totalMonths = yearsDiff * 12 + monthsDiff;
         OraDecimal months = OraDecimal.valueOf(totalMonths);
 
         /* 判断是否"同日"或"均为月末" */
         // 判断是否"同日"，比如1月12日与2月12日属于"同日"
-        boolean sameDayOfMonth = begin.getDayOfMonth() == end.getDayOfMonth();
+        boolean sameDayOfMonth = begin.get(Calendar.DAY_OF_MONTH) == end.get(Calendar.DAY_OF_MONTH);
         // 判断是否"均为月末"，比如1月31日与2月28日属于"均为月末"
         boolean bothLastDayOfMonth = isLastDayOfMonth(begin) && isLastDayOfMonth(end);
         if (sameDayOfMonth || bothLastDayOfMonth) {
             // 乘以正负号
-            months = months.multiply(sign);
-            return months;
+            return months.multiply(sign);
         }
 
         // 如果不满足上述条件，计算小数部分
 
-        /* 计算秒数 */
-        long secondOfBegin = begin.toLocalTime().toSecondOfDay();
-        long secondOfEnd = end.toLocalTime().toSecondOfDay();
+        /* 计算时分秒各自折算成的秒数之差 */
+        long secondOfBegin = begin.get(Calendar.HOUR_OF_DAY) * 3600L
+                + begin.get(Calendar.MINUTE) * 60L
+                + begin.get(Calendar.SECOND);
+        long secondOfEnd = end.get(Calendar.HOUR_OF_DAY) * 3600L
+                + end.get(Calendar.MINUTE) * 60L
+                + end.get(Calendar.SECOND);
         long secondsByHours = secondOfEnd - secondOfBegin;
 
-        /* 计算天数，然后换算成秒 */
-        long dayOfBegin = begin.getDayOfMonth();
-        long dayOfEnd = end.getDayOfMonth();
+        /* 计算日期差，然后换算成秒 */
+        long dayOfBegin = begin.get(Calendar.DAY_OF_MONTH);
+        long dayOfEnd = end.get(Calendar.DAY_OF_MONTH);
         // 相差天数整数部分
         long days = dayOfEnd - dayOfBegin;
         // 换算成秒
@@ -192,9 +180,10 @@ public class OracleDateUtils {
     }
 
     /**
-     * 判断 {@link ZonedDateTime} 是否是所在月份的最后一天
+     * 判断 {@link Calendar} 是否是所在月份的最后一天
      */
-    private static boolean isLastDayOfMonth(ZonedDateTime date) {
-        return date.getDayOfMonth() == date.toLocalDate().lengthOfMonth();
+    private static boolean isLastDayOfMonth(Calendar date) {
+        // getActualMaximum 会根据当前年份/月份动态计算该月的最大天数（含闰年判断）
+        return date.get(Calendar.DAY_OF_MONTH) == date.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 }
