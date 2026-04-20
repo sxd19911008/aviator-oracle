@@ -15,6 +15,5 @@ TODO
 2. abs 绝对值方法
 3. trunc 方法
 4. ADD_MONTHS 方法
-5. MONTHS_BETWEEN 方法
 6. LAST_DAY 方法
 7. COALESCE 方法

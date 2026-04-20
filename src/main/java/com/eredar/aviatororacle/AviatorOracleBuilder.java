@@ -107,6 +107,7 @@ public class AviatorOracleBuilder {
         aviator.addFunction(new FloorFunction());
         aviator.addFunction(new CeilFunction());
         aviator.addFunction(new RoundFunction());
+        aviator.addFunction(new MonthsBetweenFunction());
 
         // 调试日志
         aviator.setOption(Options.TRACE_EVAL, AOUtils.defaultIfNull(this.traceEval, Boolean.FALSE));
