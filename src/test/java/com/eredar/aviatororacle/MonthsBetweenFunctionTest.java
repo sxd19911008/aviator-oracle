@@ -1,7 +1,6 @@
 package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +10,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -55,10 +53,6 @@ public class MonthsBetweenFunctionTest {
                 .put("zoneId", zoneId)
                 .build();
     }
-
-    // -------------------------------------------------------------------------
-    // 与 OracleFunctionUtilsTest#testMonthsBetweenPlusProvider 数据一致（未改）
-    // -------------------------------------------------------------------------
 
     static Stream<Arguments> monthsBetweenPlusProvider() {
         return Stream.of(
@@ -113,7 +107,7 @@ public class MonthsBetweenFunctionTest {
         );
     }
 
-    @DisplayName("months_between(end,begin)：正数场景（与工具类 UTC 期望一致）")
+    @DisplayName("months_between(end,begin)：正数场景")
     @ParameterizedTest(name = "【{index}】{0}: endDate={1}, beginDate={2}")
     @MethodSource("monthsBetweenPlusProvider")
     public void testMonthsBetweenPlus(String caseId, Instant endDate, Instant beginDate, OraDecimal expected) {
@@ -121,74 +115,74 @@ public class MonthsBetweenFunctionTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    /**
-     * 在正数案例的同一对 Instant 上为每条用例指定不同时区，期望为 {@link OracleFunctionUtils#monthsBetween(Instant, Instant, ZoneId)} 的计算结果。
-     */
     static Stream<Arguments> monthsBetweenPlusWithZoneProvider() {
         return Stream.of(
                 Arguments.of(
                         "不同月份，同一天",
-                        Instant.parse("2023-03-15T01:14:22Z"),
+                        Instant.parse("2023-03-15T15:14:22Z"),
                         Instant.parse("2023-01-15T15:47:39Z"),
-                        "Europe/Paris"
+                        "Asia/Tokyo",
+                        new OraDecimal("2")
                 ),
                 Arguments.of(
                         "均为月末",
-                        Instant.parse("2023-02-28T01:14:22Z"),
+                        Instant.parse("2023-02-28T15:14:22Z"),
                         Instant.parse("2023-01-31T15:47:39Z"),
-                        "America/New_York"
+                        "Europe/Berlin",
+                        new OraDecimal("1")
                 ),
                 Arguments.of(
                         "同一天",
                         Instant.parse("2023-01-31T15:47:39Z"),
-                        Instant.parse("2023-01-31T01:14:22Z"),
-                        "Asia/Shanghai"
+                        Instant.parse("2023-01-31T15:14:22Z"),
+                        "America/Chicago",
+                        new OraDecimal("0")
                 ),
                 Arguments.of(
                         "小数",
-                        Instant.parse("2024-02-29T15:50:39Z"),
-                        Instant.parse("2024-02-23T11:02:39Z"),
-                        "Australia/Sydney"
+                        Instant.parse("2024-02-29T02:50:39Z"),
+                        Instant.parse("2024-02-22T22:02:39Z"),
+                        "Pacific/Auckland",
+                        new OraDecimal("0.2")
                 ),
                 Arguments.of(
                         "含0小数",
                         Instant.parse("2024-02-29T15:11:53Z"),
                         Instant.parse("2024-02-28T14:50:39Z"),
-                        "Africa/Cairo"
+                        "Asia/Dubai",
+                        new OraDecimal("0.0327337216248506571087216248506571087216")
                 ),
                 Arguments.of(
                         "1秒是零点几月",
-                        Instant.parse("2024-02-29T00:00:00Z"),
-                        Instant.parse("2024-02-28T23:59:59Z"),
-                        "Pacific/Honolulu"
+                        Instant.parse("2024-02-29T07:00:00Z"),
+                        Instant.parse("2024-02-29T06:59:59Z"),
+                        "America/Denver",
+                        new OraDecimal("0.0000003733572281959378733572281959378733572282")
                 ),
                 Arguments.of(
-                        "3位整数+小数",
+                        "3位整数+小数，夏令时",
                         Instant.parse("2033-10-28T01:14:11Z"),
-                        Instant.parse("2013-01-31T23:24:39Z"),
-                        "America/Sao_Paulo"
+                        Instant.parse("2013-01-31T23:24:39Z"), // 夏令时
+                        "Europe/Rome",
+                        new OraDecimal("248.874765531660692951015531660692951016")
                 ),
                 Arguments.of(
                         "整数+1秒",
-                        Instant.parse("2033-10-01T00:00:00Z"),
-                        Instant.parse("2013-01-31T23:59:59Z"),
-                        "Europe/Moscow"
+                        Instant.parse("2033-09-30T15:00:00Z"),
+                        Instant.parse("2013-01-31T14:59:59Z"),
+                        "Asia/Seoul",
+                        new OraDecimal("248.000000373357228195937873357228195938")
                 )
         );
     }
 
-    @DisplayName("months_between(end,begin,zone)：正数场景（相同时刻、不同时区）")
-    @ParameterizedTest(name = "【{index}】{0}: endDate={1}, beginDate={2}, zone={3}")
+    @DisplayName("months_between(end,begin,zone)：正数场景")
+    @ParameterizedTest(name = "【{index}】{0}: endDate={1}, beginDate={2}, zoneId={3}")
     @MethodSource("monthsBetweenPlusWithZoneProvider")
-    public void testMonthsBetweenPlusWithZone(String caseId, Instant endDate, Instant beginDate, String zoneId) {
-        OraDecimal expected = OracleFunctionUtils.monthsBetween(endDate, beginDate, ZoneId.of(zoneId));
+    public void testMonthsBetweenPlusWithZone(String caseId, Instant endDate, Instant beginDate, String zoneId, OraDecimal expected) {
         Object actual = AviatorInstance.execute(EXPR_THREE_ARGS, varsThreeArgs(endDate, beginDate, zoneId));
         Assertions.assertEquals(expected, actual);
     }
-
-    // -------------------------------------------------------------------------
-    // 与 OracleFunctionUtilsTest#testMonthsBetweenNegProvider 数据一致（未改）
-    // -------------------------------------------------------------------------
 
     static Stream<Arguments> monthsBetweenNegProvider() {
         return Stream.of(
@@ -243,7 +237,7 @@ public class MonthsBetweenFunctionTest {
         );
     }
 
-    @DisplayName("months_between(end,begin)：负数场景（与工具类 UTC 期望一致）")
+    @DisplayName("months_between(end,begin)：负数场景")
     @ParameterizedTest(name = "【{index}】{0}: endDate={1}, beginDate={2}")
     @MethodSource("monthsBetweenNegProvider")
     public void testMonthsBetweenNeg(String caseId, Instant endDate, Instant beginDate, OraDecimal expected) {
@@ -251,67 +245,71 @@ public class MonthsBetweenFunctionTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    /**
-     * 在负数案例的同一对 Instant 上为每条用例指定不同时区（与正数场景所用时区列表区分开，避免重复感）。
-     */
     static Stream<Arguments> monthsBetweenNegWithZoneProvider() {
         return Stream.of(
                 Arguments.of(
                         "不同月份，同一天",
                         Instant.parse("2023-01-15T15:47:39Z"),
-                        Instant.parse("2023-03-15T01:14:22Z"),
-                        "Asia/Tokyo"
+                        Instant.parse("2023-03-15T15:14:22Z"),
+                        "Asia/Tokyo",
+                        new OraDecimal("-2")
                 ),
                 Arguments.of(
                         "均为月末",
                         Instant.parse("2023-01-31T15:47:39Z"),
-                        Instant.parse("2023-02-28T01:14:22Z"),
-                        "Europe/Berlin"
+                        Instant.parse("2023-02-28T15:14:22Z"),
+                        "Europe/Berlin",
+                        new OraDecimal("-1")
                 ),
                 Arguments.of(
                         "同一天",
-                        Instant.parse("2023-01-31T01:14:22Z"),
+                        Instant.parse("2023-01-31T15:14:22Z"),
                         Instant.parse("2023-01-31T15:47:39Z"),
-                        "America/Chicago"
+                        "America/Chicago",
+                        new OraDecimal("0")
                 ),
                 Arguments.of(
                         "小数",
-                        Instant.parse("2024-02-23T11:02:39Z"),
-                        Instant.parse("2024-02-29T15:50:39Z"),
-                        "Pacific/Auckland"
+                        Instant.parse("2024-02-22T22:02:39Z"),
+                        Instant.parse("2024-02-29T02:50:39Z"),
+                        "Pacific/Auckland",
+                        new OraDecimal("-0.2")
                 ),
                 Arguments.of(
                         "含0小数",
                         Instant.parse("2024-02-28T14:50:39Z"),
                         Instant.parse("2024-02-29T15:11:53Z"),
-                        "Asia/Dubai"
+                        "Asia/Dubai",
+                        new OraDecimal("-0.0327337216248506571087216248506571087216")
                 ),
                 Arguments.of(
                         "1秒是零点几月",
-                        Instant.parse("2024-02-28T23:59:59Z"),
-                        Instant.parse("2024-02-29T00:00:00Z"),
-                        "America/Denver"
+                        Instant.parse("2024-02-29T06:59:59Z"),
+                        Instant.parse("2024-02-29T07:00:00Z"),
+                        "America/Denver",
+                        new OraDecimal("-0.0000003733572281959378733572281959378733572282")
                 ),
                 Arguments.of(
-                        "3位整数+小数",
+                        "3位整数+小数，夏令时",
                         Instant.parse("2013-01-31T23:24:39Z"),
-                        Instant.parse("2033-10-28T01:14:11Z"),
-                        "Europe/Rome"
+                        Instant.parse("2033-10-28T01:14:11Z"), // 夏令时
+                        "Europe/Rome",
+                        new OraDecimal("-248.874765531660692951015531660692951016")
                 ),
                 Arguments.of(
                         "整数+1秒",
-                        Instant.parse("2013-01-31T23:59:59Z"),
-                        Instant.parse("2033-10-01T00:00:00Z"),
-                        "Asia/Seoul"
+                        Instant.parse("2013-01-31T14:59:59Z"),
+                        Instant.parse("2033-09-30T15:00:00Z"),
+                        "Asia/Seoul",
+                        new OraDecimal("-248.000000373357228195937873357228195938")
                 )
         );
     }
 
-    @DisplayName("months_between(end,begin,zone)：负数场景（相同时刻、不同时区）")
-    @ParameterizedTest(name = "【{index}】{0}: endDate={1}, beginDate={2}, zone={3}")
+    @DisplayName("months_between(end,begin,zone)：负数场景")
+    @ParameterizedTest(name = "【{index}】{0}: endDate={1}, beginDate={2}, zoneId={3}")
     @MethodSource("monthsBetweenNegWithZoneProvider")
-    public void testMonthsBetweenNegWithZone(String caseId, Instant endDate, Instant beginDate, String zoneId) {
-        OraDecimal expected = OracleFunctionUtils.monthsBetween(endDate, beginDate, ZoneId.of(zoneId));
+    public void testMonthsBetweenNegWithZone(String caseId, Instant endDate, Instant beginDate, String zoneId, OraDecimal expected) {
         Object actual = AviatorInstance.execute(EXPR_THREE_ARGS, varsThreeArgs(endDate, beginDate, zoneId));
         Assertions.assertEquals(expected, actual);
     }
