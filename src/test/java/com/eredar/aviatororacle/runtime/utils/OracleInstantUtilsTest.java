@@ -1,7 +1,6 @@
 package com.eredar.aviatororacle.runtime.utils;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
 import com.eredar.aviatororacle.runtime.uitls.OracleInstantUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -71,7 +70,7 @@ public class OracleInstantUtilsTest {
     @ParameterizedTest(name = "【{index}】{0}: beginDate={1}, endDate={2}")
     @MethodSource("testDaysBetweenProvider")
     public void testDaysBetween(String caseId, Instant beginDate, Instant endDate, OraDecimal expected) {
-        OraDecimal actual = OracleFunctionUtils.daysBetween(beginDate, endDate);
+        OraDecimal actual = OracleInstantUtils.daysBetween(beginDate, endDate);
         Assertions.assertEquals(expected, actual);
     }
 
