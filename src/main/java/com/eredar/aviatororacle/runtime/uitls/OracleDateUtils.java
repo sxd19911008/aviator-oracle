@@ -5,16 +5,15 @@ import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 /**
- * 基于 {@link Instant} 实现Oracle数据库日期操作
+ * 基于 {@link Date} 实现Oracle数据库日期操作
  */
-public class OracleInstantUtils {
+public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库: Date对象 + 数字
@@ -22,17 +21,16 @@ public class OracleInstantUtils {
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
-     * @return Instant类型的日期对象
+     * @return {@link Date} 类型的日期对象
      */
-    public static Instant instantPlusDays(Instant date, Number days) {
+    public static Date datePlusDays(Date date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
-
         // 计算总秒数
         long seconds = daysToSeconds(days);
-        // 添加总秒数并返回新日期对象
-        return date.plus(seconds, ChronoUnit.SECONDS);
+        // 在原始毫秒时间戳上加上总秒数对应的毫秒数，返回新的 Date 对象
+        return new Date(date.getTime() + seconds * 1000L);
     }
 
     /**
@@ -41,16 +39,16 @@ public class OracleInstantUtils {
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
-     * @return Instant类型的日期对象
+     * @return {@link Date} 类型的日期对象
      */
-    public static Instant instantMinusDays(Instant date, Number days) {
+    public static Date dateMinusDays(Date date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
         // 计算总秒数
         long seconds = daysToSeconds(days);
-        // 添加总秒数并返回新日期对象
-        return date.minus(seconds, ChronoUnit.SECONDS);
+        // 在原始毫秒时间戳上减去总秒数对应的毫秒数，返回新的 Date 对象
+        return new Date(date.getTime() - seconds * 1000L);
     }
 
     /**
@@ -79,20 +77,20 @@ public class OracleInstantUtils {
     }
 
     /**
-     * 计算两个 {@code Instant} 之间的天数差 (date2 - date1)
+     * 计算两个 {@link Date} 之间的天数差 (endDate - beginDate)
      *
      * @param endDate   被减数 (结束时间)
      * @param beginDate 减数 (起始时间)
      * @return 差值天数 ({@code OraDecimal})
      */
-    public static OraDecimal daysBetween(Instant endDate, Instant beginDate) {
+    public static OraDecimal daysBetween(Date endDate, Date beginDate) {
         // 校验参数，为 null 直接报错
         if (endDate == null || beginDate == null) {
             throw new IllegalArgumentException(String.format("endDate[%s] and beginDate[%s] cannot be null", endDate, beginDate));
         }
-        // 获取秒数
-        long endSeconds = endDate.getEpochSecond();
-        long beginSeconds = beginDate.getEpochSecond();
+        // 将毫秒时间戳转换为秒
+        long endSeconds = endDate.getTime() / 1000;
+        long beginSeconds = beginDate.getTime() / 1000;
         // 获取总秒数差
         OraDecimal secondsDiff = OraDecimal.valueOf(endSeconds - beginSeconds);
         // 计算天数，Oracle日期相减场景违反正常的精度逻辑，强行保留40位小数
@@ -107,7 +105,14 @@ public class OracleInstantUtils {
          */
     }
 
-    public static OraDecimal monthsBetween(Instant endDate, Instant beginDate) {
+    /**
+     * 2个日期之间间隔的月份，默认使用 UTC 时区
+     *
+     * @param endDate   结束日期
+     * @param beginDate 起始日期
+     * @return 间隔月份
+     */
+    public static OraDecimal monthsBetween(Date endDate, Date beginDate) {
         return monthsBetween(endDate, beginDate, ZoneOffset.UTC);
     }
 
@@ -116,10 +121,10 @@ public class OracleInstantUtils {
      *
      * @param endDate   结束日期
      * @param beginDate 起始日期
-     * @param zoneId 时区
+     * @param zoneId    时区
      * @return 间隔月份
      */
-    public static OraDecimal monthsBetween(Instant endDate, Instant beginDate, ZoneId zoneId) {
+    public static OraDecimal monthsBetween(Date endDate, Date beginDate, ZoneId zoneId) {
         /* 入参校验 */
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
@@ -127,18 +132,20 @@ public class OracleInstantUtils {
         if (zoneId == null) {
             throw new IllegalArgumentException("时区zoneId不能为空");
         }
+
         // 支持负数计算
         OraDecimal sign = OraDecimal.ONE; // 正负号
-        if (beginDate.isAfter(endDate)) {
-            Instant tempDate = beginDate;
+        if (beginDate.after(endDate)) {
+            // 交换两个日期，确保 beginDate <= endDate，并将最终结果取反
+            Date tempDate = beginDate;
             beginDate = endDate;
             endDate = tempDate;
             sign = AviatorOracleConstants.NEG; // 设置为 -1
         }
 
-        /* 转换为 ZonedDateTime */
-        ZonedDateTime begin = beginDate.atZone(zoneId);
-        ZonedDateTime end = endDate.atZone(zoneId);
+        /* 将 Date 转换为 ZonedDateTime，以便进行日历层面的月份/天/时间计算 */
+        ZonedDateTime begin = beginDate.toInstant().atZone(zoneId);
+        ZonedDateTime end = endDate.toInstant().atZone(zoneId);
 
         /* 计算基础月份差 (年差 * 12 + 月差) */
         int yearsDiff = end.getYear() - begin.getYear();
@@ -146,10 +153,10 @@ public class OracleInstantUtils {
         int totalMonths = yearsDiff * 12 + monthsDiff;
         OraDecimal months = OraDecimal.valueOf(totalMonths);
 
-        /* 判断是否“同日”或“均为月末” */
-        // 判断是否“同日”，比如1月12日与2月12日属于“同日”
+        /* 判断是否"同日"或"均为月末" */
+        // 判断是否"同日"，比如1月12日与2月12日属于"同日"
         boolean sameDayOfMonth = begin.getDayOfMonth() == end.getDayOfMonth();
-        // 判断是否“均为月末”，比如1月31日与2月28日属于“均为月末”
+        // 判断是否"均为月末"，比如1月31日与2月28日属于"均为月末"
         boolean bothLastDayOfMonth = isLastDayOfMonth(begin) && isLastDayOfMonth(end);
         if (sameDayOfMonth || bothLastDayOfMonth) {
             // 乘以正负号
@@ -171,7 +178,7 @@ public class OracleInstantUtils {
         long days = dayOfEnd - dayOfBegin;
         // 换算成秒
         OraDecimal secondsByDays = OraDecimal.valueOf(days).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL);
-        // 汇总
+        // 汇总时间差秒数（时分秒差 + 天数差换算成的秒数）
         OraDecimal seconds = OraDecimal.valueOf(secondsByHours).add(secondsByDays);
 
         /* 根据Oracle数据库规则，一个月强行视为31天。这里用剩余时间的总秒数，除以一个月的总秒数 */
@@ -185,7 +192,7 @@ public class OracleInstantUtils {
     }
 
     /**
-     * 是否是所在月份的最后1填
+     * 判断 {@link ZonedDateTime} 是否是所在月份的最后一天
      */
     private static boolean isLastDayOfMonth(ZonedDateTime date) {
         return date.getDayOfMonth() == date.toLocalDate().lengthOfMonth();
