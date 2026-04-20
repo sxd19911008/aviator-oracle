@@ -2,7 +2,7 @@ package com.eredar.aviatororacle.runtime.function.orafunc;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.object.AOAviatorDecimal;
-import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.uitls.OracleInstantUtils;
 import com.eredar.aviatororacle.utils.AOUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
@@ -38,7 +38,7 @@ public class MonthsBetweenFunction extends AbstractFunction {
             Instant endDate = (Instant) obj1;
             Instant beginDate = (Instant) obj2;
 
-            OraDecimal months = OracleFunctionUtils.monthsBetween(endDate, beginDate);
+            OraDecimal months = OracleInstantUtils.monthsBetween(endDate, beginDate);
             return AOAviatorDecimal.valueOf(months);
         }
 
@@ -81,7 +81,7 @@ public class MonthsBetweenFunction extends AbstractFunction {
                 throw new IllegalArgumentException(String.format("months_between方法zoneId[%s]可以不传入，传入则不能为空字符串", zoneId));
             }
 
-            OraDecimal months = OracleFunctionUtils.monthsBetween(endDate, beginDate, ZoneId.of(zoneId));
+            OraDecimal months = OracleInstantUtils.monthsBetween(endDate, beginDate, ZoneId.of(zoneId));
             return AOAviatorDecimal.valueOf(months);
         }
 
