@@ -70,6 +70,48 @@ public class FloorFunctionTest {
                                 .build(),
                         new OraDecimal("1")
                 ),
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", -1342534967873799582L)
+                                .build(),
+                        -1342534967873799582L
+                ),
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", -143262)
+                                .build(),
+                        -143262L
+                ),
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("-1342534967873799582"))
+                                .build(),
+                        new BigInteger("-1342534967873799582")
+                ),
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", -1.113565624)
+                                .build(),
+                        new OraDecimal("-2")
+                ),
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("-1.1199431565624544763765735"))
+                                .build(),
+                        new OraDecimal("-2")
+                ),
+                Arguments.of(
+                        "floor(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("-1.1199431565624544763765735"))
+                                .build(),
+                        new OraDecimal("-2")
+                ),
                 // String：非数值，无法 floor
                 Arguments.of(
                         "floor(a)",

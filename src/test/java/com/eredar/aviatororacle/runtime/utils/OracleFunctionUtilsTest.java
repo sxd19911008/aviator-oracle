@@ -83,6 +83,12 @@ public class OracleFunctionUtilsTest {
                 Arguments.of("Double", 1.993565624, new OraDecimal("1")),
                 Arguments.of("BigDecimal", new BigDecimal("1.9999431565624544763765735"), new OraDecimal("1")),
                 Arguments.of("OraDecimal", new OraDecimal("1.9999431565624544763765735"), new OraDecimal("1")),
+                Arguments.of("Long", -1342534967873799582L, -1342534967873799582L),
+                Arguments.of("Integer", -143262, -143262),
+                Arguments.of("BigInteger", new BigInteger("-1342534967873799582"), new BigInteger("-1342534967873799582")),
+                Arguments.of("Double", -1.113565624, new OraDecimal("-2")),
+                Arguments.of("BigDecimal", new BigDecimal("-1.1199431565624544763765735"), new OraDecimal("-2")),
+                Arguments.of("OraDecimal", new OraDecimal("-1.1199431565624544763765735"), new OraDecimal("-2")),
                 Arguments.of("String", "1.9999431565624544763765735", IllegalArgumentException.class),
                 Arguments.of("Instant", Instant.parse("2020-02-01T03:36:19Z"), IllegalArgumentException.class),
                 Arguments.of("Boolean", true, IllegalArgumentException.class)
