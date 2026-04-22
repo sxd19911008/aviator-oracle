@@ -286,6 +286,8 @@ public class OracleDateUtilsTest {
          -- W：月内周
          select '月内周截断-W' as descr, to_date('2026-04-22 20:19:19', 'YYYY-MM-DD HH24:MI:SS') as origin_date, trunc(to_date('2026-04-22 20:19:19', 'YYYY-MM-DD HH24:MI:SS'), 'W') as test_result from dual
          union all
+         select '月内周截断-W' as descr, to_date('2026-04-26 09:19:19', 'YYYY-MM-DD HH24:MI:SS') as origin_date, trunc(to_date('2026-04-26 09:19:19', 'YYYY-MM-DD HH24:MI:SS'), 'W') as test_result from dual
+         union all
          -- IW：ISO 周
          select 'ISO周截断-IW' as descr, to_date('2026-04-26 09:19:19', 'YYYY-MM-DD HH24:MI:SS') as origin_date, trunc(to_date('2026-04-26 09:19:19', 'YYYY-MM-DD HH24:MI:SS'), 'IW') as test_result from dual
          union all
@@ -358,6 +360,8 @@ public class OracleDateUtilsTest {
                 // ---- 月内周 W ----
                 // 2026-04-01 为周三，2026-04-22 也是周三（间隔恰好 3 周），偏移量整除 7，截断到当天零点
                 Arguments.of("月内周截断-W",   date("2026-04-22 20:19:19"), "W",     date("2026-04-22 00:00:00")),
+                // 2026-04-01 为周三，2026-04-26 是周日，本周第一天为 2026-04-22 周三
+                Arguments.of("月内周截断-W",   date("2026-04-26 09:19:19"), "W",     date("2026-04-22 00:00:00")),
 
                 // ---- ISO 周 IW ----
                 // 2026-04-26（周日）对应 ISO 周的周一 = 2026-04-20

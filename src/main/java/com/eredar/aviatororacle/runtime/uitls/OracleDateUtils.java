@@ -222,8 +222,8 @@ public class OracleDateUtils {
      *   <li>{@code MI}：分钟——秒清零</li>
      * </ul>
      *
-     * @param date 日期对象；为 {@code null} 时返回 {@code null}
-     * @param format  格式模型（不区分大小写）；为 {@code null} 或空串时等价于 {@code "DD"}
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写）；为 {@code null} 或空串时等价于 {@code "DD"}
      * @return 截断后的新 {@link Date} 对象
      * @throws IllegalArgumentException 如果 {@code format} 是不支持的格式模型
      */
@@ -389,12 +389,10 @@ public class OracleDateUtils {
         jan4.set(isoYear, Calendar.JANUARY, 4);
         clearTimeFields(jan4);
 
-        // 找到 1 月 4 日所在 ISO 周的周一（ISO day 1）
-        int dow = jan4.get(Calendar.DAY_OF_WEEK);
-        // Java: SUNDAY=1, MONDAY=2...SATURDAY=7 → ISO: Mon=1...Sun=7
-        int isoDay = (dow == Calendar.SUNDAY) ? 7 : (dow - 1);
+        // 计算 jan4 是 ISO 周的周几
+        int isoDayOfWeek = getIsoDayOfWeek(jan4);
         // 回退 (isoDay - 1) 天即可到达本周周一
-        jan4.add(Calendar.DAY_OF_MONTH, -(isoDay - 1));
+        jan4.add(Calendar.DAY_OF_MONTH, -(isoDayOfWeek - 1));
 
         return jan4;
     }
@@ -405,11 +403,10 @@ public class OracleDateUtils {
      */
     private static Calendar truncToIsoWeek(Calendar cal) {
         Calendar result = (Calendar) cal.clone();
-        int dow = result.get(Calendar.DAY_OF_WEEK);
-        // Java: SUNDAY=1...SATURDAY=7 → ISO: Mon=1...Sun=7
-        int isoDay = (dow == Calendar.SUNDAY) ? 7 : (dow - 1);
+        // 计算 result 是 ISO 周的周几
+        int isoDayOfWeek = getIsoDayOfWeek(result);
         // 回退到本周周一
-        result.add(Calendar.DAY_OF_MONTH, -(isoDay - 1));
+        result.add(Calendar.DAY_OF_MONTH, -(isoDayOfWeek - 1));
         clearTimeFields(result);
         return result;
     }
@@ -428,21 +425,32 @@ public class OracleDateUtils {
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
 
-        // 只有 1 月和 12 月才可能属于不同的 ISO 年
+        /* 只有 1 月和 12 月才可能属于不同的 ISO 年 */
         if (month != Calendar.JANUARY && month != Calendar.DECEMBER) {
             return year;
         }
 
-        // 计算该日期所在 ISO 周的周四
-        // Java: SUNDAY=1...SATURDAY=7 → ISO: Mon=1...Sun=7
-        int dow = cal.get(Calendar.DAY_OF_WEEK);
-        int isoDay = (dow == Calendar.SUNDAY) ? 7 : (dow - 1);
-        // ISO 周四 = ISO day 4，偏移量 = 4 - isoDay（可为负，代表往前）
+        /* 计算 cal 所在 ISO 周的周四 */
+        // 计算 cal 是 ISO 周的周几
+        int isoDayOfWeek = getIsoDayOfWeek(cal);
+        // 计算 ISO 周四: 先克隆入参日期
         Calendar thursday = (Calendar) cal.clone();
-        thursday.add(Calendar.DAY_OF_MONTH, 4 - isoDay);
+        // 计算 ISO 周四: 通过[4 - isoDayOfWeek]，得到 cal 相对 周四 的偏移量，然后相加得到周四日期
+        thursday.add(Calendar.DAY_OF_MONTH, 4 - isoDayOfWeek);
 
-        // ISO 年 = 周四所在的日历年
+        /* ISO 年 = 周四所在的日历年 */
         return thursday.get(Calendar.YEAR);
+    }
+
+    /**
+     * 计算该日期，属于所在 ISO 周的周几
+     * <p>ISO 周的周一到周日与数字1到7是对应的
+     */
+    private static int getIsoDayOfWeek(Calendar cal) {
+        // Java: 周一到周日是[2,3,4,5,6,7,1]
+        int javaDayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        // 转换为 ISO: 周一到周日是[1~7]
+        return (javaDayOfWeek == Calendar.SUNDAY) ? 7 : (javaDayOfWeek - 1);
     }
 
     /**
