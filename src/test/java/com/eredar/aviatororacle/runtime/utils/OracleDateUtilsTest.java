@@ -317,8 +317,8 @@ public class OracleDateUtilsTest {
         return Stream.of(
                 // ---- 世纪 CC / SCC ----
                 // 2026 年属于第 21 世纪（2001-2100），截断到 2001-01-01
-                Arguments.of("世纪截断-CC",   date("2026-04-22 10:14:06"), "CC",    date("2001-01-01 00:00:00")),
-                Arguments.of("世纪截断-SCC",  date("2026-04-22 10:14:06"), "SCC",   date("2001-01-01 00:00:00")),
+                Arguments.of("世纪截断-CC",   date("2001-04-22 10:14:06"), "CC",    date("2001-01-01 00:00:00")),
+                Arguments.of("世纪截断-SCC",  date("2000-04-22 10:14:06"), "SCC",   date("1901-01-01 00:00:00")),
 
                 // ---- 年份 SYYYY / YYYY / YEAR / SYEAR / YYY / YY / Y ----
                 // 截断到当年 1 月 1 日零点
