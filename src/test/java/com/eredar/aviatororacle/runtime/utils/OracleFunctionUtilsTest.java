@@ -418,4 +418,301 @@ public class OracleFunctionUtilsTest {
             throw new RuntimeException(e);
         }
     }
+
+
+    // -------------------------------------------------------------------------
+    // trunc
+    // -------------------------------------------------------------------------
+
+    /**
+     * {@link OracleFunctionUtils#trunc(Number)} 场景数据：等价于 {@code trunc(n, 0)}，向零方向截断到整数。
+     * <p>与 {@link #testRoundOneArgProvider()} 的关键区别：
+     * 使用 {@link java.math.RoundingMode#DOWN}（向零），而 {@code round} 使用 HALF_UP。
+     * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经截断后的结果。
+     * <p>期望值通过 Oracle 执行 {@code SELECT TRUNC(x) FROM dual} 获得。
+     */
+    static Stream<Arguments> testTruncOneArgProvider() {
+        return Stream.of(
+                Arguments.of("入参为 null", null, null),
+                Arguments.of("Long 已为整数且 scale=0 时直接返回原装箱对象", 42L, 42L),
+                Arguments.of("Integer 已为整数且 scale=0 时直接返回原装箱对象", 7, 7),
+                Arguments.of("Short 已为整数且 scale=0 时直接返回原装箱对象", (short) 3, (short) 3),
+                Arguments.of("Byte 已为整数且 scale=0 时直接返回原装箱对象", (byte) 9, (byte) 9),
+                // Oracle: TRUNC(2.5) = 2（向零截断，非 HALF_UP 的 3）
+                Arguments.of("Double 正数向零截断到整数", 2.5d, new OraDecimal("2")),
+                // Oracle: TRUNC(3.4159) = 3
+                Arguments.of("BigDecimal 正数向零截断到整数", new BigDecimal("3.4159"), new OraDecimal("3")),
+                // Oracle: TRUNC(9.576) = 9
+                Arguments.of("OraDecimal 正数向零截断到整数", new OraDecimal("9.576"), new OraDecimal("9")),
+                // Oracle: TRUNC(-2.5) = -2（向零，非向负无穷的 -3）
+                Arguments.of("Double 负数向零截断到整数", -2.5d, new OraDecimal("-2")),
+                // Oracle: TRUNC(-3.9999) = -3
+                Arguments.of("BigDecimal 负数向零截断到整数", new BigDecimal("-3.9999"), new OraDecimal("-3")),
+                // Oracle: TRUNC(-9.999) = -9
+                Arguments.of("OraDecimal 负数向零截断到整数", new OraDecimal("-9.999"), new OraDecimal("-9"))
+        );
+    }
+
+    @DisplayName("trunc(number) 方法测试（等价于 newScale=0）")
+    @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
+    @MethodSource("testTruncOneArgProvider")
+    public void testTruncOneArg(String caseId, Object n, Object expected) {
+        Number actual = OracleFunctionUtils.trunc((Number) n);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    /**
+     * {@link OracleFunctionUtils#trunc(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
+     */
+    static Stream<Arguments> testTruncTwoArgsProvider() {
+        return Stream.of(
+                Arguments.of("number 为 null 时返回 null", null, 2, null),
+                // newScale 极限区间：>= 40 原样返回 number；<= -40 返回 0
+                // Oracle: TRUNC(999, 40) = 999
+                Arguments.of("primitive newScale>=40 时原样返回 Long", 999L, 40, 999L),
+                // Oracle: TRUNC(12.3, 40) = 12.3
+                Arguments.of("Double 形式的 newScale>=40 时原样返回 Double", 12.3d, 40.0d, 12.3d),
+                Arguments.of("Integer 入参且 OraDecimal newScale>=40 时原样返回", 1, new OraDecimal("40"), 1),
+                Arguments.of(
+                        "BigInteger 入参且 BigInteger newScale>=40 时原样返回 BigInteger 入参",
+                        new BigInteger("5"),
+                        new BigInteger("40"),
+                        new BigInteger("5")
+                ),
+                Arguments.of(
+                        "OraDecimal 入参与 newScale>=40 时原样返回（assertSame 语义）",
+                        new OraDecimal("2.71"),
+                        new OraDecimal("40"),
+                        new OraDecimal("2.71")
+                ),
+                // Oracle: TRUNC(大数, -40) = 0
+                Arguments.of("Long newScale<=-40 时结果为 0", Long.MAX_VALUE, -40, 0),
+                Arguments.of(
+                        "OraDecimal newScale<=-40 时结果为 0（int newScale）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        -40,
+                        0
+                ),
+                // Oracle: TRUNC(大数, -39) = 1000000000000000000000000000000000000000
+                Arguments.of(
+                        "OraDecimal newScale=-39（int newScale）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        -39,
+                        new OraDecimal("1000000000000000000000000000000000000000")
+                ),
+                Arguments.of(
+                        "OraDecimal newScale<=-40 时结果为 0（Long newScale）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        -40L,
+                        0
+                ),
+                Arguments.of(
+                        "OraDecimal newScale=-39（Long newScale）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        -39L,
+                        new OraDecimal("1000000000000000000000000000000000000000")
+                ),
+                Arguments.of(
+                        "BigInteger 入参 newScale<=-40 时结果为 0（BigInteger newScale）",
+                        new BigInteger("1234567890123456789012345678901234567890"),
+                        new BigInteger("-40"),
+                        0
+                ),
+                Arguments.of(
+                        "BigInteger 入参 newScale=-39（BigInteger newScale）",
+                        new BigInteger("1234567890123456789012345678901234567890"),
+                        new BigInteger("-39"),
+                        new OraDecimal("1000000000000000000000000000000000000000")
+                ),
+                Arguments.of(
+                        "OraDecimal newScale<=-40 时结果为 0（Double newScale 带小数）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        -40.9d,
+                        0
+                ),
+                Arguments.of(
+                        "OraDecimal newScale=-39（Double newScale 带小数，丢弃小数部分）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        -39.9d,
+                        new OraDecimal("1000000000000000000000000000000000000000")
+                ),
+                Arguments.of(
+                        "BigDecimal 入参 newScale<=-40 时结果为 0（BigDecimal newScale）",
+                        new BigDecimal("1234567890123456789012345678901234567890"),
+                        new BigDecimal("-40"),
+                        0
+                ),
+                Arguments.of(
+                        "BigDecimal 入参 newScale=-39（BigDecimal newScale）",
+                        new BigDecimal("1234567890123456789012345678901234567890"),
+                        new BigDecimal("-39"),
+                        new OraDecimal("1000000000000000000000000000000000000000")
+                ),
+                Arguments.of(
+                        "OraDecimal newScale<=-40 时结果为 0（OraDecimal newScale）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        new OraDecimal("-40"),
+                        0
+                ),
+                Arguments.of(
+                        "OraDecimal newScale=-39（OraDecimal newScale）",
+                        new OraDecimal("1234567890123456789012345678901234567890"),
+                        new OraDecimal("-39"),
+                        new OraDecimal("1000000000000000000000000000000000000000")
+                ),
+                // 各 Number 分支上的正常向零截断（Oracle: TRUNC(1.23456, 1) = 1.2）
+                Arguments.of(
+                        "OraDecimal 保留1位小数 DOWN（Byte newScale）",
+                        new OraDecimal("1.23456"),
+                        (byte) 1,
+                        new OraDecimal("1.2")
+                ),
+                // Oracle: TRUNC(1.23456, 3) = 1.234
+                Arguments.of(
+                        "OraDecimal 保留3位小数 DOWN（Integer newScale）",
+                        new OraDecimal("1.23456"),
+                        3,
+                        new OraDecimal("1.234")
+                ),
+                // Oracle: TRUNC(2.3456, 2) = 2.34
+                Arguments.of(
+                        "BigDecimal 先转 OraDecimal 再 setScale DOWN（Long newScale）",
+                        new BigDecimal("2.3456"),
+                        2L,
+                        new OraDecimal("2.34")
+                ),
+                // Oracle: TRUNC(77, 5) = 77（整数 newScale>=0 直接返回）
+                Arguments.of("Long 且 newScale>=0 时直接返回原 Long", 77L, 5, 77L),
+                // Oracle: TRUNC(12345, -1) = 12340（向零截断，与 round 的 12350 不同）
+                Arguments.of(
+                        "Long 且 newScale<0 时在左侧数量级上 DOWN（BigInteger newScale）",
+                        12345L,
+                        new BigInteger("-1"),
+                        new OraDecimal("12340")
+                ),
+                // Oracle: TRUNC(154, -2) = 100（向零截断）
+                Arguments.of(
+                        "Integer 且 newScale<0 时在左侧数量级上 DOWN（BigDecimal newScale）",
+                        154,
+                        new BigDecimal("-2"),
+                        new OraDecimal("100")
+                ),
+                // Oracle: TRUNC(999, 2) = 999（BigInteger newScale>=0 直接返回）
+                Arguments.of(
+                        "BigInteger 且 newScale>=0 时直接返回原 BigInteger（OraDecimal newScale）",
+                        new BigInteger("999"),
+                        new OraDecimal("2"),
+                        new BigInteger("999")
+                ),
+                // Oracle: TRUNC(12345, -1) = 12340
+                Arguments.of(
+                        "BigInteger 且 newScale<0 时转为 OraDecimal 向零截断（Double newScale）",
+                        new BigInteger("12345"),
+                        -1.0d,
+                        new OraDecimal("12340")
+                ),
+                // Oracle: TRUNC(10.56, 1) = 10.5（OraDecimal，Short newScale）
+                Arguments.of(
+                        "OraDecimal 保留1位小数 DOWN（Short newScale）",
+                        new OraDecimal("10.56"),
+                        (short) 1,
+                        new OraDecimal("10.5")
+                ),
+                // Oracle: TRUNC(9.12345678901234567890123456789012345675, 37) = 9.1234567890123456789012345678901234567
+                Arguments.of(
+                        "newScale 为带小数的 Double 时先截断为 long 再转 int 作为 scale",
+                        new OraDecimal("9.12345678901234567890123456789012345675"),
+                        37.9d,
+                        new OraDecimal("9.1234567890123456789012345678901234567")
+                ),
+                // Oracle: TRUNC(9.12345678901234567890123456789012345675, 38) = 9.12345678901234567890123456789012345675
+                Arguments.of(
+                        "newScale 等于小数位数时无截断原样返回（BigInteger newScale）",
+                        new OraDecimal("9.12345678901234567890123456789012345675"),
+                        new BigInteger("38"),
+                        new OraDecimal("9.12345678901234567890123456789012345675")
+                ),
+                // Oracle: TRUNC(3.1445926, 2) = 3.14（BigDecimal newScale 丢弃小数部分后 scale=2）
+                Arguments.of(
+                        "newScale 为 BigDecimal 时用 intValue 丢弃小数部分（BigDecimal number）",
+                        new BigDecimal("3.1445926"),
+                        new BigDecimal("2.9"),
+                        new OraDecimal("3.14")
+                ),
+                Arguments.of(
+                        "newScale 为 OraDecimal 时用 intValue 丢弃小数部分（OraDecimal number）",
+                        new OraDecimal("3.1445926"),
+                        new OraDecimal("2.9"),
+                        new OraDecimal("3.14")
+                ),
+                // 负数向零截断（区别于 floor 的向负无穷方向）
+                // Oracle: TRUNC(-15.79, 1) = -15.7
+                Arguments.of("负数保留正 newScale 位小数向零截断", new OraDecimal("-15.79"), 1, new OraDecimal("-15.7")),
+                // Oracle: TRUNC(-2.9, 0) = -2
+                Arguments.of("负数 newScale=0 向零截断", new OraDecimal("-2.9"), 0, new OraDecimal("-2")),
+                // Oracle: TRUNC(-15.79, -1) = -10
+                Arguments.of("负数 newScale<0 在左侧数量级向零截断", new OraDecimal("-15.79"), -1, new OraDecimal("-10")),
+                // Double number 的正、负截断分支
+                // Oracle: TRUNC(3.14159, 3) = 3.141
+                Arguments.of("Double number 正数保留3位小数向零截断", new OraDecimal("3.14159"), 3, new OraDecimal("3.141")),
+                // Oracle: TRUNC(-3.14159, 3) = -3.141
+                Arguments.of("Double number 负数保留3位小数向零截断", new OraDecimal("-3.14159"), 3, new OraDecimal("-3.141"))
+        );
+    }
+
+    @DisplayName("trunc(number, newScale) 方法测试")
+    @ParameterizedTest(name = "【{index}】{0}: number={1}, newScale={2}, expected={3}")
+    @MethodSource("testTruncTwoArgsProvider")
+    public void testTruncTwoArgs(String caseId, Object number, Object newScale, Object expected) {
+        Number actual = OracleFunctionUtils.trunc((Number) number, (Number) newScale);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    /**
+     * trunc 非法入参：{@code newScale==null} 或运行期类型不在实现支持范围内。
+     * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。
+     */
+    static Stream<Arguments> testTruncTwoArgsInvalidProvider() {
+        //noinspection DataFlowIssue
+        return Stream.of(
+                Arguments.of("newScale 为 null", (Executable) () -> OracleFunctionUtils.trunc(1.0, null)),
+                Arguments.of(
+                        "newScale 运行期类型非支持的 Number 子类型",
+                        (Executable) () -> invokeTruncReflectSecondArg(new OraDecimal("1"), Instant.parse("2020-02-01T03:36:19Z"))
+                )
+        );
+    }
+
+    @DisplayName("trunc(number, newScale) 非法入参测试")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testTruncTwoArgsInvalidProvider")
+    public void testTruncTwoArgsInvalid(String caseId, Executable executable) {
+        assertThrows(IllegalArgumentException.class, executable);
+    }
+
+    /**
+     * 通过反射调用 {@link OracleFunctionUtils#trunc(Number, Number)}，第二形参在运行期可为任意对象，
+     * 用于模拟调用方以非 Number 实参调用时实现内的类型校验分支。
+     *
+     * @param number          第一个实参
+     * @param newScaleRuntime 第二个实参的运行期类型可自由指定
+     */
+    private static void invokeTruncReflectSecondArg(Number number, Object newScaleRuntime) {
+        try {
+            Method m = OracleFunctionUtils.class.getMethod("trunc", Number.class, Number.class);
+            //noinspection JavaReflectionInvocation
+            m.invoke(null, number, newScaleRuntime);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof Error) {
+                throw (Error) cause;
+            }
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new RuntimeException(cause);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
