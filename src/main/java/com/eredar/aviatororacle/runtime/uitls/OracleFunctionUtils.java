@@ -11,6 +11,9 @@ import java.util.Objects;
 
 public class OracleFunctionUtils {
 
+    private static final String NEW_SCALE_RES_THIS = "this";
+    private static final String NEW_SCALE_RES_ZERO = "zero";
+
     /**
      * 模拟 Oracle 数据库的 DECODE 函数实现。
      * <p>
@@ -148,71 +151,19 @@ public class OracleFunctionUtils {
         }
 
         /* 校验并与处理 newScale */
-        // newScale >= 40，直接返回0
-        boolean isGE_40 = false;
-        // newScale <= -40，直接返回 n 本身
-        boolean isLE_NEG40 = false;
-        // scale = newScale的int类型
-        int scale = 0;
+        String scaleRes = resolveNewScale(newScale);
 
-        if (newScale instanceof Long || newScale instanceof Integer || newScale instanceof Short
-                || newScale instanceof Byte || newScale instanceof Double || newScale instanceof Float) {
-            long l = newScale.longValue();
-            if (l >= 40) {
-                isGE_40 = true;
-            } else if (l <= -40) {
-                isLE_NEG40 = true;
-            } else {
-                // 强行转换成整数，丢弃小数部分
-                scale = (int) l;
-            }
-        } else if (newScale instanceof BigInteger) {
-            BigInteger bi = (BigInteger) newScale;
-            if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_POS) >= 0) {
-                // newScale >= 40
-                isGE_40 = true;
-            } else if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_NEG) <= 0) {
-                // newScale <= -40
-                isLE_NEG40 = true;
-            } else {
-                scale = bi.intValue();
-            }
-        } else if (newScale instanceof BigDecimal) {
-            BigDecimal decimal = (BigDecimal) newScale;
-            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_POS) >= 0) {
-                // newScale >= 40
-                isGE_40 = true;
-            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_NEG) <= 0) {
-                // newScale <= -40
-                isLE_NEG40 = true;
-            } else {
-                // 强行转换成整数，丢弃小数部分
-                scale = decimal.intValue();
-            }
-        } else if (newScale instanceof OraDecimal) {
-            OraDecimal decimal = (OraDecimal) newScale;
-            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_POS) >= 0) {
-                // newScale >= 40
-                isGE_40 = true;
-            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_NEG) <= 0) {
-                // newScale <= -40
-                isLE_NEG40 = true;
-            } else {
-                // 强行转换成整数，丢弃小数部分
-                scale = decimal.intValue();
-            }
-        } else {
-            throw new IllegalArgumentException(String.format("newScale 是未知类型[%s]", newScale.getClass().getName()));
-        }
-
-        /* newScale 超过极限值，直接返回对应的值 */
-        if (isGE_40) {
-            // newScale >= 40，返回 number，不需要处理
+        // 极限值快速返回
+        if (NEW_SCALE_RES_THIS.equals(scaleRes)) {
+            // newScale >= 40，精度足够，数值无需截断，直接返回原值
             return number;
-        } else if (isLE_NEG40) {
-            // newScale <= -40，返回 0
+        } else if (NEW_SCALE_RES_ZERO.equals(scaleRes)) {
+            // newScale <= -40，全部有效数字均被截断，结果为 0
             return 0;
         }
+
+        // 需要计算，得到 int 类型的 scale
+        int scale = Integer.parseInt(scaleRes);
 
         /* newScale 处于合理范围内，正常计算 */
         // OraDecimal：直接走 Oracle NUMBER 舍入与规范化（setScale 默认为 HALF_UP）
@@ -228,14 +179,14 @@ public class OracleFunctionUtils {
             if (scale >= 0) {
                 return number;
             }
-            return OraDecimal.valueOf(number.longValue()).setScale(scale, RoundingMode.HALF_UP);
+            return OraDecimal.valueOf(number.longValue()).setScale(scale);
         }
         if (number instanceof BigInteger) {
             // 整数无小数部分，非负 newScale 不改变数值
             if (scale >= 0) {
                 return number;
             }
-            return new OraDecimal((BigInteger) number).setScale(scale, RoundingMode.HALF_UP);
+            return new OraDecimal((BigInteger) number).setScale(scale);
         }
 
         /* 其余 Number 类型：统一走 OraDecimal */
@@ -277,72 +228,26 @@ public class OracleFunctionUtils {
         }
 
         if (newScale == null) {
-            /* 与 Oracle TRUNC 行为对齐，第 2 个入参不允许为 null */
+            /* 第 2 个入参不允许为 null */
             throw new IllegalArgumentException("[newScale] cannot be null");
         }
 
-        /* ---- 解析 newScale 为 int，同时判断极限值 ---- */
-        // newScale >= 40：精度已超过 Oracle NUMBER 最大有效位数，数值无需变化
-        boolean isGE_40 = false;
-        // newScale <= -40：截断位数已超过所有有效数字，结果为 0
-        boolean isLE_NEG40 = false;
-        // 正常范围内的 scale 整数值
-        int scale = 0;
+        /* 解析 newScale 为 int，同时判断极限值 */
+        String scaleRes = resolveNewScale(newScale);
 
-        if (newScale instanceof Long || newScale instanceof Integer || newScale instanceof Short
-                || newScale instanceof Byte || newScale instanceof Double || newScale instanceof Float) {
-            long l = newScale.longValue();
-            if (l >= 40) {
-                isGE_40 = true;
-            } else if (l <= -40) {
-                isLE_NEG40 = true;
-            } else {
-                /* Double/Float 的小数部分按 Oracle 行为直接丢弃 */
-                scale = (int) l;
-            }
-        } else if (newScale instanceof BigInteger) {
-            BigInteger bi = (BigInteger) newScale;
-            if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_POS) >= 0) {
-                isGE_40 = true;
-            } else if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_NEG) <= 0) {
-                isLE_NEG40 = true;
-            } else {
-                scale = bi.intValue();
-            }
-        } else if (newScale instanceof BigDecimal) {
-            BigDecimal decimal = (BigDecimal) newScale;
-            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_POS) >= 0) {
-                isGE_40 = true;
-            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_NEG) <= 0) {
-                isLE_NEG40 = true;
-            } else {
-                /* BigDecimal 的小数部分按 Oracle 行为直接丢弃 */
-                scale = decimal.intValue();
-            }
-        } else if (newScale instanceof OraDecimal) {
-            OraDecimal decimal = (OraDecimal) newScale;
-            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_POS) >= 0) {
-                isGE_40 = true;
-            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_NEG) <= 0) {
-                isLE_NEG40 = true;
-            } else {
-                /* OraDecimal 的小数部分按 Oracle 行为直接丢弃 */
-                scale = decimal.intValue();
-            }
-        } else {
-            throw new IllegalArgumentException(String.format("newScale 是未知类型[%s]", newScale.getClass().getName()));
-        }
-
-        /* ---- 极限值快速返回 ---- */
-        if (isGE_40) {
-            /* newScale >= 40，精度足够，数值无需截断，直接返回原值 */
+        // 极限值快速返回
+        if (NEW_SCALE_RES_THIS.equals(scaleRes)) {
+            // newScale >= 40，精度足够，数值无需截断，直接返回原值
             return number;
-        } else if (isLE_NEG40) {
-            /* newScale <= -40，全部有效数字均被截断，结果为 0 */
+        } else if (NEW_SCALE_RES_ZERO.equals(scaleRes)) {
+            // newScale <= -40，全部有效数字均被截断，结果为 0
             return 0;
         }
 
-        /* ---- 正常范围内，使用 RoundingMode.DOWN 向零截断 ---- */
+        // 需要计算，得到 int 类型的 scale
+        int scale = Integer.parseInt(scaleRes);
+
+        /* 正常范围内，使用 RoundingMode.DOWN 向零截断 */
 
         // Long / Integer / Short / Byte：整数类型无小数部分
         if (number instanceof Long || number instanceof Integer || number instanceof Short || number instanceof Byte) {
@@ -379,6 +284,83 @@ public class OracleFunctionUtils {
 
         /* 其余未知 Number 子类：统一先转为 OraDecimal 再截断 */
         return OraDecimal.valueOf(number).setScale(scale, RoundingMode.DOWN);
+    }
+
+    /**
+     * 处理 {@code newScale}
+     *
+     * @param newScale 新精度
+     * @return 处理结果，调用者需要根据结果判断接下来的动作
+     */
+    private static String resolveNewScale(Number newScale) {
+        // newScale >= 40：精度已超过 Oracle NUMBER 最大有效位数，数值无需变化
+        boolean isGE_40 = false;
+        // newScale <= -40：截断位数已超过所有有效数字，结果为 0
+        boolean isLE_NEG40 = false;
+        // 正常范围内的 scale 整数值
+        int scale = 0;
+
+        if (newScale instanceof Long || newScale instanceof Integer || newScale instanceof Short
+                || newScale instanceof Byte || newScale instanceof Double || newScale instanceof Float) {
+            long l = newScale.longValue();
+            if (l >= 40) {
+                isGE_40 = true;
+            } else if (l <= -40) {
+                isLE_NEG40 = true;
+            } else {
+                // 强行转换成整数，丢弃小数部分
+                scale = (int) l;
+            }
+        } else if (newScale instanceof BigInteger) {
+            BigInteger bi = (BigInteger) newScale;
+            if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_POS) >= 0) {
+                // newScale >= 40
+                isGE_40 = true;
+            } else if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_NEG) <= 0) {
+                // newScale <= -40
+                isLE_NEG40 = true;
+            } else {
+                scale = bi.intValue();
+            }
+        } else if (newScale instanceof BigDecimal) {
+            BigDecimal decimal = (BigDecimal) newScale;
+            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_POS) >= 0) {
+                // newScale >= 40
+                isGE_40 = true;
+            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_NEG) <= 0) {
+                // newScale <= -40
+                isLE_NEG40 = true;
+            } else {
+                // 强行转换成整数，丢弃小数部分
+                scale = decimal.intValue();
+            }
+        } else if (newScale instanceof OraDecimal) {
+            OraDecimal decimal = (OraDecimal) newScale;
+            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_POS) >= 0) {
+                // newScale >= 40
+                isGE_40 = true;
+            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_NEG) <= 0) {
+                // newScale <= -40
+                isLE_NEG40 = true;
+            } else {
+                // 强行转换成整数，丢弃小数部分
+                scale = decimal.intValue();
+            }
+        } else {
+            throw new IllegalArgumentException(String.format("newScale 是未知类型[%s]", newScale.getClass().getName()));
+        }
+
+        /* ---- 极限值快速返回 ---- */
+        if (isGE_40) {
+            // newScale >= 40，精度足够，数值无需截断，直接返回原值
+            return NEW_SCALE_RES_THIS;
+        } else if (isLE_NEG40) {
+            // newScale <= -40，全部有效数字均被截断，结果为 0
+            return NEW_SCALE_RES_ZERO;
+        } else {
+            // 需要计算
+            return String.valueOf(scale);
+        }
     }
 
     /**
