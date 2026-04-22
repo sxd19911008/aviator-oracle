@@ -362,8 +362,7 @@ public class OracleDateUtils {
                 break;
 
             default:
-                throw new IllegalArgumentException(
-                        String.format("TRUNC(date, format): 不支持的格式模型 [%s]", format));
+                throw new IllegalArgumentException(String.format("trunc方法不支持传入format为[%s]", format));
         }
 
         return cal.getTime();
