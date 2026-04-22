@@ -89,9 +89,9 @@ public class OracleFunctionUtilsTest {
                 Arguments.of("Double", -1.113565624, new OraDecimal("-2")),
                 Arguments.of("BigDecimal", new BigDecimal("-1.1199431565624544763765735"), new OraDecimal("-2")),
                 Arguments.of("OraDecimal", new OraDecimal("-1.1199431565624544763765735"), new OraDecimal("-2")),
-                Arguments.of("String", "1.9999431565624544763765735", IllegalArgumentException.class),
-                Arguments.of("Instant", Instant.parse("2020-02-01T03:36:19Z"), IllegalArgumentException.class),
-                Arguments.of("Boolean", true, IllegalArgumentException.class)
+                Arguments.of("String，异常", "1.9999431565624544763765735", IllegalArgumentException.class),
+                Arguments.of("Instant，异常", Instant.parse("2020-02-01T03:36:19Z"), IllegalArgumentException.class),
+                Arguments.of("Boolean，异常", true, IllegalArgumentException.class)
         );
     }
 
@@ -105,6 +105,49 @@ public class OracleFunctionUtilsTest {
             Assertions.assertThrows(exceptionClass, () -> OracleFunctionUtils.floor(n));
         } else {
             Number actual = OracleFunctionUtils.floor(n);
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // ceil
+    // -------------------------------------------------------------------------
+
+    static Stream<Arguments> testCeilProvider() {
+        return Stream.of(
+                Arguments.of( "null", null, null),
+                Arguments.of( "Byte", (byte) 2, (byte) 2),
+                Arguments.of( "Short", (short) 2, (short) 2),
+                Arguments.of( "Long", 2L, 2L),
+                Arguments.of( "Integer", 2, 2),
+                Arguments.of( "BigInteger", new BigInteger("2"), new BigInteger("2")),
+                Arguments.of( "Double", 1.193565624, new OraDecimal("2")),
+                Arguments.of( "BigDecimal", new BigDecimal("1.1999431565624544763765735"), new OraDecimal("2")),
+                Arguments.of( "OraDecimal", new OraDecimal("1.1999431565624544763765735"), new OraDecimal("2")),
+                Arguments.of( "-Byte", (byte) -2, (byte) -2),
+                Arguments.of( "-Short", (short) -2, (short) -2),
+                Arguments.of( "-Long", -2L, -2L),
+                Arguments.of( "-Integer", -2, -2),
+                Arguments.of( "-BigInteger", new BigInteger("-2"), new BigInteger("-2")),
+                Arguments.of( "-Double", -1.993565624, new OraDecimal("-1")),
+                Arguments.of( "-BigDecimal", new BigDecimal("-1.9999431565624544763765735"), new OraDecimal("-1")),
+                Arguments.of( "-OraDecimal", new OraDecimal("-1.9999431565624544763765735"), new OraDecimal("-1")),
+                Arguments.of( "String，异常", "2", IllegalArgumentException.class),
+                Arguments.of( "Instant，异常", Instant.parse("2020-02-01T03:36:19Z"), IllegalArgumentException.class),
+                Arguments.of( "Boolean，异常", true, IllegalArgumentException.class)
+        );
+    }
+
+    @DisplayName("ceil 方法测试")
+    @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
+    @MethodSource("testCeilProvider")
+    public void testCeil(String caseId, Object n, Object expected) {
+        if (expected instanceof Class) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> OracleFunctionUtils.ceil(n));
+        } else {
+            Number actual = OracleFunctionUtils.ceil(n);
             Assertions.assertEquals(expected, actual);
         }
     }

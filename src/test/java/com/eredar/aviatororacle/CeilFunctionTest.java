@@ -79,6 +79,58 @@ public class CeilFunctionTest {
                                 .build(),
                         new OraDecimal("2")
                 ),
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", (byte) -2).build(),
+                        -2L
+                ),
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", (short) -2).build(),
+                        -2L
+                ),
+                // Long
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", -2L).build(),
+                        -2L
+                ),
+                // Integer
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", -2).build(),
+                        -2L
+                ),
+                // BigInteger
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder().put("a", new BigInteger("-2")).build(),
+                        new BigInteger("-2")
+                ),
+                // Double
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", -1.993565624)
+                                .build(),
+                        new OraDecimal("-1")
+                ),
+                // BigDecimal
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("-1.9999431565624544763765735"))
+                                .build(),
+                        new OraDecimal("-1")
+                ),
+                // OraDecimal
+                Arguments.of(
+                        "ceil(a)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("-1.9999431565624544763765735"))
+                                .build(),
+                        new OraDecimal("-1")
+                ),
                 // String：非数值，无法 ceil
                 Arguments.of(
                         "ceil(a)",
