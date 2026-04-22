@@ -24,11 +24,18 @@ public class OracleInstantUtilsTest {
     private static final ZoneId SHANGHAI = ZoneId.of("Asia/Shanghai");
 
     /**
-     * 以上海时区构造 {@link Instant}：先用 {@link ZonedDateTime#of} 指定本地时间和时区，再转换为 Instant。
-     * 纳秒参数固定为 0，入参与 truncInstant 系列保持相同的年/月/日/时/分/秒数字。
+     * 以上海时区构造 {@link Instant}（纳秒固定为 0），用于构造截断后的期望值。
      */
     private static Instant sh(int year, int month, int day, int hour, int minute, int second) {
         return ZonedDateTime.of(year, month, day, hour, minute, second, 0, SHANGHAI).toInstant();
+    }
+
+    /**
+     * 以上海时区构造 {@link Instant}（可指定纳秒），用于构造含亚秒精度的输入值，
+     * 以验证截断方法能够正确清除纳秒部分。
+     */
+    private static Instant sh(int year, int month, int day, int hour, int minute, int second, int nano) {
+        return ZonedDateTime.of(year, month, day, hour, minute, second, nano, SHANGHAI).toInstant();
     }
 
     // -------------------------------------------------------------------------
@@ -359,80 +366,83 @@ public class OracleInstantUtilsTest {
      * 确保截断逻辑与时区挂钩，而非直接在 UTC 上操作。
      */
     static Stream<Arguments> testTruncInstantWithZoneProvider() {
+        // 所有输入均携带非零纳秒（123_456_789），期望值纳秒为 0，
+        // 以验证截断方法能够正确清除亚秒精度。
+        final int nano = 123_456_789;
         return Stream.of(
                 // ---- 世纪 CC / SCC ----
                 // 2001 年属于第 21 世纪（2001-2100），截断到 2001-01-01
-                Arguments.of("世纪截断-CC",    sh(2001, 4, 22, 10, 14,  6), "CC",    sh(2001, 1,  1,  0,  0,  0)),
-                Arguments.of("世纪截断-SCC",   sh(2000, 4, 22, 10, 14,  6), "SCC",   sh(1901, 1,  1,  0,  0,  0)),
+                Arguments.of("世纪截断-CC",    sh(2001, 4, 22, 10, 14,  6, nano), "CC",    sh(2001, 1,  1,  0,  0,  0)),
+                Arguments.of("世纪截断-SCC",   sh(2000, 4, 22, 10, 14,  6, nano), "SCC",   sh(1901, 1,  1,  0,  0,  0)),
 
                 // ---- 年份 SYYYY / YYYY / YEAR / SYEAR / YYY / YY / Y ----
                 // 截断到当年 1 月 1 日零点
-                Arguments.of("年份截断-SYYYY", sh(2024, 12, 31, 23, 59, 59), "SYYYY", sh(2024, 1,  1,  0,  0,  0)),
-                Arguments.of("年份截断-YYYY",  sh(2024, 12, 31, 23, 59, 59), "YYYY",  sh(2024, 1,  1,  0,  0,  0)),
-                Arguments.of("年份截断-YEAR",  sh(2024, 12, 31, 23, 59, 59), "YEAR",  sh(2024, 1,  1,  0,  0,  0)),
-                Arguments.of("年份截断-SYEAR", sh(2024, 12, 31, 23, 59, 59), "SYEAR", sh(2024, 1,  1,  0,  0,  0)),
-                Arguments.of("年份截断-YYY",   sh(2021,  1,  1, 10, 19, 19), "YYY",   sh(2021, 1,  1,  0,  0,  0)),
-                Arguments.of("年份截断-YY",    sh(2022,  1,  1, 12, 19, 19), "YY",    sh(2022, 1,  1,  0,  0,  0)),
-                Arguments.of("年份截断-Y",     sh(2023,  1,  1, 12, 19, 19), "Y",     sh(2023, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-SYYYY", sh(2024, 12, 31, 23, 59, 59, nano), "SYYYY", sh(2024, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-YYYY",  sh(2024, 12, 31, 23, 59, 59, nano), "YYYY",  sh(2024, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-YEAR",  sh(2024, 12, 31, 23, 59, 59, nano), "YEAR",  sh(2024, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-SYEAR", sh(2024, 12, 31, 23, 59, 59, nano), "SYEAR", sh(2024, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-YYY",   sh(2021,  1,  1, 10, 19, 19, nano), "YYY",   sh(2021, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-YY",    sh(2022,  1,  1, 12, 19, 19, nano), "YY",    sh(2022, 1,  1,  0,  0,  0)),
+                Arguments.of("年份截断-Y",     sh(2023,  1,  1, 12, 19, 19, nano), "Y",     sh(2023, 1,  1,  0,  0,  0)),
 
                 // ---- ISO 年 IYYY / IYY / IY / I ----
                 // 2024-01-01（周一）属于 ISO 2024 年，ISO 2024 年首日 = 2024-01-01
-                Arguments.of("ISO年截断-IYYY", sh(2024,  1,  1, 12, 19, 19), "IYYY",  sh(2024, 1,  1,  0,  0,  0)),
+                Arguments.of("ISO年截断-IYYY", sh(2024,  1,  1, 12, 19, 19, nano), "IYYY",  sh(2024, 1,  1,  0,  0,  0)),
                 // 2021-01-01（周五）属于 ISO 2020 年，ISO 2020 年首日 = 2019-12-30
-                Arguments.of("ISO年截断-IYY",  sh(2021,  1,  1, 10, 19, 19), "IYY",   sh(2019, 12, 30,  0,  0,  0)),
+                Arguments.of("ISO年截断-IYY",  sh(2021,  1,  1, 10, 19, 19, nano), "IYY",   sh(2019, 12, 30,  0,  0,  0)),
                 // 2022-01-01（周六）属于 ISO 2021 年，ISO 2021 年首日 = 2021-01-04
-                Arguments.of("ISO年截断-IY",   sh(2022,  1,  1, 12, 19, 19), "IY",    sh(2021, 1,  4,  0,  0,  0)),
+                Arguments.of("ISO年截断-IY",   sh(2022,  1,  1, 12, 19, 19, nano), "IY",    sh(2021, 1,  4,  0,  0,  0)),
                 // 2023-01-01（周日）属于 ISO 2022 年，ISO 2022 年首日 = 2022-01-03
-                Arguments.of("ISO年截断-I",    sh(2023,  1,  1, 12, 19, 19), "I",     sh(2022, 1,  3,  0,  0,  0)),
+                Arguments.of("ISO年截断-I",    sh(2023,  1,  1, 12, 19, 19, nano), "I",     sh(2022, 1,  3,  0,  0,  0)),
 
                 // ---- 季度 Q ----
                 // 5 月属于 Q2，Q2 首日 = 4 月 1 日
-                Arguments.of("季度截断-Q",     sh(2024,  5, 15,  8, 30,  0), "Q",     sh(2024, 4,  1,  0,  0,  0)),
+                Arguments.of("季度截断-Q",     sh(2024,  5, 15,  8, 30,  0, nano), "Q",     sh(2024, 4,  1,  0,  0,  0)),
 
                 // ---- 月份 MONTH / MON / MM / RM ----
                 // 截断到本月 1 日零点
-                Arguments.of("月份截断-MONTH", sh(2024, 12, 31, 23, 59, 59), "MONTH", sh(2024, 12,  1,  0,  0,  0)),
-                Arguments.of("月份截断-MON",   sh(2024, 10, 30, 23, 59, 59), "MON",   sh(2024, 10,  1,  0,  0,  0)),
-                Arguments.of("月份截断-MM",    sh(2024,  2, 29, 23, 59, 59), "MM",    sh(2024,  2,  1,  0,  0,  0)),
-                Arguments.of("月份截断-RM",    sh(2024,  1,  1,  0,  0,  1), "RM",    sh(2024,  1,  1,  0,  0,  0)),
+                Arguments.of("月份截断-MONTH", sh(2024, 12, 31, 23, 59, 59, nano), "MONTH", sh(2024, 12,  1,  0,  0,  0)),
+                Arguments.of("月份截断-MON",   sh(2024, 10, 30, 23, 59, 59, nano), "MON",   sh(2024, 10,  1,  0,  0,  0)),
+                Arguments.of("月份截断-MM",    sh(2024,  2, 29, 23, 59, 59, nano), "MM",    sh(2024,  2,  1,  0,  0,  0)),
+                Arguments.of("月份截断-RM",    sh(2024,  1,  1,  0,  0,  1, nano), "RM",    sh(2024,  1,  1,  0,  0,  0)),
 
                 // ---- 年内周 WW ----
                 // 2026-01-01 为周四，2026-04-22（周三）往前 6 天对齐到上一个周四 2026-04-16
-                Arguments.of("年内周截断-WW",  sh(2026,  4, 22, 15, 20, 30), "WW",    sh(2026,  4, 16,  0,  0,  0)),
+                Arguments.of("年内周截断-WW",  sh(2026,  4, 22, 15, 20, 30, nano), "WW",    sh(2026,  4, 16,  0,  0,  0)),
 
                 // ---- 月内周 W ----
                 // 2026-04-01 为周三，2026-04-22 也是周三（间隔恰好 3 周），偏移量整除 7，截断到当天零点
-                Arguments.of("月内周截断-W",   sh(2026,  4, 22, 20, 19, 19), "W",     sh(2026,  4, 22,  0,  0,  0)),
+                Arguments.of("月内周截断-W",   sh(2026,  4, 22, 20, 19, 19, nano), "W",     sh(2026,  4, 22,  0,  0,  0)),
                 // 2026-04-01 为周三，2026-04-26 是周日，本周第一天为 2026-04-22 周三
-                Arguments.of("月内周截断-W",   sh(2026,  4, 26,  9, 19, 19), "W",     sh(2026,  4, 22,  0,  0,  0)),
+                Arguments.of("月内周截断-W",   sh(2026,  4, 26,  9, 19, 19, nano), "W",     sh(2026,  4, 22,  0,  0,  0)),
 
                 // ---- ISO 周 IW ----
                 // 2026-04-26（周日）对应 ISO 周的周一 = 2026-04-20
-                Arguments.of("ISO周截断-IW",   sh(2026,  4, 26,  9, 19, 19), "IW",    sh(2026,  4, 20,  0,  0,  0)),
+                Arguments.of("ISO周截断-IW",   sh(2026,  4, 26,  9, 19, 19, nano), "IW",    sh(2026,  4, 20,  0,  0,  0)),
 
                 // ---- 天 DDD / DD / J ----
                 // 截断到当天零点
-                Arguments.of("天截断-DDD",     sh(2026,  4, 26, 14, 45, 12), "DDD",   sh(2026,  4, 26,  0,  0,  0)),
-                Arguments.of("天截断-DD",      sh(2026,  4, 25, 14, 45, 12), "DD",    sh(2026,  4, 25,  0,  0,  0)),
-                Arguments.of("天截断-J",       sh(2026,  4, 20,  0,  0,  1), "J",     sh(2026,  4, 20,  0,  0,  0)),
+                Arguments.of("天截断-DDD",     sh(2026,  4, 26, 14, 45, 12, nano), "DDD",   sh(2026,  4, 26,  0,  0,  0)),
+                Arguments.of("天截断-DD",      sh(2026,  4, 25, 14, 45, 12, nano), "DD",    sh(2026,  4, 25,  0,  0,  0)),
+                Arguments.of("天截断-J",       sh(2026,  4, 20,  0,  0,  1, nano), "J",     sh(2026,  4, 20,  0,  0,  0)),
 
                 // ---- 周 DAY / DY / D（Oracle 以周日为一周第一天）----
                 // 2026-04-26 为周日，本身即周首日
-                Arguments.of("周截断-DAY",     sh(2026,  4, 26, 16, 19, 19), "DAY",   sh(2026,  4, 26,  0,  0,  0)),
+                Arguments.of("周截断-DAY",     sh(2026,  4, 26, 16, 19, 19, nano), "DAY",   sh(2026,  4, 26,  0,  0,  0)),
                 // 2026-04-25（周六）往前 6 天到周日 2026-04-19
-                Arguments.of("周截断-DY",      sh(2026,  4, 25, 16, 19, 19), "DY",    sh(2026,  4, 19,  0,  0,  0)),
+                Arguments.of("周截断-DY",      sh(2026,  4, 25, 16, 19, 19, nano), "DY",    sh(2026,  4, 19,  0,  0,  0)),
                 // 2026-04-20（周一）往前 1 天到周日 2026-04-19
-                Arguments.of("周截断-D",       sh(2026,  4, 20,  0,  0,  1), "D",     sh(2026,  4, 19,  0,  0,  0)),
+                Arguments.of("周截断-D",       sh(2026,  4, 20,  0,  0,  1, nano), "D",     sh(2026,  4, 19,  0,  0,  0)),
 
                 // ---- 小时 HH / HH12 / HH24 ----
                 // 保留小时，分钟和秒清零
-                Arguments.of("小时截断-HH",    sh(2024,  5, 23, 18, 59, 59), "HH",    sh(2024,  5, 23, 18,  0,  0)),
-                Arguments.of("小时截断-HH12",  sh(2024,  5, 23, 18,  0,  1), "HH12",  sh(2024,  5, 23, 18,  0,  0)),
-                Arguments.of("小时截断-HH24",  sh(2024,  5, 23, 18, 31, 59), "HH24",  sh(2024,  5, 23, 18,  0,  0)),
+                Arguments.of("小时截断-HH",    sh(2024,  5, 23, 18, 59, 59, nano), "HH",    sh(2024,  5, 23, 18,  0,  0)),
+                Arguments.of("小时截断-HH12",  sh(2024,  5, 23, 18,  0,  1, nano), "HH12",  sh(2024,  5, 23, 18,  0,  0)),
+                Arguments.of("小时截断-HH24",  sh(2024,  5, 23, 18, 31, 59, nano), "HH24",  sh(2024,  5, 23, 18,  0,  0)),
 
                 // ---- 分钟 MI ----
                 // 保留分钟，秒清零
-                Arguments.of("分钟截断-MI",    sh(2024,  5, 23, 18, 55, 59), "MI",    sh(2024,  5, 23, 18, 55,  0))
+                Arguments.of("分钟截断-MI",    sh(2024,  5, 23, 18, 55, 59, nano), "MI",    sh(2024,  5, 23, 18, 55,  0))
         );
     }
 
@@ -448,7 +458,7 @@ public class OracleInstantUtilsTest {
     @Test
     public void testTruncInstantWithZoneNoFormat() {
         Instant actual = OracleInstantUtils.truncInstantWithZone(
-                sh(2026, 4, 25, 14, 45, 12), SHANGHAI);
+                sh(2026, 4, 25, 14, 45, 12, 123), SHANGHAI);
         Assertions.assertEquals(sh(2026, 4, 25, 0, 0, 0), actual);
     }
 
@@ -458,7 +468,7 @@ public class OracleInstantUtilsTest {
     @Test
     @DisplayName("truncInstantWithZone 方法异常场景测试：不支持的格式（上海时区）")
     public void testTruncInstantWithZoneInvalidFormat() {
-        Instant now = sh(2026, 4, 22, 10, 14, 6);
+        Instant now = sh(2026, 4, 22, 10, 14, 6, 123_456);
         assertThrows(IllegalArgumentException.class, () -> OracleInstantUtils.truncInstantWithZone(now, "XX", SHANGHAI));
     }
 }
