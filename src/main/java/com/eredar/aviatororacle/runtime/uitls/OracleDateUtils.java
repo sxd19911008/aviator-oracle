@@ -2,6 +2,7 @@ package com.eredar.aviatororacle.runtime.uitls;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.utils.AOUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -185,5 +186,273 @@ public class OracleDateUtils {
     private static boolean isLastDayOfMonth(Calendar date) {
         // getActualMaximum 会根据当前年份/月份动态计算该月的最大天数（含闰年判断）
         return date.get(Calendar.DAY_OF_MONTH) == date.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    // =====================================================================
+    //  TRUNC(date [, format])
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
+     * <p>等价于 {@code TRUNC(date, 'DD')}
+     *
+     * @param date 日期对象；为 {@code null} 时返回 {@code null}
+     * @return 截断到天的新 {@link Date} 对象
+     */
+    public static Date truncDate(Date date) {
+        return truncDate(date, "DD");
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 {@code TRUNC(date, format)} 函数：按指定格式模型截断日期。
+     * <p>
+     * 支持的格式模型（不区分大小写）：
+     * <ul>
+     *   <li>{@code CC / SCC}：世纪——截断到当前世纪首年的 1 月 1 日（如 2026 年 → 2001-01-01）</li>
+     *   <li>{@code SYYYY / YYYY / YEAR / SYEAR / YYY / YY / Y}：年——截断到当年 1 月 1 日</li>
+     *   <li>{@code IYYY / IYY / IY / I}：ISO 年——截断到 ISO 第1周的周一</li>
+     *   <li>{@code Q}：季度——截断到本季度第1天</li>
+     *   <li>{@code MONTH / MON / MM / RM}：月——截断到本月第1天</li>
+     *   <li>{@code WW}：年内周——截断到与本年 1 月 1 日同星期的最近日期</li>
+     *   <li>{@code W}：月内周——截断到与本月 1 日同星期的最近日期</li>
+     *   <li>{@code IW}：ISO 周——截断到 ISO 周的第一天（周一）</li>
+     *   <li>{@code DDD / DD / J}：天——截断到当天零点（默认）</li>
+     *   <li>{@code DAY / DY / D}：周——截断到本周第一天（Oracle 以周日为一周起始）</li>
+     *   <li>{@code HH / HH12 / HH24}：小时——分钟与秒清零</li>
+     *   <li>{@code MI}：分钟——秒清零</li>
+     * </ul>
+     *
+     * @param date 日期对象；为 {@code null} 时返回 {@code null}
+     * @param format  格式模型（不区分大小写）；为 {@code null} 或空串时等价于 {@code "DD"}
+     * @return 截断后的新 {@link Date} 对象
+     * @throws IllegalArgumentException 如果 {@code format} 是不支持的格式模型
+     */
+    public static Date truncDate(Date date, String format) {
+        if (date == null) {
+            return null;
+        }
+        // format 为空时默认截断到天
+        if (AOUtils.isBlank(format)) {
+            throw new IllegalArgumentException("");
+        }
+        // 转大写，统一处理
+        String fmtUpper = format.trim().toUpperCase();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+
+        switch (fmtUpper) {
+
+            /* ---- 世纪 ---- */
+            case "CC":
+            case "SCC": {
+                int year = cal.get(Calendar.YEAR);
+                // Oracle 世纪从 1, 101, 201, ..., 1901, 2001 ... 开始
+                // 公式：世纪首年 = floor((year - 1) / 100) * 100 + 1
+                int centuryStartYear = ((year - 1) / 100) * 100 + 1;
+                cal.set(centuryStartYear, Calendar.JANUARY, 1);
+                clearTimeFields(cal);
+                break;
+            }
+
+            /* ---- 年 ---- */
+            case "SYYYY":
+            case "YYYY":
+            case "YEAR":
+            case "SYEAR":
+            case "YYY":
+            case "YY":
+            case "Y":
+                // 截断到当年 1 月 1 日 00:00:00
+                cal.set(Calendar.MONTH, Calendar.JANUARY);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                clearTimeFields(cal);
+                break;
+
+            /* ---- ISO 年 ---- */
+            case "IYYY":
+            case "IYY":
+            case "IY":
+            case "I":
+                // 截断到 ISO 年第1周的周一
+                cal = truncToIsoYear(cal);
+                break;
+
+            /* ---- 季度 ---- */
+            case "Q": {
+                // Calendar.MONTH 从 0 开始，季度首月为 0、3、6、9
+                int month = cal.get(Calendar.MONTH);
+                int quarterStartMonth = (month / 3) * 3;
+                cal.set(Calendar.MONTH, quarterStartMonth);
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                clearTimeFields(cal);
+                break;
+            }
+
+            /* ---- 月 ---- */
+            case "MONTH":
+            case "MON":
+            case "MM":
+            case "RM":
+                // 截断到本月第1天 00:00:00
+                cal.set(Calendar.DAY_OF_MONTH, 1);
+                clearTimeFields(cal);
+                break;
+
+            /* ---- 年内周 (WW)：与本年 1 月 1 日同星期的最近日期 ---- */
+            case "WW": {
+                // DAY_OF_YEAR 从 1 起，减 1 得到 0-indexed 的年内偏移天数
+                // 该偏移对 7 取余，即为距上一个与 1 月 1 日同星期日期的天数差
+                int dayOfYearOffset = cal.get(Calendar.DAY_OF_YEAR) - 1;
+                int daysBack = dayOfYearOffset % 7;
+                cal.add(Calendar.DAY_OF_MONTH, -daysBack);
+                clearTimeFields(cal);
+                break;
+            }
+
+            /* ---- 月内周 (W)：与本月 1 日同星期的最近日期 ---- */
+            case "W": {
+                // DAY_OF_MONTH 从 1 起，减 1 得到 0-indexed 的月内偏移天数
+                int dayOfMonthOffset = cal.get(Calendar.DAY_OF_MONTH) - 1;
+                int daysBack = dayOfMonthOffset % 7;
+                cal.add(Calendar.DAY_OF_MONTH, -daysBack);
+                clearTimeFields(cal);
+                break;
+            }
+
+            /* ---- ISO 周 (IW)：ISO 周的第一天（周一）---- */
+            case "IW":
+                cal = truncToIsoWeek(cal);
+                break;
+
+            /* ---- 天（默认）---- */
+            case "DDD":
+            case "DD":
+            case "J":
+                clearTimeFields(cal);
+                break;
+
+            /* ---- 周（Oracle 以周日作为一周的第一天）---- */
+            case "DAY":
+            case "DY":
+            case "D": {
+                // Calendar.SUNDAY = 1，SATURDAY = 7
+                // 将星期偏移量减去 Calendar.SUNDAY(1) 即可回退到本周周日
+                int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+                cal.add(Calendar.DAY_OF_MONTH, -(dayOfWeek - Calendar.SUNDAY));
+                clearTimeFields(cal);
+                break;
+            }
+
+            /* ---- 小时 ---- */
+            case "HH":
+            case "HH12":
+            case "HH24":
+                // 保留小时，将分钟、秒、毫秒清零
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                break;
+
+            /* ---- 分钟 ---- */
+            case "MI":
+                // 保留分钟，将秒和毫秒清零
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 0);
+                break;
+
+            default:
+                throw new IllegalArgumentException(
+                        String.format("TRUNC(date, format): 不支持的格式模型 [%s]", format));
+        }
+
+        return cal.getTime();
+    }
+
+    /**
+     * 截断到 ISO 年的第一天（ISO 第1周的周一）。
+     * <p>
+     * ISO 8601 规定：包含该年第一个周四的那一周是第1周，且 ISO 周以周一为起始。
+     * 因此 ISO 年的第一天可能早于日历年的 1 月 1 日（最多早 3 天）。
+     * <p>
+     * 算法：
+     * <ol>
+     *   <li>确定目标日期所属的 ISO 年（仅 1 月和 12 月边界处与日历年不同）</li>
+     *   <li>取该 ISO 年的 1 月 4 日——根据 ISO 8601，1 月 4 日必在第1周内</li>
+     *   <li>回退到该周的周一，即为 ISO 年的第一天</li>
+     * </ol>
+     */
+    private static Calendar truncToIsoYear(Calendar cal) {
+        int isoYear = getIsoYear(cal);
+
+        // ISO 第1周必包含 isoYear 年的 1 月 4 日
+        Calendar jan4 = Calendar.getInstance();
+        jan4.set(isoYear, Calendar.JANUARY, 4);
+        clearTimeFields(jan4);
+
+        // 找到 1 月 4 日所在 ISO 周的周一（ISO day 1）
+        int dow = jan4.get(Calendar.DAY_OF_WEEK);
+        // Java: SUNDAY=1, MONDAY=2...SATURDAY=7 → ISO: Mon=1...Sun=7
+        int isoDay = (dow == Calendar.SUNDAY) ? 7 : (dow - 1);
+        // 回退 (isoDay - 1) 天即可到达本周周一
+        jan4.add(Calendar.DAY_OF_MONTH, -(isoDay - 1));
+
+        return jan4;
+    }
+
+    /**
+     * 截断到 ISO 周的第一天（周一）。
+     * <p>ISO 8601 规定 ISO 周从周一开始，周日是一周的最后一天。
+     */
+    private static Calendar truncToIsoWeek(Calendar cal) {
+        Calendar result = (Calendar) cal.clone();
+        int dow = result.get(Calendar.DAY_OF_WEEK);
+        // Java: SUNDAY=1...SATURDAY=7 → ISO: Mon=1...Sun=7
+        int isoDay = (dow == Calendar.SUNDAY) ? 7 : (dow - 1);
+        // 回退到本周周一
+        result.add(Calendar.DAY_OF_MONTH, -(isoDay - 1));
+        clearTimeFields(result);
+        return result;
+    }
+
+    /**
+     * 获取日期所属的 ISO 年编号。
+     * <p>
+     * ISO 年与日历年在 1 月和 12 月的边界处可能不同：
+     * <ul>
+     *   <li>12 月末：若所属 ISO 周的周四在下一年 1 月，则该日期属于下一 ISO 年</li>
+     *   <li>1 月初：若所属 ISO 周的周四在上一年 12 月，则该日期属于上一 ISO 年</li>
+     * </ul>
+     * 判断依据：<b>ISO 年 = 该日期所在 ISO 周的周四所在的日历年</b>
+     */
+    private static int getIsoYear(Calendar cal) {
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+
+        // 只有 1 月和 12 月才可能属于不同的 ISO 年
+        if (month != Calendar.JANUARY && month != Calendar.DECEMBER) {
+            return year;
+        }
+
+        // 计算该日期所在 ISO 周的周四
+        // Java: SUNDAY=1...SATURDAY=7 → ISO: Mon=1...Sun=7
+        int dow = cal.get(Calendar.DAY_OF_WEEK);
+        int isoDay = (dow == Calendar.SUNDAY) ? 7 : (dow - 1);
+        // ISO 周四 = ISO day 4，偏移量 = 4 - isoDay（可为负，代表往前）
+        Calendar thursday = (Calendar) cal.clone();
+        thursday.add(Calendar.DAY_OF_MONTH, 4 - isoDay);
+
+        // ISO 年 = 周四所在的日历年
+        return thursday.get(Calendar.YEAR);
+    }
+
+    /**
+     * 将 {@link Calendar} 的时、分、秒、毫秒全部清零（即设为当天 00:00:00.000）。
+     */
+    private static void clearTimeFields(Calendar cal) {
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
     }
 }

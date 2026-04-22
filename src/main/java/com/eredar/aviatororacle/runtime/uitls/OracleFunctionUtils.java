@@ -243,6 +243,145 @@ public class OracleFunctionUtils {
     }
 
     /**
+     * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #trunc(Number, Number) truncDate(n, 0)}。
+     * <p>与 {@link #floor(Object) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
+     * 例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
+     *
+     * @param n 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
+     */
+    public static Number trunc(Number n) {
+        return trunc(n, 0);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。
+     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；
+     * <p>{@code newScale = 0} 表示仅保留整数部分；
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。
+     * <p>示例：
+     * <pre>
+     *   truncDate(15.79)      = 15
+     *   truncDate(15.79,  1)  = 15.7
+     *   truncDate(15.79, -1)  = 10
+     *   truncDate(-2.9,   0)  = -2   （向零，非向负无穷）
+     * </pre>
+     *
+     * @param number   待截断的值；为 {@code null} 时返回 {@code null}
+     * @param newScale 目标标度（可为负）；支持 Long、Integer、Double、BigInteger、BigDecimal、OraDecimal
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
+     */
+    public static Number trunc(Number number, Number newScale) {
+        if (number == null) {
+            return null;
+        }
+
+        if (newScale == null) {
+            /* 与 Oracle TRUNC 行为对齐，第 2 个入参不允许为 null */
+            throw new IllegalArgumentException("[newScale] cannot be null");
+        }
+
+        /* ---- 解析 newScale 为 int，同时判断极限值 ---- */
+        // newScale >= 40：精度已超过 Oracle NUMBER 最大有效位数，数值无需变化
+        boolean isGE_40 = false;
+        // newScale <= -40：截断位数已超过所有有效数字，结果为 0
+        boolean isLE_NEG40 = false;
+        // 正常范围内的 scale 整数值
+        int scale = 0;
+
+        if (newScale instanceof Long || newScale instanceof Integer || newScale instanceof Short
+                || newScale instanceof Byte || newScale instanceof Double || newScale instanceof Float) {
+            long l = newScale.longValue();
+            if (l >= 40) {
+                isGE_40 = true;
+            } else if (l <= -40) {
+                isLE_NEG40 = true;
+            } else {
+                /* Double/Float 的小数部分按 Oracle 行为直接丢弃 */
+                scale = (int) l;
+            }
+        } else if (newScale instanceof BigInteger) {
+            BigInteger bi = (BigInteger) newScale;
+            if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_POS) >= 0) {
+                isGE_40 = true;
+            } else if (bi.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_INTEGER_NEG) <= 0) {
+                isLE_NEG40 = true;
+            } else {
+                scale = bi.intValue();
+            }
+        } else if (newScale instanceof BigDecimal) {
+            BigDecimal decimal = (BigDecimal) newScale;
+            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_POS) >= 0) {
+                isGE_40 = true;
+            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__BIG_DECIMAL_NEG) <= 0) {
+                isLE_NEG40 = true;
+            } else {
+                /* BigDecimal 的小数部分按 Oracle 行为直接丢弃 */
+                scale = decimal.intValue();
+            }
+        } else if (newScale instanceof OraDecimal) {
+            OraDecimal decimal = (OraDecimal) newScale;
+            if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_POS) >= 0) {
+                isGE_40 = true;
+            } else if (decimal.compareTo(AviatorOracleConstants.ROUND_SCALE__ORA_DECIMAL_NEG) <= 0) {
+                isLE_NEG40 = true;
+            } else {
+                /* OraDecimal 的小数部分按 Oracle 行为直接丢弃 */
+                scale = decimal.intValue();
+            }
+        } else {
+            throw new IllegalArgumentException(String.format("newScale 是未知类型[%s]", newScale.getClass().getName()));
+        }
+
+        /* ---- 极限值快速返回 ---- */
+        if (isGE_40) {
+            /* newScale >= 40，精度足够，数值无需截断，直接返回原值 */
+            return number;
+        } else if (isLE_NEG40) {
+            /* newScale <= -40，全部有效数字均被截断，结果为 0 */
+            return 0;
+        }
+
+        /* ---- 正常范围内，使用 RoundingMode.DOWN 向零截断 ---- */
+
+        // Long / Integer / Short / Byte：整数类型无小数部分
+        if (number instanceof Long || number instanceof Integer || number instanceof Short || number instanceof Byte) {
+            if (scale >= 0) {
+                /* 保留位数 >= 0，整数本身无小数，直接返回 */
+                return number;
+            }
+            /* scale < 0：对整数部分按位截断（向零，非四舍五入） */
+            return OraDecimal.valueOf(number.longValue()).setScale(scale, RoundingMode.DOWN);
+        }
+
+        // BigInteger：同整数类型逻辑
+        if (number instanceof BigInteger) {
+            if (scale >= 0) {
+                return number;
+            }
+            return new OraDecimal((BigInteger) number).setScale(scale, RoundingMode.DOWN);
+        }
+
+        // Double：先通过 OraDecimal.valueOf 精确表示，再截断
+        if (number instanceof Double) {
+            return OraDecimal.valueOf(number).setScale(scale, RoundingMode.DOWN);
+        }
+
+        // BigDecimal：包装为 OraDecimal 后截断
+        if (number instanceof BigDecimal) {
+            return new OraDecimal((BigDecimal) number).setScale(scale, RoundingMode.DOWN);
+        }
+
+        // OraDecimal：直接截断
+        if (number instanceof OraDecimal) {
+            return ((OraDecimal) number).setScale(scale, RoundingMode.DOWN);
+        }
+
+        /* 其余未知 Number 子类：统一先转为 OraDecimal 再截断 */
+        return OraDecimal.valueOf(number).setScale(scale, RoundingMode.DOWN);
+    }
+
+    /**
      * 对象相等比较逻辑，增强对数字类型和 Null 的支持。
      * <p>比对2个不支持的类型，会抛出异常。</p>
      *
