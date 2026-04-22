@@ -12,6 +12,9 @@ Thumbs.db
 # IDEs & Editors
 ### cursor
 .cursor/
+# JetBrains AI
+.ai/
+.aiassistant/
 ### VS Code / Cursor ###
 .vscode/
 # VS Code Local History plugin

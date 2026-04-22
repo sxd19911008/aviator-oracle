@@ -2,6 +2,7 @@ package com.eredar.aviatororacle.runtime.uitls;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.utils.AOUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -9,7 +10,10 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.IsoFields;
+import java.time.temporal.TemporalAdjusters;
 
 /**
  * 基于 {@link Instant} 实现Oracle数据库日期操作
@@ -116,7 +120,7 @@ public class OracleInstantUtils {
      *
      * @param endDate   结束日期
      * @param beginDate 起始日期
-     * @param zoneId 时区
+     * @param zoneId    时区
      * @return 间隔月份
      */
     public static OraDecimal monthsBetween(Instant endDate, Instant beginDate, ZoneId zoneId) {
@@ -189,5 +193,223 @@ public class OracleInstantUtils {
      */
     private static boolean isLastDayOfMonth(ZonedDateTime date) {
         return date.getDayOfMonth() == date.toLocalDate().lengthOfMonth();
+    }
+
+    // =====================================================================
+    //  TRUNC(date [, format])
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
+     * <p>等价于 {@code TRUNC(date, 'DD')}，使用 UTC 时区。
+     *
+     * @param date 日期对象；为 {@code null} 时返回 {@code null}
+     * @return 截断到天的新 {@link Instant} 对象
+     */
+    public static Instant truncInstant(Instant date) {
+        return truncInstantWithZone(date, ZoneOffset.UTC);
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 {@code TRUNC(date, format)} 函数：按指定格式模型截断日期，使用 UTC 时区。
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写）
+     * @return 截断后的新 {@link Instant} 对象
+     */
+    public static Instant truncInstant(Instant date, String format) {
+        return truncInstantWithZone(date, format, ZoneOffset.UTC);
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
+     * <p>等价于 {@code TRUNC(date, 'DD')}
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 截断到天的新 {@link Instant} 对象
+     */
+    public static Instant truncInstantWithZone(Instant date, ZoneId zoneId) {
+        return truncInstantWithZone(date, "DD", zoneId);
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 {@code TRUNC(date, format)} 函数：按指定格式模型截断日期。
+     * <p>
+     * 支持的格式模型（不区分大小写）：
+     * <ul>
+     *   <li>{@code CC / SCC}：世纪——截断到当前世纪首年的 1 月 1 日（如 2026 年 → 2001-01-01）</li>
+     *   <li>{@code SYYYY / YYYY / YEAR / SYEAR / YYY / YY / Y}：年——截断到当年 1 月 1 日</li>
+     *   <li>{@code IYYY / IYY / IY / I}：ISO 年——截断到 ISO 第1周的周一</li>
+     *   <li>{@code Q}：季度——截断到本季度第1天</li>
+     *   <li>{@code MONTH / MON / MM / RM}：月——截断到本月第1天</li>
+     *   <li>{@code WW}：年内周——截断到与本年 1 月 1 日同星期的最近日期</li>
+     *   <li>{@code W}：月内周——截断到与本月 1 日同星期的最近日期</li>
+     *   <li>{@code IW}：ISO 周——截断到 ISO 周的第一天（周一）</li>
+     *   <li>{@code DDD / DD / J}：天——截断到当天零点（默认）</li>
+     *   <li>{@code DAY / DY / D}：周——截断到本周第一天（Oracle 以周日为一周起始）</li>
+     *   <li>{@code HH / HH12 / HH24}：小时——分钟与秒清零</li>
+     *   <li>{@code MI}：分钟——秒清零</li>
+     * </ul>
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写）；为 {@code null} 或空串时等价于 {@code "DD"}
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 截断后的新 {@link Instant} 对象
+     * @throws IllegalArgumentException 如果 {@code zoneId} 为 {@code null}，或 {@code format} 是不支持的格式模型
+     */
+    public static Instant truncInstantWithZone(Instant date, String format, ZoneId zoneId) {
+        if (date == null) {
+            return null;
+        }
+        if (zoneId == null) {
+            throw new IllegalArgumentException("时区zoneId不能为空");
+        }
+        if (AOUtils.isBlank(format)) {
+            throw new IllegalArgumentException("format不能为空");
+        }
+        // 转大写，统一处理
+        String fmtUpper = format.trim().toUpperCase();
+        // 将 Instant 转换为带时区的日期时间对象，便于按日历字段操作
+        ZonedDateTime zdt = date.atZone(zoneId);
+
+        switch (fmtUpper) {
+
+            /* ---- 世纪 ---- */
+            case "CC":
+            case "SCC": {
+                int year = zdt.getYear();
+                // Oracle 世纪从 1, 101, 201, ..., 1901, 2001 ... 开始
+                // 公式：世纪首年 = floor((year - 1) / 100) * 100 + 1
+                int centuryStartYear = ((year - 1) / 100) * 100 + 1;
+                zdt = ZonedDateTime.of(centuryStartYear, 1, 1, 0, 0, 0, 0, zoneId);
+                break;
+            }
+
+            /* ---- 年 ---- */
+            case "SYYYY":
+            case "YYYY":
+            case "YEAR":
+            case "SYEAR":
+            case "YYY":
+            case "YY":
+            case "Y":
+                // 截断到当年 1 月 1 日 00:00:00
+                zdt = ZonedDateTime.of(zdt.getYear(), 1, 1, 0, 0, 0, 0, zoneId);
+                break;
+
+            /* ---- ISO 年 ---- */
+            case "IYYY":
+            case "IYY":
+            case "IY":
+            case "I":
+                // 截断到 ISO 年第1周的周一
+                zdt = truncZdtToIsoYear(zdt);
+                break;
+
+            /* ---- 季度 ---- */
+            case "Q": {
+                // getMonthValue() 返回 1~12，季度首月为 1、4、7、10
+                int month = zdt.getMonthValue();
+                int quarterStartMonth = ((month - 1) / 3) * 3 + 1;
+                zdt = ZonedDateTime.of(zdt.getYear(), quarterStartMonth, 1, 0, 0, 0, 0, zoneId);
+                break;
+            }
+
+            /* ---- 月 ---- */
+            case "MONTH":
+            case "MON":
+            case "MM":
+            case "RM":
+                // 截断到本月第1天 00:00:00
+                zdt = ZonedDateTime.of(zdt.getYear(), zdt.getMonthValue(), 1, 0, 0, 0, 0, zoneId);
+                break;
+
+            /* ---- 年内周 (WW)：与本年 1 月 1 日同星期的最近日期 ---- */
+            case "WW": {
+                // getDayOfYear() 从 1 起，减 1 得到 0-indexed 的年内偏移天数
+                // 该偏移对 7 取余，即为距上一个与 1 月 1 日同星期日期的天数差
+                int dayOfYearOffset = zdt.getDayOfYear() - 1;
+                int daysBack = dayOfYearOffset % 7;
+                zdt = zdt.minusDays(daysBack).truncatedTo(ChronoUnit.DAYS);
+                break;
+            }
+
+            /* ---- 月内周 (W)：与本月 1 日同星期的最近日期 ---- */
+            case "W": {
+                // getDayOfMonth() 从 1 起，减 1 得到 0-indexed 的月内偏移天数
+                int dayOfMonthOffset = zdt.getDayOfMonth() - 1;
+                int daysBack = dayOfMonthOffset % 7;
+                zdt = zdt.minusDays(daysBack).truncatedTo(ChronoUnit.DAYS);
+                break;
+            }
+
+            /* ---- ISO 周 (IW)：ISO 周的第一天（周一）---- */
+            case "IW":
+                // ISO 8601 规定 ISO 周从周一开始，回退到最近的周一（含当天）
+                zdt = zdt.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                         .truncatedTo(ChronoUnit.DAYS);
+                break;
+
+            /* ---- 天（默认）---- */
+            case "DDD":
+            case "DD":
+            case "J":
+                zdt = zdt.truncatedTo(ChronoUnit.DAYS);
+                break;
+
+            /* ---- 周（Oracle 以周日作为一周的第一天）---- */
+            case "DAY":
+            case "DY":
+            case "D":
+                // Oracle 以周日为一周起始，回退到最近的周日（含当天）
+                zdt = zdt.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY))
+                         .truncatedTo(ChronoUnit.DAYS);
+                break;
+
+            /* ---- 小时 ---- */
+            case "HH":
+            case "HH12":
+            case "HH24":
+                // 保留小时，将分钟、秒、纳秒清零
+                zdt = zdt.truncatedTo(ChronoUnit.HOURS);
+                break;
+
+            /* ---- 分钟 ---- */
+            case "MI":
+                // 保留分钟，将秒和纳秒清零
+                zdt = zdt.truncatedTo(ChronoUnit.MINUTES);
+                break;
+
+            default:
+                throw new IllegalArgumentException(String.format("trunc方法不支持传入format为[%s]", format));
+        }
+
+        // 将带时区的日期时间转回 Instant
+        return zdt.toInstant();
+    }
+
+    /**
+     * 截断到 ISO 年的第一天（ISO 第1周的周一）。
+     * <p>
+     * ISO 8601 规定：包含该年第一个周四的那一周是第1周，且 ISO 周以周一为起始。
+     * 因此 ISO 年的第一天可能早于日历年的 1 月 1 日（最多早 3 天）。
+     * <p>
+     * 算法：
+     * <ol>
+     *   <li>通过 {@link IsoFields#WEEK_BASED_YEAR} 字段获取 ISO 年编号</li>
+     *   <li>取该 ISO 年的 1 月 4 日——根据 ISO 8601，1 月 4 日必在第1周内</li>
+     *   <li>回退到该周的周一，即为 ISO 年的第一天</li>
+     * </ol>
+     */
+    private static ZonedDateTime truncZdtToIsoYear(ZonedDateTime zdt) {
+        // 获取 ISO 年编号（在 1 月初或 12 月末可能与日历年不同）
+        int isoYear = zdt.get(IsoFields.WEEK_BASED_YEAR);
+        // ISO 第1周必包含 isoYear 年的 1 月 4 日
+        ZonedDateTime jan4 = ZonedDateTime.of(isoYear, 1, 4, 0, 0, 0, 0, zdt.getZone());
+        // DayOfWeek.getValue() 返回 ISO 编号：周一=1, ..., 周日=7
+        // 回退 (isoDayOfWeek - 1) 天即可到达本周周一
+        int isoDayOfWeek = jan4.getDayOfWeek().getValue();
+        return jan4.minusDays(isoDayOfWeek - 1);
     }
 }
