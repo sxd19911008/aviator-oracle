@@ -590,7 +590,7 @@ public class OracleInstantUtilsTest {
     // -------------------------------------------------------------------------
 
     /**
-     * truncInstantWithZone(instant, format, zoneId) 场景数据。
+     * truncInstantWithZone(zoneId, instant, format) 场景数据。
      * <p>案例日期与 {@link #testTruncInstantProvider()} 完全相同（年/月/日/时/分/秒数字不变），
      * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行截断。
      * <p>输入和期望均通过 {@code ZonedDateTime.of(..., SHANGHAI).toInstant()} 构造，
@@ -677,19 +677,19 @@ public class OracleInstantUtilsTest {
         );
     }
 
-    @DisplayName("truncInstantWithZone(instant, format, zoneId) 方法测试（上海时区）")
+    @DisplayName("truncInstantWithZone(zoneId, instant, format) 方法测试（上海时区）")
     @ParameterizedTest(name = "【{index}】{0}: input={1}, format={2}")
     @MethodSource("testTruncInstantWithZoneProvider")
     public void testTruncInstantWithZone(String caseId, Instant input, String format, Instant expected) {
-        Instant actual = OracleInstantUtils.truncInstantWithZone(input, format, SHANGHAI);
+        Instant actual = OracleInstantUtils.truncInstantWithZone(SHANGHAI, input, format);
         Assertions.assertEquals(expected, actual);
     }
 
-    @DisplayName("truncInstantWithZone(instant, zoneId) 方法测试（上海时区，无格式）")
+    @DisplayName("truncInstantWithZone(zoneId, instant) 方法测试（上海时区，无格式）")
     @Test
     public void testTruncInstantWithZoneNoFormat() {
         Instant actual = OracleInstantUtils.truncInstantWithZone(
-                sh(2026, 4, 25, 14, 45, 12, 123), SHANGHAI);
+                SHANGHAI, sh(2026, 4, 25, 14, 45, 12, 123));
         Assertions.assertEquals(sh(2026, 4, 25, 0, 0, 0), actual);
     }
 
@@ -700,6 +700,6 @@ public class OracleInstantUtilsTest {
     @DisplayName("truncInstantWithZone 方法异常场景测试：不支持的格式（上海时区）")
     public void testTruncInstantWithZoneInvalidFormat() {
         Instant now = sh(2026, 4, 22, 10, 14, 6, 123_456);
-        assertThrows(IllegalArgumentException.class, () -> OracleInstantUtils.truncInstantWithZone(now, "XX", SHANGHAI));
+        assertThrows(IllegalArgumentException.class, () -> OracleInstantUtils.truncInstantWithZone(SHANGHAI, now, "XX"));
     }
 }

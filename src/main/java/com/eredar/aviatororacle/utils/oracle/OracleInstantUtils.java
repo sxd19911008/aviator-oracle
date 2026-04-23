@@ -353,7 +353,7 @@ public class OracleInstantUtils {
      * @return 截断到天的新 {@link Instant} 对象
      */
     protected static Instant truncInstant(Instant date) {
-        return truncInstantWithZone(date, ZoneOffset.UTC);
+        return truncInstantWithZone(ZoneOffset.UTC, date);
     }
 
     /**
@@ -364,19 +364,19 @@ public class OracleInstantUtils {
      * @return 截断后的新 {@link Instant} 对象
      */
     protected static Instant truncInstant(Instant date, String format) {
-        return truncInstantWithZone(date, format, ZoneOffset.UTC);
+        return truncInstantWithZone(ZoneOffset.UTC, date, format);
     }
 
     /**
      * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
      * <p>等价于 {@code TRUNC(date, 'DD')}
      *
-     * @param date   日期对象；为 {@code null} 时返回 {@code null}
      * @param zoneId 时区，不可为 {@code null}
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link Instant} 对象
      */
-    protected static Instant truncInstantWithZone(Instant date, ZoneId zoneId) {
-        return truncInstantWithZone(date, "DD", zoneId);
+    protected static Instant truncInstantWithZone(ZoneId zoneId, Instant date) {
+        return truncInstantWithZone(zoneId, date, "DD");
     }
 
     /**
@@ -398,13 +398,13 @@ public class OracleInstantUtils {
      *   <li>{@code MI}：分钟——秒清零</li>
      * </ul>
      *
+     * @param zoneId 时区，不可为 {@code null}
      * @param date   日期对象；为 {@code null} 时返回 {@code null}
      * @param format 格式模型（不区分大小写）；为 {@code null} 或空串时等价于 {@code "DD"}
-     * @param zoneId 时区，不可为 {@code null}
      * @return 截断后的新 {@link Instant} 对象
      * @throws IllegalArgumentException 如果 {@code zoneId} 为 {@code null}，或 {@code format} 是不支持的格式模型
      */
-    protected static Instant truncInstantWithZone(Instant date, String format, ZoneId zoneId) {
+    protected static Instant truncInstantWithZone(ZoneId zoneId, Instant date, String format) {
         if (date == null) {
             return null;
         }

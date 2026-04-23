@@ -479,27 +479,28 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(date)}：将 {@link Instant} 截断到天（指定时区）
+     * <p>参数设计：zoneId 放首位，使得后续参数 {@code (date [, format])} 与 {@link #trunc(Instant)} 系列保持一致。
      *
-     * @param date   日期对象；为 {@code null} 时返回 {@code null}
      * @param zoneId 时区，不可为 {@code null}
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link Instant} 对象
-     * @see OracleInstantUtils#truncInstantWithZone(Instant, ZoneId)
+     * @see OracleInstantUtils#truncInstantWithZone(ZoneId, Instant)
      */
-    public static Instant truncWithZone(Instant date, ZoneId zoneId) {
-        return OracleInstantUtils.truncInstantWithZone(date, zoneId);
+    public static Instant truncWithZone(ZoneId zoneId, Instant date) {
+        return OracleInstantUtils.truncInstantWithZone(zoneId, date);
     }
 
     /**
      * 模拟 Oracle {@code TRUNC(date, format)}：按指定格式模型截断 {@link Instant}（指定时区）
+     * <p>参数设计：zoneId 放首位，使得后续参数 {@code (date, format)} 与 {@link #trunc(Instant, String)} 保持一致。
      *
+     * @param zoneId 时区，不可为 {@code null}
      * @param date   日期对象；为 {@code null} 时返回 {@code null}
      * @param format 格式模型（不区分大小写），如 CC、YYYY、Q、MM、DD、HH、MI 等
-     * @param zoneId 时区，不可为 {@code null}
      * @return 截断后的新 {@link Instant} 对象
-     * @see OracleInstantUtils#truncInstantWithZone(Instant, String, ZoneId)
+     * @see OracleInstantUtils#truncInstantWithZone(ZoneId, Instant, String)
      */
-    public static Instant truncWithZone(Instant date, String format, ZoneId zoneId) {
-        return OracleInstantUtils.truncInstantWithZone(date, format, zoneId);
+    public static Instant truncWithZone(ZoneId zoneId, Instant date, String format) {
+        return OracleInstantUtils.truncInstantWithZone(zoneId, date, format);
     }
-
 }
