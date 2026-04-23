@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.function.orafunc;
 
-import com.eredar.aviatororacle.runtime.uitls.AORuntimeUtils;
-import com.eredar.aviatororacle.runtime.uitls.oracle.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.utils.AORuntimeUtils;
+import com.eredar.aviatororacle.runtime.utils.oracle.OracleFunctionUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 

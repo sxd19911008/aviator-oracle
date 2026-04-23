@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.runtime.uitls.oracle;
+package com.eredar.aviatororacle.runtime.utils.oracle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
@@ -53,6 +53,16 @@ public class OracleNumberFunctionUtils {
             return OraDecimal.valueOf(n).setScale(0, RoundingMode.CEILING);
         }
         throw new IllegalArgumentException(String.format("ceil方法不能传入[%s]类型", n.getClass().getName()));
+    }
+
+    /**
+     * 模拟 Oracle {@code ROUND(number)}：四舍五入保留整数，等价于 {@link #round(Number, Number) round(n, 0)}。
+     *
+     * @param n 待舍入的 {@link Number}；为 {@code null} 时返回 {@code null}
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
+     */
+    protected static Number round(Number n) {
+        return round(n, 0);
     }
 
     /**
@@ -117,6 +127,19 @@ public class OracleNumberFunctionUtils {
         /* 其余 Number 类型：统一走 OraDecimal */
         return OraDecimal.valueOf(number).setScale(scale);
     }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #truncNumber(Number, Number) truncDate(n, 0)}。
+     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
+     * <p>例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
+     *
+     * @param number 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
+     */
+    protected static Number truncNumber(Number number) {
+        return truncNumber(number, 0);
+    }
+
 
     /**
      * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。

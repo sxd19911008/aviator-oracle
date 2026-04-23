@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.runtime.uitls;
+package com.eredar.aviatororacle.runtime.utils;
 
 import com.eredar.aviatororacle.runtime.object.AOAviatorNumber;
 import com.eredar.aviatororacle.runtime.object.AOAviatorRuntimeJavaType;

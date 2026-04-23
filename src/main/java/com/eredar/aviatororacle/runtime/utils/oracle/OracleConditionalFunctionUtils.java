@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.runtime.uitls.oracle;
+package com.eredar.aviatororacle.runtime.utils.oracle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 
@@ -35,7 +35,7 @@ public class OracleConditionalFunctionUtils {
      *             最后一位（可选）: 默认值（当参数总数为偶数时存在）。
      * @return 匹配到的结果对象，或者默认值，或者 null。
      */
-    public static Object decode(Object... args) {
+    protected static Object decode(Object... args) {
         // 至少需要 3 个参数。
         if (args == null || args.length < 3) {
             int argsLength = 0;

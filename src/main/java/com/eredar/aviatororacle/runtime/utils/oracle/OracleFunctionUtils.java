@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.runtime.uitls.oracle;
+package com.eredar.aviatororacle.runtime.utils.oracle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 
@@ -60,7 +60,7 @@ public class OracleFunctionUtils {
      * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
      */
     public static Number round(Number n) {
-        return round(n, 0);
+        return OracleNumberFunctionUtils.round(n);
     }
 
     /**
@@ -79,14 +79,14 @@ public class OracleFunctionUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #trunc(Number, Number) truncDate(n, 0)}。
-     * <p>与 {@link #floor(Object) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
+     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
      * 例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
      *
      * @param number 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
      * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
      */
     public static Number trunc(Number number) {
-        return trunc(number, 0);
+        return OracleNumberFunctionUtils.truncNumber(number, 0);
     }
 
     /**

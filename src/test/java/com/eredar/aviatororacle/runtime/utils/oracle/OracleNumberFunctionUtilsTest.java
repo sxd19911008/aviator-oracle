@@ -1,7 +1,6 @@
-package com.eredar.aviatororacle.runtime.utils;
+package com.eredar.aviatororacle.runtime.utils.oracle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.oracle.OracleFunctionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.function.Executable;
@@ -9,67 +8,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@DisplayName("Oracle方法测试")
-public class OracleFunctionUtilsTest {
-
-    // -------------------------------------------------------------------------
-    // decode
-    // -------------------------------------------------------------------------
-
-    /**
-     * decode 正常返回值场景：最后一列 {@code null} 表示期望 {@link OracleFunctionUtils#decode} 返回 null。
-     */
-    static Stream<Arguments> decodeMatchProvider() {
-        return Stream.of(
-                Arguments.of("匹配第一个 search", (Supplier<Object>) () -> OracleFunctionUtils.decode("1", "1", "A", "2", "B", "C"), "A"),
-                Arguments.of("匹配第二个 search", (Supplier<Object>) () -> OracleFunctionUtils.decode("2", "1", "A", "2", "B", "C"), "B"),
-                Arguments.of("无匹配返回默认值", (Supplier<Object>) () -> OracleFunctionUtils.decode("3", "1", "A", "2", "B", "C"), "C"),
-                Arguments.of("无匹配且无默认值返回 null", (Supplier<Object>) () -> OracleFunctionUtils.decode("3", "1", "A", "2", "B"), null),
-                Arguments.of("null 与 null 匹配", (Supplier<Object>) () -> OracleFunctionUtils.decode(null, null, "Result", "Other"), "Result"),
-                Arguments.of("表达式为 null 且 search 非 null", (Supplier<Object>) () -> OracleFunctionUtils.decode(null, "1", "Result", "Default"), "Default"),
-                Arguments.of("Integer 与 Long 数值相等", (Supplier<Object>) () -> OracleFunctionUtils.decode(100, 100L, "Match", "No Match"), "Match"),
-                Arguments.of("Long 与 OraDecimal 数值相等", (Supplier<Object>) () -> OracleFunctionUtils.decode(200L, new OraDecimal("200.00"), "Match", "No Match"), "Match"),
-                Arguments.of("OraDecimal 不同精度数值相等", (Supplier<Object>) () -> OracleFunctionUtils.decode(new OraDecimal("3.14"), new OraDecimal("3.1400"), "Match", "No Match"), "Match")
-        );
-    }
-
-    @DisplayName("decode 方法匹配与返回值测试")
-    @ParameterizedTest(name = "【{index}】{0}")
-    @MethodSource("decodeMatchProvider")
-    public void testDecodeMatch(String caseId, Supplier<Object> decodeCall, Object expected) {
-        if (expected == null) {
-            Assertions.assertNull(decodeCall.get());
-        } else {
-            Assertions.assertEquals(expected, decodeCall.get());
-        }
-    }
-
-    static Stream<Arguments> decodeInvalidArgsProvider() {
-        //noinspection Convert2MethodRef
-        return Stream.of(
-                Arguments.of("入参仅2个", (Executable) () -> OracleFunctionUtils.decode("1", "2")),
-                Arguments.of("入参仅1个", (Executable) () -> OracleFunctionUtils.decode("1")),
-                Arguments.of("入参0个", (Executable) () -> OracleFunctionUtils.decode())
-        );
-    }
-
-    @DisplayName("decode 方法非法入参测试")
-    @ParameterizedTest(name = "【{index}】{0}")
-    @MethodSource("decodeInvalidArgsProvider")
-    public void testDecodeInvalidArgs(String caseId, Executable executable) {
-        assertThrows(IllegalArgumentException.class, executable);
-    }
-
+@DisplayName("Oracle 数值函数测试")
+public class OracleNumberFunctionUtilsTest {
 
     // -------------------------------------------------------------------------
     // floor
@@ -99,9 +45,9 @@ public class OracleFunctionUtilsTest {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
-            Assertions.assertThrows(exceptionClass, () -> OracleFunctionUtils.floor(n));
+            Assertions.assertThrows(exceptionClass, () -> OracleNumberFunctionUtils.floor(n));
         } else {
-            Number actual = OracleFunctionUtils.floor(n);
+            Number actual = OracleNumberFunctionUtils.floor(n);
             Assertions.assertEquals(expected, actual);
         }
     }
@@ -139,19 +85,20 @@ public class OracleFunctionUtilsTest {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
-            Assertions.assertThrows(exceptionClass, () -> OracleFunctionUtils.ceil(n));
+            Assertions.assertThrows(exceptionClass, () -> OracleNumberFunctionUtils.ceil(n));
         } else {
-            Number actual = OracleFunctionUtils.ceil(n);
+            Number actual = OracleNumberFunctionUtils.ceil(n);
             Assertions.assertEquals(expected, actual);
         }
     }
+
 
     // -------------------------------------------------------------------------
     // round
     // -------------------------------------------------------------------------
 
     /**
-     * {@link OracleFunctionUtils#round(Number)} 场景数据：等价于 {@code round(n, 0)}。
+     * {@link OracleNumberFunctionUtils#round(Number)} 场景数据：等价于 {@code round(n, 0)}。
      * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经 Oracle NUMBER 规则舍入后的结果。
      */
     static Stream<Arguments> testRoundOneArgProvider() {
@@ -171,12 +118,12 @@ public class OracleFunctionUtilsTest {
     @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
     @MethodSource("testRoundOneArgProvider")
     public void testRoundOneArg(String caseId, Object n, Object expected) {
-        Number actual = OracleFunctionUtils.round((Number) n);
+        Number actual = OracleNumberFunctionUtils.round((Number) n);
         Assertions.assertEquals(expected, actual);
     }
 
     /**
-     * {@link OracleFunctionUtils#round(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
+     * {@link OracleNumberFunctionUtils#round(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
      * <p>与 Oracle 极限标度一致：
      * <p>{@code newScale >= 40} 时直接返回入参 {@code number}；
      * <p>{@code newScale <= -40} 时结果为 {@code 0}；
@@ -361,7 +308,7 @@ public class OracleFunctionUtilsTest {
     @ParameterizedTest(name = "【{index}】{0}: number={1}, newScale={2}, expected={3}")
     @MethodSource("testRoundTwoArgsProvider")
     public void testRoundTwoArgs(String caseId, Object number, Object newScale, Object expected) {
-        Number actual = OracleFunctionUtils.round((Number) number, (Number) newScale);
+        Number actual = OracleNumberFunctionUtils.round((Number) number, (Number) newScale);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -372,11 +319,7 @@ public class OracleFunctionUtilsTest {
     static Stream<Arguments> testRoundTwoArgsInvalidProvider() {
         //noinspection DataFlowIssue
         return Stream.of(
-                Arguments.of("newScale 为 null", (Executable) () -> OracleFunctionUtils.round(1.0, null)),
-                Arguments.of(
-                        "newScale 运行期类型非支持的 Number 子类型",
-                        (Executable) () -> invokeRoundReflectSecondArg(new OraDecimal("1"), Instant.parse("2020-02-01T03:36:19Z"))
-                )
+                Arguments.of("newScale 为 null", (Executable) () -> OracleNumberFunctionUtils.round(1.0, null))
         );
     }
 
@@ -387,41 +330,12 @@ public class OracleFunctionUtilsTest {
         assertThrows(IllegalArgumentException.class, executable);
     }
 
-    /**
-     * 通过反射调用 {@link OracleFunctionUtils#round(Number, Number)}，第二形参在运行期可为任意对象，
-     * 用于模拟调用方以非 Number 实参调用时实现内的类型校验分支。
-     *
-     * @param number          第一个实参
-     * @param newScaleRuntime 第二个实参的运行期类型可自由指定
-     */
-    private static void invokeRoundReflectSecondArg(Number number, Object newScaleRuntime) {
-        try {
-            Method m = OracleFunctionUtils.class.getMethod("round", Number.class, Number.class);
-            //noinspection JavaReflectionInvocation
-            m.invoke(null, number, newScaleRuntime);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof Error) {
-                throw (Error) cause;
-            }
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            }
-            throw new RuntimeException(cause);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     // -------------------------------------------------------------------------
     // truncNumber
     // -------------------------------------------------------------------------
 
     /**
-     * {@link OracleFunctionUtils#trunc(Number)} 场景数据：等价于 {@code truncNumber(n, 0)}，向零方向截断到整数。
-     * <p>与 {@link #testRoundOneArgProvider()} 的关键区别：
-     * 使用 {@link java.math.RoundingMode#DOWN}（向零），而 {@code round} 使用 HALF_UP。
+     * {@link OracleNumberFunctionUtils#truncNumber(Number)} 场景数据：等价于 {@code truncNumber(n, 0)}，向零方向截断到整数。
      * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经截断后的结果。
      * <p>期望值通过 Oracle 执行 {@code SELECT TRUNC(x) FROM dual} 获得。
      */
@@ -451,12 +365,12 @@ public class OracleFunctionUtilsTest {
     @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
     @MethodSource("testTruncNumberOneArgProvider")
     public void testTruncNumberOneArg(String caseId, Object n, Object expected) {
-        Number actual = OracleFunctionUtils.trunc((Number) n);
+        Number actual = OracleNumberFunctionUtils.truncNumber((Number) n);
         Assertions.assertEquals(expected, actual);
     }
 
     /**
-     * {@link OracleFunctionUtils#trunc(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
+     * {@link OracleNumberFunctionUtils#truncNumber(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
      */
     static Stream<Arguments> testTruncNumberTwoArgsProvider() {
         return Stream.of(
@@ -658,7 +572,7 @@ public class OracleFunctionUtilsTest {
     @ParameterizedTest(name = "【{index}】{0}: number={1}, newScale={2}, expected={3}")
     @MethodSource("testTruncNumberTwoArgsProvider")
     public void testTruncNumberTwoArgs(String caseId, Object number, Object newScale, Object expected) {
-        Number actual = OracleFunctionUtils.trunc((Number) number, (Number) newScale);
+        Number actual = OracleNumberFunctionUtils.truncNumber((Number) number, (Number) newScale);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -669,11 +583,7 @@ public class OracleFunctionUtilsTest {
     static Stream<Arguments> testTruncNumberTwoArgsInvalidProvider() {
         //noinspection DataFlowIssue
         return Stream.of(
-                Arguments.of("newScale 为 null", (Executable) () -> OracleFunctionUtils.trunc(1.0, null)),
-                Arguments.of(
-                        "newScale 运行期类型非支持的 Number 子类型",
-                        (Executable) () -> invokeTruncReflectSecondArg(new OraDecimal("1"), Instant.parse("2020-02-01T03:36:19Z"))
-                )
+                Arguments.of("newScale 为 null", (Executable) () -> OracleNumberFunctionUtils.truncNumber(1.0, null))
         );
     }
 
@@ -682,31 +592,5 @@ public class OracleFunctionUtilsTest {
     @MethodSource("testTruncNumberTwoArgsInvalidProvider")
     public void testTruncNumberTwoArgsInvalid(String caseId, Executable executable) {
         assertThrows(IllegalArgumentException.class, executable);
-    }
-
-    /**
-     * 通过反射调用 {@link OracleFunctionUtils#trunc(Number, Number)}，第二形参在运行期可为任意对象，
-     * 用于模拟调用方以非 Number 实参调用时实现内的类型校验分支。
-     *
-     * @param number          第一个实参
-     * @param newScaleRuntime 第二个实参的运行期类型可自由指定
-     */
-    private static void invokeTruncReflectSecondArg(Number number, Object newScaleRuntime) {
-        try {
-            Method m = OracleFunctionUtils.class.getMethod("trunc", Number.class, Number.class);
-            //noinspection JavaReflectionInvocation
-            m.invoke(null, number, newScaleRuntime);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof Error) {
-                throw (Error) cause;
-            }
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            }
-            throw new RuntimeException(cause);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

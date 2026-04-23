@@ -2,7 +2,7 @@ package com.eredar.aviatororacle.runtime.function.orafunc;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.object.AOAviatorDecimal;
-import com.eredar.aviatororacle.runtime.uitls.oracle.OracleInstantUtils;
+import com.eredar.aviatororacle.runtime.utils.oracle.OracleInstantUtils;
 import com.eredar.aviatororacle.utils.AOUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
