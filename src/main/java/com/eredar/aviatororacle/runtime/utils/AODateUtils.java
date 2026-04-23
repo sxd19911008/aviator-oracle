@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.utils;
+package com.eredar.aviatororacle.runtime.utils;
 
 import com.googlecode.aviator.runtime.function.system.DateFormatCache;
 import lombok.SneakyThrows;

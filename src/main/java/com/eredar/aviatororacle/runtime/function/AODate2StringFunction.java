@@ -1,6 +1,6 @@
 package com.eredar.aviatororacle.runtime.function;
 
-import com.eredar.aviatororacle.runtime.utils.AODateFormatCache;
+import com.eredar.aviatororacle.runtime.utils.AODateTimeFormatCache;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.function.FunctionUtils;
 import com.googlecode.aviator.runtime.type.AviatorObject;
@@ -30,7 +30,7 @@ public class AODate2StringFunction extends AbstractFunction {
         String format = FunctionUtils.getStringValue(arg2, env);
         String zoneId = FunctionUtils.getStringValue(arg3, env);
         // 获取 DateTimeFormatter 对象
-        DateTimeFormatter dtf = AODateFormatCache.getOrCreateDateFormat(format, zoneId);
+        DateTimeFormatter dtf = AODateTimeFormatCache.getOrCreateDateFormat(format, zoneId);
         // 转换日期对象为字符串
         String dateString = dtf.format(date);
         // 返回结果

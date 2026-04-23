@@ -12,7 +12,7 @@ import java.time.temporal.ChronoField;
 /**
  * DateFormat cache
  */
-public class AODateFormatCache {
+public class AODateTimeFormatCache {
 
     private static final int maxSize = Integer.parseInt(System.getProperty("aviator.date_format.cache.max", "256"));
 
