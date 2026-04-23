@@ -223,7 +223,7 @@ public class OracleDateUtils {
 
         // 为0不用计算，直接返回
         if (monthsToAdd == 0) {
-            return date;
+            return new Date(date.getTime());
         }
 
         Calendar cal = Calendar.getInstance();
