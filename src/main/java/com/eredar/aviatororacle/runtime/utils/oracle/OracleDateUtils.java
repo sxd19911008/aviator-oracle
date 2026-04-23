@@ -221,6 +221,11 @@ public class OracleDateUtils {
         // Oracle 会将 months 截断为整数（不是四舍五入）
         int monthsToAdd = months.intValue();
 
+        // 为0不用计算，直接返回
+        if (monthsToAdd == 0) {
+            return date;
+        }
+
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
 

@@ -416,4 +416,181 @@ public class OracleDateUtilsTest {
         Date now = date("2026-04-22 10:14:06");
         assertThrows(IllegalArgumentException.class, () -> OracleDateUtils.truncDate(now, "XX"));
     }
+
+    // -------------------------------------------------------------------------
+    // addMonths
+    // -------------------------------------------------------------------------
+
+    /**
+     * addMonths 场景数据，覆盖 Oracle ADD_MONTHS(date, months) 所有行为规则。
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出:
+     * <p>
+     *     SELECT '正常场景：月中日期+正数月份' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-03-15 10:30:45', 'YYYY-MM-DD HH24:MI:SS'), 2), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月末→月末：闰年2月末+1月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-02-29 14:22:33', 'YYYY-MM-DD HH24:MI:SS'), 1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月末→月末：1月31日+1月到闰年2月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-01-31 08:15:00', 'YYYY-MM-DD HH24:MI:SS'), 1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月末→月末：非闰年1月末+1月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2023-01-31 08:15:00', 'YYYY-MM-DD HH24:MI:SS'), 1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月末→月末：4月末-2月到非闰年2月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2023-04-30 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), -2), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '负数月份：月中日期-3月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-05-20 16:45:30', 'YYYY-MM-DD HH24:MI:SS'), -3), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '小数月份被截断' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-06-15 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2.7), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '小数月份被截断(负数)' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-06-15 12:00:00', 'YYYY-MM-DD HH24:MI:SS'), -2.9), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月数为0' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-01-15 23:59:59', 'YYYY-MM-DD HH24:MI:SS'), 0), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '跨年：月末11月30日+3月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-11-30 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 3), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '负数跨年：月末3月31日-1月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-03-31 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), -1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '29日+1月到闰年2月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-01-29 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '日号超限：29日+1月到非闰年2月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2023-01-29 10:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '大跨度：+24个月跨2年' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-06-15 08:30:00', 'YYYY-MM-DD HH24:MI:SS'), 24), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月末→月末：非闰年2月末+12月到闰年' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2023-02-28 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), 12), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月末→月末：闰年2月末-12月到非闰年' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-02-29 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), -12), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     */
+    static Stream<Arguments> testAddMonthsProvider() {
+        return Stream.of(
+                // ---- 正常场景：日号在目标月份范围内，日号和时分秒均保持不变 ----
+                Arguments.of("正常场景：月中日期+正数月份",
+                        date("2024-03-15 10:30:45"), 2, date("2024-05-15 10:30:45")),
+                Arguments.of("月数为0，日期不变",
+                        date("2024-01-15 23:59:59"), 0, date("2024-01-15 23:59:59")),
+                Arguments.of("29日+1月到闰年2月，日号不变",
+                        date("2024-01-29 10:00:00"), 1, date("2024-02-29 10:00:00")),
+                Arguments.of("大跨度：+24个月跨2年",
+                        date("2024-06-15 08:30:00"), 24, date("2026-06-15 08:30:00")),
+
+                // ---- 月末→月末：原始日期是所在月份最后一天，结果一定是目标月份最后一天 ----
+                Arguments.of("月末→月末：闰年2月29日+1月→3月31日",
+                        date("2024-02-29 14:22:33"), 1, date("2024-03-31 14:22:33")),
+                Arguments.of("月末→月末：1月31日+1月→闰年2月29日",
+                        date("2024-01-31 08:15:00"), 1, date("2024-02-29 08:15:00")),
+                Arguments.of("月末→月末：非闰年1月31日+1月→2月28日",
+                        date("2023-01-31 08:15:00"), 1, date("2023-02-28 08:15:00")),
+                Arguments.of("月末→月末：4月30日-2月→非闰年2月28日",
+                        date("2023-04-30 12:00:00"), -2, date("2023-02-28 12:00:00")),
+                Arguments.of("月末→月末：跨年11月30日+3月→2月28日",
+                        date("2024-11-30 10:00:00"), 3, date("2025-02-28 10:00:00")),
+                Arguments.of("月末→月末：3月31日-1月→闰年2月29日",
+                        date("2024-03-31 10:00:00"), -1, date("2024-02-29 10:00:00")),
+                Arguments.of("月末→月末：非闰年2月28日+12月→闰年2月29日",
+                        date("2023-02-28 18:00:00"), 12, date("2024-02-29 18:00:00")),
+                Arguments.of("月末→月末：闰年2月29日-12月→非闰年2月28日",
+                        date("2024-02-29 18:00:00"), -12, date("2023-02-28 18:00:00")),
+
+                // ---- 日号超限：原始日号 > 目标月份最大天数，设为目标月份最后一天 ----
+                Arguments.of("日号超限：29日+1月到非闰年2月→28日",
+                        date("2023-01-29 10:00:00"), 1, date("2023-02-28 10:00:00")),
+
+                // ---- 负数月份：向前回退月份 ----
+                Arguments.of("负数月份：月中日期-3月",
+                        date("2024-05-20 16:45:30"), -3, date("2024-02-20 16:45:30")),
+
+                // ---- 小数月份：小数部分被截断为整数 ----
+                Arguments.of("小数月份被截断：2.7→2",
+                        date("2024-06-15 12:00:00"), 2.7, date("2024-08-15 12:00:00")),
+                Arguments.of("负数小数月份被截断：-2.9→-2",
+                        date("2024-06-15 12:00:00"), -2.9, date("2024-04-15 12:00:00"))
+        );
+    }
+
+    @DisplayName("addMonths 方法测试")
+    @ParameterizedTest(name = "【{index}】{0}: date={1}, months={2}")
+    @MethodSource("testAddMonthsProvider")
+    public void testAddMonths(String caseId, Date input, Number months, Date expected) {
+        Date actual = OracleDateUtils.addMonths(input, months);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("addMonths 方法异常场景测试：null 参数")
+    public void testAddMonthsExceptions() {
+        Date now = new Date();
+        assertThrows(IllegalArgumentException.class, () -> OracleDateUtils.addMonths(null, 1));
+        assertThrows(IllegalArgumentException.class, () -> OracleDateUtils.addMonths(now, null));
+        assertThrows(IllegalArgumentException.class, () -> OracleDateUtils.addMonths(null, null));
+    }
+
+    // -------------------------------------------------------------------------
+    // lastDay
+    // -------------------------------------------------------------------------
+
+    /**
+     * lastDay 场景数据，覆盖 Oracle LAST_DAY(date) 所有行为规则。
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出:
+     * <p>
+     *     SELECT '31天月份(1月)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-01-15 10:30:45', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '30天月份(4月)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-04-10 14:22:33', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '闰年2月' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-02-15 08:15:00', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '非闰年2月' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2023-02-15 08:15:00', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '已是月末(3月31日)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-03-31 23:59:59', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '12月(年末)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-12-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '月初第1天' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-07-01 06:30:00', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     *     UNION ALL
+     *     SELECT '闰年2月29日(已是月末)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-02-29 12:00:00', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
+     */
+    static Stream<Arguments> testLastDayProvider() {
+        return Stream.of(
+                // ---- 31天月份 ----
+                Arguments.of("31天月份(1月)",
+                        date("2024-01-15 10:30:45"), date("2024-01-31 10:30:45")),
+
+                // ---- 30天月份 ----
+                Arguments.of("30天月份(4月)",
+                        date("2024-04-10 14:22:33"), date("2024-04-30 14:22:33")),
+
+                // ---- 闰年2月 → 29日 ----
+                Arguments.of("闰年2月",
+                        date("2024-02-15 08:15:00"), date("2024-02-29 08:15:00")),
+
+                // ---- 非闰年2月 → 28日 ----
+                Arguments.of("非闰年2月",
+                        date("2023-02-15 08:15:00"), date("2023-02-28 08:15:00")),
+
+                // ---- 已是月末，返回自身（时分秒不变） ----
+                Arguments.of("已是月末(3月31日)",
+                        date("2024-03-31 23:59:59"), date("2024-03-31 23:59:59")),
+
+                // ---- 12月（年末边界） ----
+                Arguments.of("12月(年末)",
+                        date("2024-12-01 00:00:00"), date("2024-12-31 00:00:00")),
+
+                // ---- 月初第1天 ----
+                Arguments.of("月初第1天",
+                        date("2024-07-01 06:30:00"), date("2024-07-31 06:30:00")),
+
+                // ---- 闰年2月29日已是月末 ----
+                Arguments.of("闰年2月29日(已是月末)",
+                        date("2024-02-29 12:00:00"), date("2024-02-29 12:00:00"))
+        );
+    }
+
+    @DisplayName("lastDay 方法测试")
+    @ParameterizedTest(name = "【{index}】{0}: date={1}")
+    @MethodSource("testLastDayProvider")
+    public void testLastDay(String caseId, Date input, Date expected) {
+        Date actual = OracleDateUtils.lastDay(input);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("lastDay 方法异常场景测试：null 参数")
+    public void testLastDayExceptions() {
+        assertThrows(IllegalArgumentException.class, () -> OracleDateUtils.lastDay(null));
+    }
 }

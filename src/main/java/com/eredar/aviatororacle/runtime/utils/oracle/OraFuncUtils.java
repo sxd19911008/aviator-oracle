@@ -6,6 +6,8 @@ import java.math.RoundingMode;
 
 public class OraFuncUtils {
 
+
+
     /**
      * 模拟 Oracle 数据库的 DECODE 函数实现。
      * <p>
