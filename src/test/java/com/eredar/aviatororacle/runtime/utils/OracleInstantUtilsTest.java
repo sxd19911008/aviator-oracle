@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.utils;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.OracleInstantUtils;
+import com.eredar.aviatororacle.runtime.uitls.oracle.OracleInstantUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

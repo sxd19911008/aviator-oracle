@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.runtime.uitls;
+package com.eredar.aviatororacle.runtime.uitls.oracle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;

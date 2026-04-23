@@ -2,7 +2,7 @@ package com.eredar.aviatororacle.runtime.utils;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.utils.AODateUtils;
-import com.eredar.aviatororacle.runtime.uitls.OracleDateUtils;
+import com.eredar.aviatororacle.runtime.uitls.oracle.OracleDateUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

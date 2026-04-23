@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.runtime.uitls;
+package com.eredar.aviatororacle.runtime.uitls.oracle;
 
 import java.time.LocalDateTime;
 
