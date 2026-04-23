@@ -1,6 +1,6 @@
 package com.eredar.aviatororacle;
 
-import com.eredar.aviatororacle.dto.DateFormatCacheKey;
+import com.eredar.aviatororacle.runtime.dto.DateFormatCacheKey;
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import org.junit.jupiter.api.Assertions;

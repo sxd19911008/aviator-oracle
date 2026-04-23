@@ -1,4 +1,4 @@
-package com.eredar.aviatororacle.dto;
+package com.eredar.aviatororacle.runtime.dto;
 
 import java.util.Objects;
 
