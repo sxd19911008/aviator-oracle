@@ -189,10 +189,156 @@ public class OracleInstantUtils {
     }
 
     /**
-     * 是否是所在月份的最后1填
+     * 是否是所在月份的最后1天
      */
     private static boolean isLastDayOfMonth(ZonedDateTime date) {
         return date.getDayOfMonth() == date.toLocalDate().lengthOfMonth();
+    }
+
+    // =====================================================================
+    //  ADD_MONTHS(date, months)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle 数据库的 {@code ADD_MONTHS(date, months)} 函数：为日期加上指定月数。
+     * <p>使用 UTC 时区。
+     * <p>
+     * Oracle 的 {@code ADD_MONTHS} 行为规则：
+     * <ol>
+     *   <li>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</li>
+     *   <li>如果原始日期是所在月份的最后一天，则结果一定是目标月份的最后一天
+     *       （例如 2024-02-29 + 1个月 → 2024-03-31）</li>
+     *   <li>如果原始日期的日号大于目标月份的最大天数，则结果为目标月份的最后一天
+     *       （例如 2024-01-31 + 1个月 → 2024-02-29）</li>
+     *   <li>时分秒及纳秒部分保持不变</li>
+     *   <li>月数可以为负数，表示向前回退月份</li>
+     * </ol>
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param months 要增加的月数（Number 类型），小数部分会被截断
+     * @return 加上指定月数后的新 {@link Instant} 对象
+     * @throws IllegalArgumentException 如果 {@code date} 或 {@code months} 为 {@code null}
+     */
+    public static Instant addMonths(Instant date, Number months) {
+        return addMonths(date, months, ZoneOffset.UTC);
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 {@code ADD_MONTHS(date, months)} 函数：为日期加上指定月数。
+     * <p>
+     * Oracle 的 {@code ADD_MONTHS} 行为规则：
+     * <ol>
+     *   <li>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</li>
+     *   <li>如果原始日期是所在月份的最后一天，则结果一定是目标月份的最后一天
+     *       （例如 2024-02-29 + 1个月 → 2024-03-31）</li>
+     *   <li>如果原始日期的日号大于目标月份的最大天数，则结果为目标月份的最后一天
+     *       （例如 2024-01-31 + 1个月 → 2024-02-29）</li>
+     *   <li>时分秒及纳秒部分保持不变</li>
+     *   <li>月数可以为负数，表示向前回退月份</li>
+     * </ol>
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param months 要增加的月数（Number 类型），小数部分会被截断
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 加上指定月数后的新 {@link Instant} 对象
+     * @throws IllegalArgumentException 如果参数为 {@code null}
+     */
+    public static Instant addMonths(Instant date, Number months, ZoneId zoneId) {
+        /* 入参校验 */
+        if (date == null || months == null) {
+            throw new IllegalArgumentException(
+                    String.format("参数不能为空: date=%s; months=%s", date, months));
+        }
+        if (zoneId == null) {
+            throw new IllegalArgumentException("时区zoneId可以不传入，如果传入不能为空");
+        }
+
+        // Oracle 会将 months 截断为整数（不是四舍五入）
+        int monthsToAdd = months.intValue();
+
+        // 为0不用计算，直接返回
+        if (monthsToAdd == 0) {
+            return date;
+        }
+
+        ZonedDateTime zdt = date.atZone(zoneId);
+
+        // 记录原始日期的日号
+        int originalDayOfMonth = zdt.getDayOfMonth();
+        // 判断原始日期是否是所在月份的最后一天
+        boolean wasLastDayOfMonth = isLastDayOfMonth(zdt);
+
+        // 增加月份（plusMonths 会自动处理年份进位/借位）
+        zdt = zdt.plusMonths(monthsToAdd);
+
+        if (wasLastDayOfMonth) {
+            // 规则2：原始日期是月末，结果强制设为目标月份的最后一天
+            zdt = zdt.withDayOfMonth(zdt.toLocalDate().lengthOfMonth());
+        } else {
+            // 规则3：原始日号超过目标月的最大天数时，设为目标月的最后一天
+            int maxDayOfTargetMonth = zdt.toLocalDate().lengthOfMonth();
+            if (originalDayOfMonth > maxDayOfTargetMonth) {
+                zdt = zdt.withDayOfMonth(maxDayOfTargetMonth);
+            } else {
+                // 正常情况：保持原始日号（plusMonths 可能会自动调整日号，需要还原）
+                zdt = zdt.withDayOfMonth(originalDayOfMonth);
+            }
+        }
+
+        return zdt.toInstant();
+    }
+
+    // =====================================================================
+    //  LAST_DAY(date)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle 数据库的 {@code LAST_DAY(date)} 函数：返回给定日期所在月份的最后一天。
+     * <p>使用 UTC 时区。
+     * <p>
+     * Oracle 的 {@code LAST_DAY} 行为规则：
+     * <ul>
+     *   <li>返回日期所在月份的最后一天，会正确处理闰年（如2月28日/29日）</li>
+     *   <li>时分秒及纳秒部分保持不变</li>
+     * </ul>
+     *
+     * @param date 日期对象；不允许为 {@code null}
+     * @return 该日期所在月份最后一天的新 {@link Instant} 对象（保留原始时分秒及纳秒）
+     * @throws IllegalArgumentException 如果 {@code date} 为 {@code null}
+     */
+    public static Instant lastDay(Instant date) {
+        return lastDay(date, ZoneOffset.UTC);
+    }
+
+    /**
+     * 模拟 Oracle 数据库的 {@code LAST_DAY(date)} 函数：返回给定日期所在月份的最后一天。
+     * <p>
+     * Oracle 的 {@code LAST_DAY} 行为规则：
+     * <ul>
+     *   <li>返回日期所在月份的最后一天，会正确处理闰年（如2月28日/29日）</li>
+     *   <li>时分秒及纳秒部分保持不变</li>
+     * </ul>
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 该日期所在月份最后一天的新 {@link Instant} 对象（保留原始时分秒及纳秒）
+     * @throws IllegalArgumentException 如果参数为 {@code null}
+     */
+    public static Instant lastDay(Instant date, ZoneId zoneId) {
+        /* 入参校验 */
+        if (date == null) {
+            throw new IllegalArgumentException("参数不能为空: date=null");
+        }
+        if (zoneId == null) {
+            throw new IllegalArgumentException("时区zoneId不能为空");
+        }
+
+        ZonedDateTime zdt = date.atZone(zoneId);
+
+        // 将日号设为当月的最大天数（lengthOfMonth 会自动处理闰年和不同月份的天数差异）
+        zdt = zdt.withDayOfMonth(zdt.toLocalDate().lengthOfMonth());
+
+        return zdt.toInstant();
     }
 
     // =====================================================================
