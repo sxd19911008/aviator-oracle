@@ -73,7 +73,7 @@ public class MonthsBetweenFunction extends AbstractFunction {
         Object obj3 = arg3.getValue(env);
 
         if (obj1 == null || obj2 == null || obj3 == null) {
-            throw new IllegalArgumentException(String.format("months_between方法endDate[%s]、beginDate[%s]都不能为null。zoneId[%s]可以不传入，传入则不能为null", obj1, obj2, obj3));
+            throw new IllegalArgumentException(String.format("months_between方法endDate[%s]、beginDate[%s]都不能为null。zoneId[%s]可以不传入，传入则不能为null。", obj1, obj2, obj3));
         }
 
         if (obj1 instanceof Instant && obj2 instanceof Instant) {

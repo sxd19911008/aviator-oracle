@@ -86,39 +86,6 @@ public class OraFuncUtils {
         return OracleNumberFunctionUtils.round(number, newScale);
     }
 
-    /**
-     * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #trunc(Number, Number) truncDate(n, 0)}。
-     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
-     * 例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
-     *
-     * @param number 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
-     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
-     */
-    public static Number trunc(Number number) {
-        return OracleNumberFunctionUtils.truncNumber(number, 0);
-    }
-
-    /**
-     * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。
-     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；
-     * <p>{@code newScale = 0} 表示仅保留整数部分；
-     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。
-     * <p>示例：
-     * <pre>
-     *   truncDate(15.79)      = 15
-     *   truncDate(15.79,  1)  = 15.7
-     *   truncDate(15.79, -1)  = 10
-     *   truncDate(-2.9,   0)  = -2   （向零，非向负无穷）
-     * </pre>
-     *
-     * @param number   待截断的值；为 {@code null} 时返回 {@code null}
-     * @param newScale 目标标度（可为负）；支持 Long、Integer、Double、BigInteger、BigDecimal、OraDecimal
-     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
-     */
-    public static Number trunc(Number number, Number newScale) {
-        return OracleNumberFunctionUtils.truncNumber(number, newScale);
-    }
-
     // =====================================================================
     //  日期 + 数字 (Oracle: date + number)
     // =====================================================================
@@ -405,8 +372,41 @@ public class OraFuncUtils {
     }
 
     // =====================================================================
-    //  TRUNC(date [, format]) — 日期截断
+    //  TRUNC
     // =====================================================================
+
+    /**
+     * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #trunc(Number, Number) truncDate(n, 0)}。
+     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
+     * 例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
+     *
+     * @param number 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
+     */
+    public static Number trunc(Number number) {
+        return OracleNumberFunctionUtils.truncNumber(number, 0);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。
+     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；
+     * <p>{@code newScale = 0} 表示仅保留整数部分；
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。
+     * <p>示例：
+     * <pre>
+     *   truncDate(15.79)      = 15
+     *   truncDate(15.79,  1)  = 15.7
+     *   truncDate(15.79, -1)  = 10
+     *   truncDate(-2.9,   0)  = -2   （向零，非向负无穷）
+     * </pre>
+     *
+     * @param number   待截断的值；为 {@code null} 时返回 {@code null}
+     * @param newScale 目标标度（可为负）；支持 Long、Integer、Double、BigInteger、BigDecimal、OraDecimal
+     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
+     */
+    public static Number trunc(Number number, Number newScale) {
+        return OracleNumberFunctionUtils.truncNumber(number, newScale);
+    }
 
     /**
      * 模拟 Oracle {@code TRUNC(date)}：将 {@link Date} 截断到天（当天午夜零点）
