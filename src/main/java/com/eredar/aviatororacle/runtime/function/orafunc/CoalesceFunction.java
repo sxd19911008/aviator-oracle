@@ -20,6 +20,8 @@ public class CoalesceFunction extends AbstractFunction {
 
     /**
      * 执行 {@code coalesce} 方法：返回第一个非 {@code null} 的参数
+     * <p>与Oracle的不同点：不同的类型的入参也可以调用该java方法，但是Oracle在这种情况下会报错。
+     * <p>【注意】不建议使用不同类型的入参调用该方法，会导致返回值类型不确定，同样容易报错。
      *
      * @param env  参数上下文
      * @param args AviatorObject 可变参数数组

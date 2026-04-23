@@ -1,0 +1,324 @@
+{"expression":"coalesce(1, 2)","expected":1}
+{"expression":"coalesce(nil, 2)","expected":2}
+{"expression":"coalesce(1, 2, 3)","expected":1}
+{"expression":"coalesce(nil, 2, 3)","expected":2}
+{"expression":"coalesce(nil, nil, 3)","expected":3}
+{"expression":"coalesce(1, 2, 3, 4)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4)","expected":4}
+{"expression":"coalesce(1, 2, 3, 4, 5)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5)","expected":5}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6)","expected":6}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7)","expected":7}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8)","expected":8}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9)","expected":9}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10)","expected":10}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11)","expected":11}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12)","expected":12}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13)","expected":13}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14)","expected":14}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15)","expected":15}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16)","expected":16}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17)","expected":17}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18)","expected":18}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19)","expected":19}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19, 20)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19, 20)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19, 20)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19, 20)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19, 20)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19, 20)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19, 20)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19, 20)","expected":19}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 20)","expected":20}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19, 20, 21)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19, 20, 21)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19, 20, 21)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19, 20, 21)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19, 20, 21)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19, 20, 21)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19, 20, 21)","expected":19}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 20, 21)","expected":20}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 21)","expected":21}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19, 20, 21, 22)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19, 20, 21, 22)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19, 20, 21, 22)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19, 20, 21, 22)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19, 20, 21, 22)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19, 20, 21, 22)","expected":19}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 20, 21, 22)","expected":20}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 21, 22)","expected":21}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 22)","expected":22}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19, 20, 21, 22, 23)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19, 20, 21, 22, 23)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19, 20, 21, 22, 23)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19, 20, 21, 22, 23)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19, 20, 21, 22, 23)","expected":19}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 20, 21, 22, 23)","expected":20}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 21, 22, 23)","expected":21}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 22, 23)","expected":22}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 23)","expected":23}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19, 20, 21, 22, 23, 24)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19, 20, 21, 22, 23, 24)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19, 20, 21, 22, 23, 24)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19, 20, 21, 22, 23, 24)","expected":19}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 20, 21, 22, 23, 24)","expected":20}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 21, 22, 23, 24)","expected":21}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 22, 23, 24)","expected":22}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 23, 24)","expected":23}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 24)","expected":24}
+{"expression":"coalesce(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":1}
+{"expression":"coalesce(nil, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":2}
+{"expression":"coalesce(nil, nil, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":3}
+{"expression":"coalesce(nil, nil, nil, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":4}
+{"expression":"coalesce(nil, nil, nil, nil, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":5}
+{"expression":"coalesce(nil, nil, nil, nil, nil, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":6}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":7}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":8}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":9}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":10}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":11}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":12}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":13}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":14}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":15}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":16}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 17, 18, 19, 20, 21, 22, 23, 24, 25)","expected":17}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 18, 19, 20, 21, 22, 23, 24, 25)","expected":18}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 19, 20, 21, 22, 23, 24, 25)","expected":19}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 20, 21, 22, 23, 24, 25)","expected":20}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 21, 22, 23, 24, 25)","expected":21}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 22, 23, 24, 25)","expected":22}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 23, 24, 25)","expected":23}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 24, 25)","expected":24}
+{"expression":"coalesce(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 25)","expected":25}
