@@ -2,7 +2,7 @@ package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.dto.DecodeParamTestDTO;
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.utils.oracle.OraFuncUtils;
+import com.eredar.aviatororacle.utils.oracle.OraFuncUtils;
 import com.eredar.aviatororacle.testUtils.FileUtils;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import com.eredar.aviatororacle.testUtils.JsonUtils;

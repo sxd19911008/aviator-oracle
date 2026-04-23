@@ -1,8 +1,9 @@
 package com.eredar.aviatororacle;
 
+import com.eredar.aviatororacle.function.orafunc.RoundFunction;
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
-import com.eredar.aviatororacle.runtime.utils.oracle.OraFuncUtils;
+import com.eredar.aviatororacle.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.utils.oracle.OraFuncUtils;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -403,7 +404,7 @@ public class RoundFunctionTest {
 
     /**
      * 非法入参：与工具类测试语义一致——{@code newScale==null} 或非 {@link Number} 的第二实参。
-     * <p>此处通过表达式变量传入 {@code null} / {@link Instant}，覆盖 {@link com.eredar.aviatororacle.runtime.function.orafunc.RoundFunction} 的运行期校验。
+     * <p>此处通过表达式变量传入 {@code null} / {@link Instant}，覆盖 {@link RoundFunction} 的运行期校验。
      */
     static Stream<Arguments> testRoundTwoArgsInvalidProvider() {
         return Stream.of(

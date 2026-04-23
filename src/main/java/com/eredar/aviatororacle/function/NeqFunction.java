@@ -1,0 +1,25 @@
+package com.eredar.aviatororacle.function;
+
+import com.googlecode.aviator.lexer.token.OperatorType;
+import com.googlecode.aviator.runtime.type.AviatorBoolean;
+import com.googlecode.aviator.runtime.type.AviatorObject;
+
+import java.util.Map;
+
+public class NeqFunction extends CompareEqFunction{
+
+    private static final long serialVersionUID = 9024422070889535701L;
+
+    @Override
+    public String getName() {
+        return OperatorType.NEQ.token;
+    }
+
+    @Override
+    public AviatorObject call(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
+        // 比对
+        boolean bool = this.compareEqReturnInt(env, arg1, arg2) != 0;
+        // 返回结果
+        return AviatorBoolean.valueOf(bool);
+    }
+}
