@@ -21,18 +21,6 @@ public class OracleNumberFunctionUtilsTest {
     // abs
     // -------------------------------------------------------------------------
 
-    /**
-     * {@link OracleNumberFunctionUtils#abs(Number)} 场景数据。
-     * <p>期望值通过 Oracle 执行 {@code SELECT ABS(x) FROM dual} 获得。
-     * <p>特别说明：
-     * <ul>
-     *   <li>{@code Long/Integer/Short/Byte} 正数直接返回原对象（类型不变）。</li>
-     *   <li>{@code Long/Integer/Short/Byte} 负数取反后以 {@code long} 装箱返回（Java 的 {@code -val} 表达式结果类型为 {@code long}）。</li>
-     *   <li>{@code Long.MIN_VALUE} 取反会溢出，提升为 {@link OraDecimal} 处理。</li>
-     *   <li>{@code BigInteger} 负数返回 {@link BigInteger#abs()}，类型仍为 {@link BigInteger}。</li>
-     *   <li>其余 Number 类型（{@link OraDecimal}/{@link BigDecimal}/{@link Double}）均经 {@link OraDecimal#valueOf} 转换后返回，类型为 {@link OraDecimal}。</li>
-     * </ul>
-     */
     static Stream<Arguments> testAbsProvider() {
         return Stream.of(
                 // Oracle: ABS(NULL) = NULL
