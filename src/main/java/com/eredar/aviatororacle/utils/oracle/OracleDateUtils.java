@@ -22,7 +22,7 @@ public class OracleDateUtils {
      * @param days 天数，可以带小数
      * @return {@link Date} 类型的日期对象
      */
-    public static Date datePlusDays(Date date, Number days) {
+    protected static Date datePlusDays(Date date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -40,7 +40,7 @@ public class OracleDateUtils {
      * @param days 天数，可以带小数
      * @return {@link Date} 类型的日期对象
      */
-    public static Date dateMinusDays(Date date, Number days) {
+    protected static Date dateMinusDays(Date date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -82,7 +82,7 @@ public class OracleDateUtils {
      * @param beginDate 减数 (起始时间)
      * @return 差值天数 ({@code OraDecimal})
      */
-    public static OraDecimal daysBetween(Date endDate, Date beginDate) {
+    protected static OraDecimal daysBetween(Date endDate, Date beginDate) {
         // 校验参数，为 null 直接报错
         if (endDate == null || beginDate == null) {
             throw new IllegalArgumentException(String.format("endDate[%s] and beginDate[%s] cannot be null", endDate, beginDate));
@@ -111,7 +111,7 @@ public class OracleDateUtils {
      * @param beginDate 起始日期
      * @return 间隔月份
      */
-    public static OraDecimal monthsBetween(Date endDate, Date beginDate) {
+    protected static OraDecimal monthsBetween(Date endDate, Date beginDate) {
         /* 入参校验 */
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
@@ -211,7 +211,7 @@ public class OracleDateUtils {
      * @return 加上指定月数后的新 {@link Date} 对象
      * @throws IllegalArgumentException 如果 {@code date} 或 {@code months} 为 {@code null}
      */
-    public static Date addMonths(Date date, Number months) {
+    protected static Date addMonths(Date date, Number months) {
         /* 入参校验 */
         if (date == null || months == null) {
             throw new IllegalArgumentException(
@@ -271,7 +271,7 @@ public class OracleDateUtils {
      * @return 该日期所在月份最后一天的新 {@link Date} 对象（保留原始时分秒）
      * @throws IllegalArgumentException 如果 {@code date} 为 {@code null}
      */
-    public static Date lastDay(Date date) {
+    protected static Date lastDay(Date date) {
         /* 入参校验 */
         if (date == null) {
             throw new IllegalArgumentException("参数不能为空: date=null");
@@ -297,7 +297,7 @@ public class OracleDateUtils {
      * @param date 日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link Date} 对象
      */
-    public static Date truncDate(Date date) {
+    protected static Date truncDate(Date date) {
         return truncDate(date, "DD");
     }
 
@@ -325,7 +325,7 @@ public class OracleDateUtils {
      * @return 截断后的新 {@link Date} 对象
      * @throws IllegalArgumentException 如果 {@code format} 是不支持的格式模型
      */
-    public static Date truncDate(Date date, String format) {
+    protected static Date truncDate(Date date, String format) {
         if (date == null) {
             return null;
         }

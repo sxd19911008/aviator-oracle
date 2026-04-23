@@ -2,7 +2,7 @@ package com.eredar.aviatororacle.object;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.utils.AORuntimeUtils;
-import com.eredar.aviatororacle.utils.oracle.OracleInstantUtils;
+import com.eredar.aviatororacle.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import com.googlecode.aviator.runtime.type.AviatorNumber;
@@ -13,6 +13,8 @@ import com.googlecode.aviator.utils.TypeUtils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 
 public abstract class AOAviatorNumber extends AviatorObject {
@@ -78,12 +80,24 @@ public abstract class AOAviatorNumber extends AviatorObject {
                     return innerAdd(env, AOAviatorNumber.valueOf(otherValue));
                 } else if (TypeUtils.isString(otherValue)) {
                     return new AviatorString(getValue(env).toString() + otherValue);
+                } else if (otherValue instanceof Date) {
+                    Number thisValue = this.number;
+                    if (thisValue == null) {
+                        thisValue = this.longValue;
+                    }
+                    return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.datePlusDays((Date) otherValue, thisValue));
+                } else if (otherValue instanceof LocalDateTime) {
+                    Number thisValue = this.number;
+                    if (thisValue == null) {
+                        thisValue = this.longValue;
+                    }
+                    return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.datePlusDays((LocalDateTime) otherValue, thisValue));
                 } else if (otherValue instanceof Instant) {
                     Number thisValue = this.number;
                     if (thisValue == null) {
                         thisValue = this.longValue;
                     }
-                    return AOAviatorRuntimeJavaType.valueOf(OracleInstantUtils.instantPlusDays((Instant) otherValue, thisValue));
+                    return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.datePlusDays((Instant) otherValue, thisValue));
                 } else {
                     return super.add(other, env);
                 }

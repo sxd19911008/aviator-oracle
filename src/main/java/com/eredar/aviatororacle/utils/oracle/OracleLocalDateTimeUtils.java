@@ -26,7 +26,7 @@ public class OracleLocalDateTimeUtils {
      * @param days 天数，可以带小数
      * @return {@link LocalDateTime} 类型的日期对象
      */
-    public static LocalDateTime localDateTimePlusDays(LocalDateTime date, Number days) {
+    protected static LocalDateTime localDateTimePlusDays(LocalDateTime date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -41,7 +41,7 @@ public class OracleLocalDateTimeUtils {
      * @param days 天数，可以带小数
      * @return {@link LocalDateTime} 类型的日期对象
      */
-    public static LocalDateTime localDateTimeMinusDays(LocalDateTime date, Number days) {
+    protected static LocalDateTime localDateTimeMinusDays(LocalDateTime date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -81,7 +81,7 @@ public class OracleLocalDateTimeUtils {
      * @param beginDate 减数 (起始时间)
      * @return 差值天数 ({@code OraDecimal})
      */
-    public static OraDecimal daysBetween(LocalDateTime endDate, LocalDateTime beginDate) {
+    protected static OraDecimal daysBetween(LocalDateTime endDate, LocalDateTime beginDate) {
         if (endDate == null || beginDate == null) {
             throw new IllegalArgumentException(String.format("endDate[%s] and beginDate[%s] cannot be null", endDate, beginDate));
         }
@@ -106,7 +106,7 @@ public class OracleLocalDateTimeUtils {
      * @param beginDate 起始日期
      * @return 间隔月份
      */
-    public static OraDecimal monthsBetween(LocalDateTime endDate, LocalDateTime beginDate) {
+    protected static OraDecimal monthsBetween(LocalDateTime endDate, LocalDateTime beginDate) {
         /* 入参校验 */
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
@@ -183,7 +183,7 @@ public class OracleLocalDateTimeUtils {
      * @return 加上指定月数后的新 {@link LocalDateTime} 对象
      * @throws IllegalArgumentException 如果 {@code date} 或 {@code months} 为 {@code null}
      */
-    public static LocalDateTime addMonths(LocalDateTime date, Number months) {
+    protected static LocalDateTime addMonths(LocalDateTime date, Number months) {
         /* 入参校验 */
         if (date == null || months == null) {
             throw new IllegalArgumentException(
@@ -235,7 +235,7 @@ public class OracleLocalDateTimeUtils {
      * @return 该日期所在月份最后一天的新 {@link LocalDateTime} 对象（保留原始时分秒及纳秒）
      * @throws IllegalArgumentException 如果 {@code date} 为 {@code null}
      */
-    public static LocalDateTime lastDay(LocalDateTime date) {
+    protected static LocalDateTime lastDay(LocalDateTime date) {
         if (date == null) {
             throw new IllegalArgumentException("参数不能为空: date=null");
         }
@@ -254,7 +254,7 @@ public class OracleLocalDateTimeUtils {
      * @param date 日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link LocalDateTime} 对象
      */
-    public static LocalDateTime truncLocalDateTime(LocalDateTime date) {
+    protected static LocalDateTime truncLocalDateTime(LocalDateTime date) {
         return truncLocalDateTime(date, "DD");
     }
 
@@ -282,7 +282,7 @@ public class OracleLocalDateTimeUtils {
      * @return 截断后的新 {@link LocalDateTime} 对象
      * @throws IllegalArgumentException 如果 {@code format} 为空或不支持的格式模型
      */
-    public static LocalDateTime truncLocalDateTime(LocalDateTime date, String format) {
+    protected static LocalDateTime truncLocalDateTime(LocalDateTime date, String format) {
         if (date == null) {
             return null;
         }

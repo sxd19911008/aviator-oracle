@@ -2,8 +2,8 @@ package com.eredar.aviatororacle.function.orafunc;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.object.AOAviatorDecimal;
-import com.eredar.aviatororacle.utils.oracle.OracleInstantUtils;
 import com.eredar.aviatororacle.utils.AOUtils;
+import com.eredar.aviatororacle.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
@@ -38,16 +38,22 @@ public class MonthsBetweenFunction extends AbstractFunction {
             Instant endDate = (Instant) obj1;
             Instant beginDate = (Instant) obj2;
 
-            OraDecimal months = OracleInstantUtils.monthsBetween(endDate, beginDate);
+            OraDecimal months = OraFuncUtils.monthsBetween(endDate, beginDate);
             return AOAviatorDecimal.valueOf(months);
         }
 
         if (obj1 instanceof LocalDateTime && obj2 instanceof LocalDateTime ) {
-            // TODO 完成LocalDateTime类型
+            LocalDateTime endDate = (LocalDateTime) obj1;
+            LocalDateTime beginDate = (LocalDateTime) obj2;
+            OraDecimal months = OraFuncUtils.monthsBetween(endDate, beginDate);
+            return AOAviatorDecimal.valueOf(months);
         }
 
         if (obj1 instanceof Date && obj2 instanceof Date ) {
-            // TODO 完成Date类型
+            Date endDate = (Date) obj1;
+            Date beginDate = (Date) obj2;
+            OraDecimal months = OraFuncUtils.monthsBetween(endDate, beginDate);
+            return AOAviatorDecimal.valueOf(months);
         }
 
         throw new IllegalArgumentException(String.format(
@@ -81,7 +87,7 @@ public class MonthsBetweenFunction extends AbstractFunction {
                 throw new IllegalArgumentException(String.format("months_between方法zoneId[%s]可以不传入，传入则不能为空字符串", zoneId));
             }
 
-            OraDecimal months = OracleInstantUtils.monthsBetween(endDate, beginDate, ZoneId.of(zoneId));
+            OraDecimal months = OraFuncUtils.monthsBetween(endDate, beginDate, ZoneId.of(zoneId));
             return AOAviatorDecimal.valueOf(months);
         }
 

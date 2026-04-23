@@ -28,7 +28,7 @@ public class OracleInstantUtils {
      * @param days 天数，可以带小数
      * @return Instant类型的日期对象
      */
-    public static Instant instantPlusDays(Instant date, Number days) {
+    protected static Instant instantPlusDays(Instant date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -47,7 +47,7 @@ public class OracleInstantUtils {
      * @param days 天数，可以带小数
      * @return Instant类型的日期对象
      */
-    public static Instant instantMinusDays(Instant date, Number days) {
+    protected static Instant instantMinusDays(Instant date, Number days) {
         if (date == null || days == null) {
             throw new IllegalArgumentException(String.format("Params cannot be null: date=%s; days=%s", date, days));
         }
@@ -89,7 +89,7 @@ public class OracleInstantUtils {
      * @param beginDate 减数 (起始时间)
      * @return 差值天数 ({@code OraDecimal})
      */
-    public static OraDecimal daysBetween(Instant endDate, Instant beginDate) {
+    protected static OraDecimal daysBetween(Instant endDate, Instant beginDate) {
         // 校验参数，为 null 直接报错
         if (endDate == null || beginDate == null) {
             throw new IllegalArgumentException(String.format("endDate[%s] and beginDate[%s] cannot be null", endDate, beginDate));
@@ -111,7 +111,7 @@ public class OracleInstantUtils {
          */
     }
 
-    public static OraDecimal monthsBetween(Instant endDate, Instant beginDate) {
+    protected static OraDecimal monthsBetween(Instant endDate, Instant beginDate) {
         return monthsBetween(endDate, beginDate, ZoneOffset.UTC);
     }
 
@@ -123,7 +123,7 @@ public class OracleInstantUtils {
      * @param zoneId    时区
      * @return 间隔月份
      */
-    public static OraDecimal monthsBetween(Instant endDate, Instant beginDate, ZoneId zoneId) {
+    protected static OraDecimal monthsBetween(Instant endDate, Instant beginDate, ZoneId zoneId) {
         /* 入参校验 */
         if (beginDate == null || endDate == null) {
             throw new IllegalArgumentException("日期参数不能为空");
@@ -219,7 +219,7 @@ public class OracleInstantUtils {
      * @return 加上指定月数后的新 {@link Instant} 对象
      * @throws IllegalArgumentException 如果 {@code date} 或 {@code months} 为 {@code null}
      */
-    public static Instant addMonths(Instant date, Number months) {
+    protected static Instant addMonths(Instant date, Number months) {
         return addMonths(date, months, ZoneOffset.UTC);
     }
 
@@ -243,7 +243,7 @@ public class OracleInstantUtils {
      * @return 加上指定月数后的新 {@link Instant} 对象
      * @throws IllegalArgumentException 如果参数为 {@code null}
      */
-    public static Instant addMonths(Instant date, Number months, ZoneId zoneId) {
+    protected static Instant addMonths(Instant date, Number months, ZoneId zoneId) {
         /* 入参校验 */
         if (date == null || months == null) {
             throw new IllegalArgumentException(
@@ -306,7 +306,7 @@ public class OracleInstantUtils {
      * @return 该日期所在月份最后一天的新 {@link Instant} 对象（保留原始时分秒及纳秒）
      * @throws IllegalArgumentException 如果 {@code date} 为 {@code null}
      */
-    public static Instant lastDay(Instant date) {
+    protected static Instant lastDay(Instant date) {
         return lastDay(date, ZoneOffset.UTC);
     }
 
@@ -324,7 +324,7 @@ public class OracleInstantUtils {
      * @return 该日期所在月份最后一天的新 {@link Instant} 对象（保留原始时分秒及纳秒）
      * @throws IllegalArgumentException 如果参数为 {@code null}
      */
-    public static Instant lastDay(Instant date, ZoneId zoneId) {
+    protected static Instant lastDay(Instant date, ZoneId zoneId) {
         /* 入参校验 */
         if (date == null) {
             throw new IllegalArgumentException("参数不能为空: date=null");
@@ -352,7 +352,7 @@ public class OracleInstantUtils {
      * @param date 日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link Instant} 对象
      */
-    public static Instant truncInstant(Instant date) {
+    protected static Instant truncInstant(Instant date) {
         return truncInstantWithZone(date, ZoneOffset.UTC);
     }
 
@@ -363,7 +363,7 @@ public class OracleInstantUtils {
      * @param format 格式模型（不区分大小写）
      * @return 截断后的新 {@link Instant} 对象
      */
-    public static Instant truncInstant(Instant date, String format) {
+    protected static Instant truncInstant(Instant date, String format) {
         return truncInstantWithZone(date, format, ZoneOffset.UTC);
     }
 
@@ -375,7 +375,7 @@ public class OracleInstantUtils {
      * @param zoneId 时区，不可为 {@code null}
      * @return 截断到天的新 {@link Instant} 对象
      */
-    public static Instant truncInstantWithZone(Instant date, ZoneId zoneId) {
+    protected static Instant truncInstantWithZone(Instant date, ZoneId zoneId) {
         return truncInstantWithZone(date, "DD", zoneId);
     }
 
@@ -404,7 +404,7 @@ public class OracleInstantUtils {
      * @return 截断后的新 {@link Instant} 对象
      * @throws IllegalArgumentException 如果 {@code zoneId} 为 {@code null}，或 {@code format} 是不支持的格式模型
      */
-    public static Instant truncInstantWithZone(Instant date, String format, ZoneId zoneId) {
+    protected static Instant truncInstantWithZone(Instant date, String format, ZoneId zoneId) {
         if (date == null) {
             return null;
         }

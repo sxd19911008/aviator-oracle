@@ -1,6 +1,6 @@
 package com.eredar.aviatororacle.object;
 
-import com.eredar.aviatororacle.utils.oracle.OracleInstantUtils;
+import com.eredar.aviatororacle.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.lexer.SymbolTable;
 import com.googlecode.aviator.runtime.type.*;
@@ -8,6 +8,8 @@ import com.googlecode.aviator.utils.TypeUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -214,15 +216,41 @@ public class AOAviatorJavaType extends AviatorJavaType {
                 if (value instanceof Number) {
                     AOAviatorNumber aviatorNumber = AOAviatorNumber.valueOf(value);
                     return aviatorNumber.sub(other, env);
+                } else if (value instanceof Date) {
+                    Object otherValue = other.getValue(env);
+                    if (otherValue instanceof Date) { // 2个日期相减得到间隔天数
+                        // a - b，a 作为 endDate
+                        Date endDate = (Date) value;
+                        Date beginDate = (Date) otherValue;
+                        return AOAviatorDecimal.valueOf(OraFuncUtils.daysBetween(endDate, beginDate));
+                    } else if (otherValue instanceof Number) { // 日期减数字，减去对应的天数，得到新的日期
+                        return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.dateMinusDays((Date) value, (Number) otherValue));
+                    } else {
+                        // 类型错误，抛出异常
+                        return super.sub(other, env);
+                    }
+                } else if (value instanceof LocalDateTime) {
+                    Object otherValue = other.getValue(env);
+                    if (otherValue instanceof LocalDateTime) { // 2个日期相减得到间隔天数
+                        // a - b，a 作为 endDate
+                        LocalDateTime endDate = (LocalDateTime) value;
+                        LocalDateTime beginDate = (LocalDateTime) otherValue;
+                        return AOAviatorDecimal.valueOf(OraFuncUtils.daysBetween(endDate, beginDate));
+                    } else if (otherValue instanceof Number) { // 日期减数字，减去对应的天数，得到新的日期
+                        return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.dateMinusDays((LocalDateTime) value, (Number) otherValue));
+                    } else {
+                        // 类型错误，抛出异常
+                        return super.sub(other, env);
+                    }
                 } else if (value instanceof Instant) {
                     Object otherValue = other.getValue(env);
                     if (otherValue instanceof Instant) { // 2个日期相减得到间隔天数
                         // a - b，a 作为 endDate
                         Instant endDate = (Instant) value;
                         Instant beginDate = (Instant) otherValue;
-                        return AOAviatorDecimal.valueOf(OracleInstantUtils.daysBetween(endDate, beginDate));
+                        return AOAviatorDecimal.valueOf(OraFuncUtils.daysBetween(endDate, beginDate));
                     } else if (otherValue instanceof Number) { // 日期减数字，减去对应的天数，得到新的日期
-                        return AOAviatorRuntimeJavaType.valueOf(OracleInstantUtils.instantMinusDays((Instant) value, (Number) otherValue));
+                        return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.dateMinusDays((Instant) value, (Number) otherValue));
                     } else {
                         // 类型错误，抛出异常
                         return super.sub(other, env);
@@ -333,10 +361,26 @@ public class AOAviatorJavaType extends AviatorJavaType {
         if (value instanceof Number) {
             AOAviatorNumber aviatorNumber = AOAviatorNumber.valueOf(value);
             return aviatorNumber.add(other, env);
+        } else if (value instanceof Date) {
+            otherValue = other.getValue(env);
+            if (otherValue instanceof Number) { // 日期加数字，加上对应的天数，得到新的日期
+                return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.datePlusDays((Date) value, (Number) otherValue));
+            } else {
+                // 类型错误，抛出异常
+                return super.add(other, env);
+            }
+        } else if (value instanceof LocalDateTime) {
+            otherValue = other.getValue(env);
+            if (otherValue instanceof Number) { // 日期加数字，加上对应的天数，得到新的日期
+                return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.datePlusDays((LocalDateTime) value, (Number) otherValue));
+            } else {
+                // 类型错误，抛出异常
+                return super.add(other, env);
+            }
         } else if (value instanceof Instant) {
             otherValue = other.getValue(env);
             if (otherValue instanceof Number) { // 日期加数字，加上对应的天数，得到新的日期
-                return AOAviatorRuntimeJavaType.valueOf(OracleInstantUtils.instantPlusDays((Instant) value, (Number) otherValue));
+                return AOAviatorRuntimeJavaType.valueOf(OraFuncUtils.datePlusDays((Instant) value, (Number) otherValue));
             } else {
                 // 类型错误，抛出异常
                 return super.add(other, env);

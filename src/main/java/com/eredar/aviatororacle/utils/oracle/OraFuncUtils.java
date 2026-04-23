@@ -3,7 +3,14 @@ package com.eredar.aviatororacle.utils.oracle;
 import com.eredar.aviatororacle.number.OraDecimal;
 
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
+/**
+ * Oracle 函数统一入口工具类。
+ */
 public class OraFuncUtils {
 
 
@@ -111,4 +118,388 @@ public class OraFuncUtils {
     public static Number trunc(Number number, Number newScale) {
         return OracleNumberFunctionUtils.truncNumber(number, newScale);
     }
+
+    // =====================================================================
+    //  日期 + 数字 (Oracle: date + number)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle 数据库: {@link Date} + 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return {@link Date} 类型的日期对象
+     * @see OracleDateUtils#datePlusDays(Date, Number)
+     */
+    public static Date datePlusDays(Date date, Number days) {
+        return OracleDateUtils.datePlusDays(date, days);
+    }
+
+    /**
+     * 模拟 Oracle 数据库: {@link LocalDateTime} + 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return {@link LocalDateTime} 类型的日期对象
+     * @see OracleLocalDateTimeUtils#localDateTimePlusDays(LocalDateTime, Number)
+     */
+    public static LocalDateTime datePlusDays(LocalDateTime date, Number days) {
+        return OracleLocalDateTimeUtils.localDateTimePlusDays(date, days);
+    }
+
+    /**
+     * 模拟 Oracle 数据库: {@link Instant} + 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return {@link Instant} 类型的日期对象
+     * @see OracleInstantUtils#instantPlusDays(Instant, Number)
+     */
+    public static Instant datePlusDays(Instant date, Number days) {
+        return OracleInstantUtils.instantPlusDays(date, days);
+    }
+
+    // =====================================================================
+    //  日期 - 数字 (Oracle: date - number)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle 数据库: {@link Date} - 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return {@link Date} 类型的日期对象
+     * @see OracleDateUtils#dateMinusDays(Date, Number)
+     */
+    public static Date dateMinusDays(Date date, Number days) {
+        return OracleDateUtils.dateMinusDays(date, days);
+    }
+
+    /**
+     * 模拟 Oracle 数据库: {@link LocalDateTime} - 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return {@link LocalDateTime} 类型的日期对象
+     * @see OracleLocalDateTimeUtils#localDateTimeMinusDays(LocalDateTime, Number)
+     */
+    public static LocalDateTime dateMinusDays(LocalDateTime date, Number days) {
+        return OracleLocalDateTimeUtils.localDateTimeMinusDays(date, days);
+    }
+
+    /**
+     * 模拟 Oracle 数据库: {@link Instant} - 数字
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     *
+     * @param date 日期对象
+     * @param days 天数，可以带小数
+     * @return {@link Instant} 类型的日期对象
+     * @see OracleInstantUtils#instantMinusDays(Instant, Number)
+     */
+    public static Instant dateMinusDays(Instant date, Number days) {
+        return OracleInstantUtils.instantMinusDays(date, days);
+    }
+
+    // =====================================================================
+    //  日期 - 日期 = 天数差 (Oracle: date - date)
+    // =====================================================================
+
+    /**
+     * 计算两个 {@link Date} 之间的天数差 (endDate - beginDate)
+     *
+     * @param endDate   被减数 (结束时间)
+     * @param beginDate 减数 (起始时间)
+     * @return 差值天数 ({@code OraDecimal})
+     * @see OracleDateUtils#daysBetween(Date, Date)
+     */
+    public static OraDecimal daysBetween(Date endDate, Date beginDate) {
+        return OracleDateUtils.daysBetween(endDate, beginDate);
+    }
+
+    /**
+     * 计算两个 {@link LocalDateTime} 之间的天数差 (endDate - beginDate)
+     *
+     * @param endDate   被减数 (结束时间)
+     * @param beginDate 减数 (起始时间)
+     * @return 差值天数 ({@code OraDecimal})
+     * @see OracleLocalDateTimeUtils#daysBetween(LocalDateTime, LocalDateTime)
+     */
+    public static OraDecimal daysBetween(LocalDateTime endDate, LocalDateTime beginDate) {
+        return OracleLocalDateTimeUtils.daysBetween(endDate, beginDate);
+    }
+
+    /**
+     * 计算两个 {@link Instant} 之间的天数差 (endDate - beginDate)
+     *
+     * @param endDate   被减数 (结束时间)
+     * @param beginDate 减数 (起始时间)
+     * @return 差值天数 ({@code OraDecimal})
+     * @see OracleInstantUtils#daysBetween(Instant, Instant)
+     */
+    public static OraDecimal daysBetween(Instant endDate, Instant beginDate) {
+        return OracleInstantUtils.daysBetween(endDate, beginDate);
+    }
+
+    // =====================================================================
+    //  MONTHS_BETWEEN(date1, date2)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle {@code MONTHS_BETWEEN}：计算两个 {@link Date} 之间间隔的月份数
+     *
+     * @param endDate   结束日期
+     * @param beginDate 起始日期
+     * @return 间隔月份 ({@code OraDecimal})
+     * @see OracleDateUtils#monthsBetween(Date, Date)
+     */
+    public static OraDecimal monthsBetween(Date endDate, Date beginDate) {
+        return OracleDateUtils.monthsBetween(endDate, beginDate);
+    }
+
+    /**
+     * 模拟 Oracle {@code MONTHS_BETWEEN}：计算两个 {@link LocalDateTime} 之间间隔的月份数
+     *
+     * @param endDate   结束日期
+     * @param beginDate 起始日期
+     * @return 间隔月份 ({@code OraDecimal})
+     * @see OracleLocalDateTimeUtils#monthsBetween(LocalDateTime, LocalDateTime)
+     */
+    public static OraDecimal monthsBetween(LocalDateTime endDate, LocalDateTime beginDate) {
+        return OracleLocalDateTimeUtils.monthsBetween(endDate, beginDate);
+    }
+
+    /**
+     * 模拟 Oracle {@code MONTHS_BETWEEN}：计算两个 {@link Instant} 之间间隔的月份数（使用 UTC 时区）
+     *
+     * @param endDate   结束日期
+     * @param beginDate 起始日期
+     * @return 间隔月份 ({@code OraDecimal})
+     * @see OracleInstantUtils#monthsBetween(Instant, Instant)
+     */
+    public static OraDecimal monthsBetween(Instant endDate, Instant beginDate) {
+        return OracleInstantUtils.monthsBetween(endDate, beginDate);
+    }
+
+    /**
+     * 模拟 Oracle {@code MONTHS_BETWEEN}：计算两个 {@link Instant} 之间间隔的月份数（指定时区）
+     *
+     * @param endDate   结束日期
+     * @param beginDate 起始日期
+     * @param zoneId    时区
+     * @return 间隔月份 ({@code OraDecimal})
+     * @see OracleInstantUtils#monthsBetween(Instant, Instant, ZoneId)
+     */
+    public static OraDecimal monthsBetween(Instant endDate, Instant beginDate, ZoneId zoneId) {
+        return OracleInstantUtils.monthsBetween(endDate, beginDate, zoneId);
+    }
+
+    // =====================================================================
+    //  ADD_MONTHS(date, months)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle {@code ADD_MONTHS}：为 {@link Date} 加上指定月数
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param months 要增加的月数，小数部分会被截断
+     * @return 加上指定月数后的新 {@link Date} 对象
+     * @see OracleDateUtils#addMonths(Date, Number)
+     */
+    public static Date addMonths(Date date, Number months) {
+        return OracleDateUtils.addMonths(date, months);
+    }
+
+    /**
+     * 模拟 Oracle {@code ADD_MONTHS}：为 {@link LocalDateTime} 加上指定月数
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param months 要增加的月数，小数部分会被截断
+     * @return 加上指定月数后的新 {@link LocalDateTime} 对象
+     * @see OracleLocalDateTimeUtils#addMonths(LocalDateTime, Number)
+     */
+    public static LocalDateTime addMonths(LocalDateTime date, Number months) {
+        return OracleLocalDateTimeUtils.addMonths(date, months);
+    }
+
+    /**
+     * 模拟 Oracle {@code ADD_MONTHS}：为 {@link Instant} 加上指定月数（使用 UTC 时区）
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param months 要增加的月数，小数部分会被截断
+     * @return 加上指定月数后的新 {@link Instant} 对象
+     * @see OracleInstantUtils#addMonths(Instant, Number)
+     */
+    public static Instant addMonths(Instant date, Number months) {
+        return OracleInstantUtils.addMonths(date, months);
+    }
+
+    /**
+     * 模拟 Oracle {@code ADD_MONTHS}：为 {@link Instant} 加上指定月数（指定时区）
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param months 要增加的月数，小数部分会被截断
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 加上指定月数后的新 {@link Instant} 对象
+     * @see OracleInstantUtils#addMonths(Instant, Number, ZoneId)
+     */
+    public static Instant addMonths(Instant date, Number months, ZoneId zoneId) {
+        return OracleInstantUtils.addMonths(date, months, zoneId);
+    }
+
+    // =====================================================================
+    //  LAST_DAY(date)
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle {@code LAST_DAY}：返回 {@link Date} 所在月份的最后一天
+     *
+     * @param date 日期对象；不允许为 {@code null}
+     * @return 该日期所在月份最后一天的新 {@link Date} 对象（保留原始时分秒）
+     * @see OracleDateUtils#lastDay(Date)
+     */
+    public static Date lastDay(Date date) {
+        return OracleDateUtils.lastDay(date);
+    }
+
+    /**
+     * 模拟 Oracle {@code LAST_DAY}：返回 {@link LocalDateTime} 所在月份的最后一天
+     *
+     * @param date 日期对象；不允许为 {@code null}
+     * @return 该日期所在月份最后一天的新 {@link LocalDateTime} 对象（保留原始时分秒及纳秒）
+     * @see OracleLocalDateTimeUtils#lastDay(LocalDateTime)
+     */
+    public static LocalDateTime lastDay(LocalDateTime date) {
+        return OracleLocalDateTimeUtils.lastDay(date);
+    }
+
+    /**
+     * 模拟 Oracle {@code LAST_DAY}：返回 {@link Instant} 所在月份的最后一天（使用 UTC 时区）
+     *
+     * @param date 日期对象；不允许为 {@code null}
+     * @return 该日期所在月份最后一天的新 {@link Instant} 对象（保留原始时分秒及纳秒）
+     * @see OracleInstantUtils#lastDay(Instant)
+     */
+    public static Instant lastDay(Instant date) {
+        return OracleInstantUtils.lastDay(date);
+    }
+
+    /**
+     * 模拟 Oracle {@code LAST_DAY}：返回 {@link Instant} 所在月份的最后一天（指定时区）
+     *
+     * @param date   日期对象；不允许为 {@code null}
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 该日期所在月份最后一天的新 {@link Instant} 对象（保留原始时分秒及纳秒）
+     * @see OracleInstantUtils#lastDay(Instant, ZoneId)
+     */
+    public static Instant lastDay(Instant date, ZoneId zoneId) {
+        return OracleInstantUtils.lastDay(date, zoneId);
+    }
+
+    // =====================================================================
+    //  TRUNC(date [, format]) — 日期截断
+    // =====================================================================
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date)}：将 {@link Date} 截断到天（当天午夜零点）
+     *
+     * @param date 日期对象；为 {@code null} 时返回 {@code null}
+     * @return 截断到天的新 {@link Date} 对象
+     * @see OracleDateUtils#truncDate(Date)
+     */
+    public static Date trunc(Date date) {
+        return OracleDateUtils.truncDate(date);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date, format)}：按指定格式模型截断 {@link Date}
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写），如 CC、YYYY、Q、MM、DD、HH、MI 等
+     * @return 截断后的新 {@link Date} 对象
+     * @see OracleDateUtils#truncDate(Date, String)
+     */
+    public static Date trunc(Date date, String format) {
+        return OracleDateUtils.truncDate(date, format);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date)}：将 {@link LocalDateTime} 截断到天（当天午夜零点）
+     *
+     * @param date 日期对象；为 {@code null} 时返回 {@code null}
+     * @return 截断到天的新 {@link LocalDateTime} 对象
+     * @see OracleLocalDateTimeUtils#truncLocalDateTime(LocalDateTime)
+     */
+    public static LocalDateTime trunc(LocalDateTime date) {
+        return OracleLocalDateTimeUtils.truncLocalDateTime(date);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date, format)}：按指定格式模型截断 {@link LocalDateTime}
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写），如 CC、YYYY、Q、MM、DD、HH、MI 等
+     * @return 截断后的新 {@link LocalDateTime} 对象
+     * @see OracleLocalDateTimeUtils#truncLocalDateTime(LocalDateTime, String)
+     */
+    public static LocalDateTime trunc(LocalDateTime date, String format) {
+        return OracleLocalDateTimeUtils.truncLocalDateTime(date, format);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date)}：将 {@link Instant} 截断到天（使用 UTC 时区）
+     *
+     * @param date 日期对象；为 {@code null} 时返回 {@code null}
+     * @return 截断到天的新 {@link Instant} 对象
+     * @see OracleInstantUtils#truncInstant(Instant)
+     */
+    public static Instant trunc(Instant date) {
+        return OracleInstantUtils.truncInstant(date);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date, format)}：按指定格式模型截断 {@link Instant}（使用 UTC 时区）
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写），如 CC、YYYY、Q、MM、DD、HH、MI 等
+     * @return 截断后的新 {@link Instant} 对象
+     * @see OracleInstantUtils#truncInstant(Instant, String)
+     */
+    public static Instant trunc(Instant date, String format) {
+        return OracleInstantUtils.truncInstant(date, format);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date)}：将 {@link Instant} 截断到天（指定时区）
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 截断到天的新 {@link Instant} 对象
+     * @see OracleInstantUtils#truncInstantWithZone(Instant, ZoneId)
+     */
+    public static Instant truncWithZone(Instant date, ZoneId zoneId) {
+        return OracleInstantUtils.truncInstantWithZone(date, zoneId);
+    }
+
+    /**
+     * 模拟 Oracle {@code TRUNC(date, format)}：按指定格式模型截断 {@link Instant}（指定时区）
+     *
+     * @param date   日期对象；为 {@code null} 时返回 {@code null}
+     * @param format 格式模型（不区分大小写），如 CC、YYYY、Q、MM、DD、HH、MI 等
+     * @param zoneId 时区，不可为 {@code null}
+     * @return 截断后的新 {@link Instant} 对象
+     * @see OracleInstantUtils#truncInstantWithZone(Instant, String, ZoneId)
+     */
+    public static Instant truncWithZone(Instant date, String format, ZoneId zoneId) {
+        return OracleInstantUtils.truncInstantWithZone(date, format, zoneId);
+    }
+
 }
