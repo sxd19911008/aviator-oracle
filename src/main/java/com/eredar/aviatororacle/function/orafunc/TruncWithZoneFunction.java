@@ -35,13 +35,12 @@ public class TruncWithZoneFunction extends AbstractFunction {
         Object obj1 = arg1.getValue(env);
         if (!(obj1 instanceof String)) {
             throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法zoneId必须是String类型，不支持[%s]",
+                    "truncWithZone方法zoneId必须是String类型，不支持[%s]类型",
                     AORuntimeUtils.getClass(obj1)));
         }
         String zoneIdStr = (String) obj1;
         if (AOUtils.isBlank(zoneIdStr)) {
-            throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法zoneId[%s]不能为空字符串", zoneIdStr));
+            throw new IllegalArgumentException("truncWithZone方法第1个入参zoneId不能为空字符串");
         }
 
         // arg2 = instant
@@ -51,7 +50,7 @@ public class TruncWithZoneFunction extends AbstractFunction {
         }
         if (!(obj2 instanceof Instant)) {
             throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法instant入参必须是Instant，不支持[%s]类型",
+                    "truncWithZone方法第2个入参instant必须是Instant，不支持[%s]类型",
                     AORuntimeUtils.getClass(obj2)));
         }
 
@@ -72,13 +71,12 @@ public class TruncWithZoneFunction extends AbstractFunction {
         Object obj1 = arg1.getValue(env);
         if (!(obj1 instanceof String)) {
             throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法zoneId必须是String类型，不支持[%s]",
+                    "truncWithZone方法zoneId必须是String类型，不支持[%s]类型",
                     AORuntimeUtils.getClass(obj1)));
         }
         String zoneIdStr = (String) obj1;
         if (AOUtils.isBlank(zoneIdStr)) {
-            throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法zoneId[%s]不能为空字符串", zoneIdStr));
+            throw new IllegalArgumentException("truncWithZone方法第1个入参zoneId不能为空字符串");
         }
 
         // arg2 = instant
@@ -88,16 +86,23 @@ public class TruncWithZoneFunction extends AbstractFunction {
         }
         if (!(obj2 instanceof Instant)) {
             throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法instant入参必须是Instant，不支持[%s]类型",
+                    "truncWithZone方法第2个入参instant必须是Instant，不支持[%s]类型",
                     AORuntimeUtils.getClass(obj2)));
         }
 
         // arg3 = format
         Object obj3 = arg3.getValue(env);
+        if (obj3 == null) {
+            throw new IllegalArgumentException("truncWithZone方法第3个入参format可以不传入，传入则不能为null");
+        }
         if (!(obj3 instanceof String)) {
             throw new IllegalArgumentException(String.format(
-                    "truncWithZone方法format必须是String类型，不支持[%s]",
+                    "truncWithZone方法第3个入参format必须是String类型，不支持[%s]类型",
                     AORuntimeUtils.getClass(obj3)));
+        }
+
+        if (AOUtils.isBlank(zoneIdStr)) {
+            throw new IllegalArgumentException("truncWithZone方法第3个入参format可以不传入，传入则不能为空字符串");
         }
 
         Instant res = OraFuncUtils.truncWithZone(ZoneId.of(zoneIdStr), (Instant) obj2, (String) obj3);
