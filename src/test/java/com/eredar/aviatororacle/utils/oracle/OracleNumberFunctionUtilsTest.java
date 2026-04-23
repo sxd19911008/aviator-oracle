@@ -18,6 +18,77 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class OracleNumberFunctionUtilsTest {
 
     // -------------------------------------------------------------------------
+    // abs
+    // -------------------------------------------------------------------------
+
+    /**
+     * {@link OracleNumberFunctionUtils#abs(Number)} 场景数据。
+     * <p>期望值通过 Oracle 执行 {@code SELECT ABS(x) FROM dual} 获得。
+     * <p>特别说明：
+     * <ul>
+     *   <li>{@code Long/Integer/Short/Byte} 正数直接返回原对象（类型不变）。</li>
+     *   <li>{@code Long/Integer/Short/Byte} 负数取反后以 {@code long} 装箱返回（Java 的 {@code -val} 表达式结果类型为 {@code long}）。</li>
+     *   <li>{@code Long.MIN_VALUE} 取反会溢出，提升为 {@link OraDecimal} 处理。</li>
+     *   <li>{@code BigInteger} 负数返回 {@link BigInteger#abs()}，类型仍为 {@link BigInteger}。</li>
+     *   <li>其余 Number 类型（{@link OraDecimal}/{@link BigDecimal}/{@link Double}）均经 {@link OraDecimal#valueOf} 转换后返回，类型为 {@link OraDecimal}。</li>
+     * </ul>
+     */
+    static Stream<Arguments> testAbsProvider() {
+        return Stream.of(
+                // Oracle: ABS(NULL) = NULL
+                Arguments.of("null 返回 null", null, null),
+                // Oracle: ABS(1342534967873799582) = 1342534967873799582
+                Arguments.of("Long 正数直接返回原对象", 1342534967873799582L, 1342534967873799582L),
+                // Oracle: ABS(-1342534967873799582) = 1342534967873799582
+                Arguments.of("Long 负数取反返回 Long", -1342534967873799582L, 1342534967873799582L),
+                // Oracle: ABS(0) = 0
+                Arguments.of("Long 零值返回原对象", 0L, 0L),
+                // Oracle: ABS(9223372036854775807) = 9223372036854775807
+                Arguments.of("Long.MAX_VALUE 直接返回原对象", Long.MAX_VALUE, Long.MAX_VALUE),
+                // Oracle: ABS(-9223372036854775808) = 9223372036854775808（-Long.MIN_VALUE 溢出，提升为 OraDecimal）
+                Arguments.of("Long.MIN_VALUE 溢出提升为 OraDecimal", Long.MIN_VALUE, new OraDecimal("9223372036854775808")),
+                // Oracle: ABS(2147483647) = 2147483647
+                Arguments.of("Integer 正数直接返回原对象", 2147483647, 2147483647),
+                // Oracle: ABS(-2147483647) = 2147483647（-val 表达式类型为 long，返回 Long 而非 Integer）
+                Arguments.of("Integer 负数取反返回 Long", -2147483647, 2147483647L),
+                // Oracle: ABS(5) = 5
+                Arguments.of("Short 正数直接返回原对象", (short) 5, (short) 5),
+                // Oracle: ABS(-5) = 5（返回 Long）
+                Arguments.of("Short 负数取反返回 Long", (short) -5, 5L),
+                // Oracle: ABS(9) = 9
+                Arguments.of("Byte 正数直接返回原对象", (byte) 9, (byte) 9),
+                // Oracle: ABS(-9) = 9（返回 Long）
+                Arguments.of("Byte 负数取反返回 Long", (byte) -9, 9L),
+                // Oracle: ABS(99999999999999999999999999999) = 99999999999999999999999999999
+                Arguments.of("BigInteger 正数直接返回原对象", new BigInteger("99999999999999999999999999999"), new BigInteger("99999999999999999999999999999")),
+                // Oracle: ABS(-99999999999999999999999999999) = 99999999999999999999999999999
+                Arguments.of("BigInteger 负数返回 BigInteger.abs()", new BigInteger("-99999999999999999999999999999"), new BigInteger("99999999999999999999999999999")),
+                // Oracle: ABS(0) = 0（BigInteger 零值 signum=0，直接返回原对象）
+                Arguments.of("BigInteger 零值直接返回原对象", BigInteger.ZERO, BigInteger.ZERO),
+                // Oracle: ABS(3.14) = 3.14（Double 正数经 OraDecimal.valueOf 转换后返回）
+                Arguments.of("Double 正数转 OraDecimal 返回", 3.14d, new OraDecimal("3.14")),
+                // Oracle: ABS(-3.14) = 3.14（Double 负数取 abs 后返回 OraDecimal）
+                Arguments.of("Double 负数取 OraDecimal.abs() 返回", -3.14d, new OraDecimal("3.14")),
+                // Oracle: ABS(1.2345678901234567890123456789) = 1.2345678901234567890123456789
+                Arguments.of("BigDecimal 高精度正数转 OraDecimal 返回", new BigDecimal("1.2345678901234567890123456789"), new OraDecimal("1.2345678901234567890123456789")),
+                // Oracle: ABS(-1.2345678901234567890123456789) = 1.2345678901234567890123456789
+                Arguments.of("BigDecimal 高精度负数取 OraDecimal.abs() 返回", new BigDecimal("-1.2345678901234567890123456789"), new OraDecimal("1.2345678901234567890123456789")),
+                // Oracle: ABS(9.999999999999999999999999999999999999) = 9.999999999999999999999999999999999999
+                Arguments.of("OraDecimal 高精度正数直接返回 OraDecimal", new OraDecimal("9.999999999999999999999999999999999999"), new OraDecimal("9.999999999999999999999999999999999999")),
+                // Oracle: ABS(-9.999999999999999999999999999999999999) = 9.999999999999999999999999999999999999
+                Arguments.of("OraDecimal 高精度负数取 OraDecimal.abs() 返回", new OraDecimal("-9.999999999999999999999999999999999999"), new OraDecimal("9.999999999999999999999999999999999999"))
+        );
+    }
+
+    @DisplayName("abs 方法测试")
+    @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
+    @MethodSource("testAbsProvider")
+    public void testAbs(String caseId, Number n, Object expected) {
+        Number actual = OracleNumberFunctionUtils.abs(n);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    // -------------------------------------------------------------------------
     // floor
     // -------------------------------------------------------------------------
 
