@@ -7,7 +7,7 @@ import com.googlecode.aviator.runtime.type.AviatorObject;
 import java.util.Map;
 
 /**
- * 大于
+ * 大于等于
  */
 public class GeFunction extends CompareFunction {
 

@@ -225,7 +225,7 @@ public class AOAviatorJavaType extends AviatorJavaType {
                         return AOAviatorRuntimeJavaType.valueOf(OracleInstantUtils.instantMinusDays((Instant) value, (Number) otherValue));
                     } else {
                         // 类型错误，抛出异常
-                        super.sub(other, env);
+                        return super.sub(other, env);
                     }
                 } else {
                     return super.sub(other, env);
@@ -339,7 +339,7 @@ public class AOAviatorJavaType extends AviatorJavaType {
                 return AOAviatorRuntimeJavaType.valueOf(OracleInstantUtils.instantPlusDays((Instant) value, (Number) otherValue));
             } else {
                 // 类型错误，抛出异常
-                return super.sub(other, env);
+                return super.add(other, env);
             }
         } else if (TypeUtils.isString(value)) {
             AviatorString aviatorString = new AviatorString(String.valueOf(value));

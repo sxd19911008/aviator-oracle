@@ -323,6 +323,12 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         return this.decimal.equals(other.decimal);
     }
 
+    @Override
+    public int hashCode() {
+        // 两个 equals() 返回 true 的对象必须有相同的 hashCode
+        return this.decimal.hashCode();
+    }
+
     /**
      * 是否是整数
      *

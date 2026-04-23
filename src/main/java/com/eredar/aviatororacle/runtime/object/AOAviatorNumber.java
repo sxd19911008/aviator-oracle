@@ -1,6 +1,7 @@
 package com.eredar.aviatororacle.runtime.object;
 
 import com.eredar.aviatororacle.number.OraDecimal;
+import com.eredar.aviatororacle.runtime.utils.AORuntimeUtils;
 import com.eredar.aviatororacle.runtime.utils.oracle.OracleInstantUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
@@ -57,9 +58,8 @@ public abstract class AOAviatorNumber extends AviatorObject {
         } else if (value instanceof OraDecimal) {
             return AOAviatorDecimal.valueOf((OraDecimal) value);
         } else {
-            throw new ClassCastException("Could not cast " + value.getClass().getName() + " to Number");
+            throw new ClassCastException(String.format("Could not cast %s to Number", AORuntimeUtils.getClass(value)));
         }
-
     }
 
     @Override

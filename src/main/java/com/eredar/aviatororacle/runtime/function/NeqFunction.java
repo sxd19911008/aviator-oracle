@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class NeqFunction extends CompareEqFunction{
 
-    private static final long serialVersionUID = 6781088673492959004L;
+    private static final long serialVersionUID = 9024422070889535701L;
 
     @Override
     public String getName() {

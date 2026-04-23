@@ -48,12 +48,12 @@ public class RoundFunction extends AbstractFunction {
                     res = OraFuncUtils.round((Number) obj1, (Number) obj2);
                 } else {
                     // 与 Oracle 的 round 方法不同，第2个入参不允许为null
-                    throw new IllegalArgumentException(String.format("round 方法第2个入参不能为[%s]类型", obj1.getClass().getName()));
+                    throw new IllegalArgumentException(String.format("round 方法第2个入参不能为[%s]类型", AORuntimeUtils.getClass(obj2)));
                 }
             }
             return AORuntimeUtils.wrapAviatorObject(res);
         } else {
-            throw new IllegalArgumentException(String.format("round 方法首个入参不能为[%s]类型", obj1.getClass().getName()));
+            throw new IllegalArgumentException(String.format("round 方法首个入参不能为[%s]类型", AORuntimeUtils.getClass(obj1)));
         }
     }
 }

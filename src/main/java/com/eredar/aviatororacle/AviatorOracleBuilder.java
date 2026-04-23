@@ -104,6 +104,7 @@ public class AviatorOracleBuilder {
         // 新增模拟Oracle数据库的方法
         aviator.addFunction(new DecodeFunction());
         aviator.addFunction(new NvlFunction());
+        aviator.addFunction(new CoalesceFunction());
         aviator.addFunction(new FloorFunction());
         aviator.addFunction(new CeilFunction());
         aviator.addFunction(new RoundFunction());

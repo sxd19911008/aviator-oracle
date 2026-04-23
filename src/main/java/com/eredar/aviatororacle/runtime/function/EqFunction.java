@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class EqFunction extends CompareEqFunction{
 
-    private static final long serialVersionUID = 6781088673492959004L;
+    private static final long serialVersionUID = -5100775253117652369L;
 
     @Override
     public String getName() {

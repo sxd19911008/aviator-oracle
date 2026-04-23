@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class ShiftRightFunction extends AbstractFunction {
 
-    private static final long serialVersionUID = -8764715183192885861L;
+    private static final long serialVersionUID = -6976268808503816004L;
 
     @Override
     public String getName() {
