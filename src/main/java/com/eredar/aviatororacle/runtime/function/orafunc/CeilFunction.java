@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.function.orafunc;
 
 import com.eredar.aviatororacle.runtime.uitls.AORuntimeUtils;
-import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.uitls.oracle.OracleFunctionUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
@@ -22,7 +22,8 @@ public class CeilFunction extends AbstractFunction {
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1) {
         Object obj = arg1.getValue(env);
-        Number res = OracleFunctionUtils.ceil(obj);
+        Number number = AORuntimeUtils.toNumber(obj, this.getName());
+        Number res = OracleFunctionUtils.ceil(number);
         return AORuntimeUtils.wrapAviatorObject(res);
     }
 }

@@ -18,17 +18,17 @@ public class OracleNumberFunctionUtils {
     /**
      * 取整数，小数位直接舍去
      */
-    public static Number floor(Object n) {
+    protected static Number floor(Number n) {
         if (n == null) {
             return null;
         }
         if (n instanceof Long || n instanceof Integer || n instanceof Short || n instanceof Byte
                 || n instanceof BigInteger) {
             // 整数类型，直接返回
-            return (Number) n;
+            return n;
         }
         if (n instanceof OraDecimal || n instanceof BigDecimal || n instanceof Double || n instanceof Float) {
-            return OraDecimal.valueOf((Number) n).setScale(0, RoundingMode.FLOOR);
+            return OraDecimal.valueOf(n).setScale(0, RoundingMode.FLOOR);
         }
         throw new IllegalArgumentException(String.format("floor方法不能传入[%s]类型", n.getClass().getName()));
     }
@@ -40,17 +40,17 @@ public class OracleNumberFunctionUtils {
      * @param n 目标数字；为 {@code null} 时返回 {@code null}
      * @return 上取整后的数字
      */
-    public static Number ceil(Object n) {
+    protected static Number ceil(Number n) {
         if (n == null) {
             return null;
         }
         if (n instanceof Long || n instanceof Integer || n instanceof Short || n instanceof Byte
                 || n instanceof BigInteger) {
             // 整数类型，直接返回
-            return (Number) n;
+            return n;
         }
         if (n instanceof OraDecimal || n instanceof BigDecimal || n instanceof Double || n instanceof Float) {
-            return OraDecimal.valueOf((Number) n).setScale(0, RoundingMode.CEILING);
+            return OraDecimal.valueOf(n).setScale(0, RoundingMode.CEILING);
         }
         throw new IllegalArgumentException(String.format("ceil方法不能传入[%s]类型", n.getClass().getName()));
     }
@@ -65,7 +65,7 @@ public class OracleNumberFunctionUtils {
      * @param newScale 目标标度（可为负）
      * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
      */
-    public static Number round(Number number, Number newScale) {
+    protected static Number round(Number number, Number newScale) {
         if (number == null) {
             return null;
         }
@@ -119,18 +119,6 @@ public class OracleNumberFunctionUtils {
     }
 
     /**
-     * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #trunc(Number, Number) truncDate(n, 0)}。
-     * <p>与 {@link #floor(Object) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
-     * 例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
-     *
-     * @param n 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
-     * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
-     */
-    public static Number trunc(Number n) {
-        return trunc(n, 0);
-    }
-
-    /**
      * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。
      * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；
      * <p>{@code newScale = 0} 表示仅保留整数部分；
@@ -147,7 +135,7 @@ public class OracleNumberFunctionUtils {
      * @param newScale 目标标度（可为负）；支持 Long、Integer、Double、BigInteger、BigDecimal、OraDecimal
      * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
      */
-    public static Number trunc(Number number, Number newScale) {
+    protected static Number truncNumber(Number number, Number newScale) {
         if (number == null) {
             return null;
         }

@@ -1,8 +1,6 @@
-package com.eredar.aviatororacle.runtime.uitls;
+package com.eredar.aviatororacle.runtime.uitls.oracle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.oracle.OracleConditionalFunctionUtils;
-import com.eredar.aviatororacle.runtime.uitls.oracle.OracleNumberFunctionUtils;
 
 import java.math.RoundingMode;
 
@@ -40,7 +38,7 @@ public class OracleFunctionUtils {
     /**
      * 取整数，小数位直接舍去
      */
-    public static Number floor(Object n) {
+    public static Number floor(Number n) {
         return OracleNumberFunctionUtils.floor(n);
     }
 
@@ -51,7 +49,7 @@ public class OracleFunctionUtils {
      * @param n 目标数字；为 {@code null} 时返回 {@code null}
      * @return 上取整后的数字
      */
-    public static Number ceil(Object n) {
+    public static Number ceil(Number n) {
         return OracleNumberFunctionUtils.ceil(n);
     }
 
@@ -109,6 +107,6 @@ public class OracleFunctionUtils {
      * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code number} 本身
      */
     public static Number trunc(Number number, Number newScale) {
-        return OracleNumberFunctionUtils.trunc(number, newScale);
+        return OracleNumberFunctionUtils.truncNumber(number, newScale);
     }
 }

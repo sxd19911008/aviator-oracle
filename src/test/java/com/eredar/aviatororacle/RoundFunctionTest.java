@@ -2,6 +2,7 @@ package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.runtime.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.runtime.uitls.oracle.OracleFunctionUtils;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -93,7 +94,7 @@ public class RoundFunctionTest {
     }
 
     /**
-     * 双参数 {@code round(number, newScale)}：与 {@link com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils#round(Number, Number)} 一致。
+     * 双参数 {@code round(number, newScale)}：与 {@link OracleFunctionUtils#round(Number, Number)} 一致。
      */
     static Stream<Arguments> testRoundTwoArgsProvider() {
         return Stream.of(

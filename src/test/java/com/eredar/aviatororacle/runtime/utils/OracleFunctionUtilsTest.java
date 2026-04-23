@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.utils;
 
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.uitls.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.uitls.oracle.OracleFunctionUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.function.Executable;
@@ -88,17 +88,14 @@ public class OracleFunctionUtilsTest {
                 Arguments.of("BigInteger", new BigInteger("-1342534967873799582"), new BigInteger("-1342534967873799582")),
                 Arguments.of("Double", -1.113565624, new OraDecimal("-2")),
                 Arguments.of("BigDecimal", new BigDecimal("-1.1199431565624544763765735"), new OraDecimal("-2")),
-                Arguments.of("OraDecimal", new OraDecimal("-1.1199431565624544763765735"), new OraDecimal("-2")),
-                Arguments.of("String，异常", "1.9999431565624544763765735", IllegalArgumentException.class),
-                Arguments.of("Instant，异常", Instant.parse("2020-02-01T03:36:19Z"), IllegalArgumentException.class),
-                Arguments.of("Boolean，异常", true, IllegalArgumentException.class)
+                Arguments.of("OraDecimal", new OraDecimal("-1.1199431565624544763765735"), new OraDecimal("-2"))
         );
     }
 
     @DisplayName("floor 方法测试")
     @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
     @MethodSource("testFloorProvider")
-    public void testFloor(String caseId, Object n, Object expected) {
+    public void testFloor(String caseId, Number n, Object expected) {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
@@ -131,17 +128,14 @@ public class OracleFunctionUtilsTest {
                 Arguments.of( "-BigInteger", new BigInteger("-2"), new BigInteger("-2")),
                 Arguments.of( "-Double", -1.993565624, new OraDecimal("-1")),
                 Arguments.of( "-BigDecimal", new BigDecimal("-1.9999431565624544763765735"), new OraDecimal("-1")),
-                Arguments.of( "-OraDecimal", new OraDecimal("-1.9999431565624544763765735"), new OraDecimal("-1")),
-                Arguments.of( "String，异常", "2", IllegalArgumentException.class),
-                Arguments.of( "Instant，异常", Instant.parse("2020-02-01T03:36:19Z"), IllegalArgumentException.class),
-                Arguments.of( "Boolean，异常", true, IllegalArgumentException.class)
+                Arguments.of( "-OraDecimal", new OraDecimal("-1.9999431565624544763765735"), new OraDecimal("-1"))
         );
     }
 
     @DisplayName("ceil 方法测试")
     @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
     @MethodSource("testCeilProvider")
-    public void testCeil(String caseId, Object n, Object expected) {
+    public void testCeil(String caseId, Number n, Object expected) {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
@@ -421,17 +415,17 @@ public class OracleFunctionUtilsTest {
 
 
     // -------------------------------------------------------------------------
-    // trunc
+    // truncNumber
     // -------------------------------------------------------------------------
 
     /**
-     * {@link OracleFunctionUtils#trunc(Number)} 场景数据：等价于 {@code trunc(n, 0)}，向零方向截断到整数。
+     * {@link OracleFunctionUtils#trunc(Number)} 场景数据：等价于 {@code truncNumber(n, 0)}，向零方向截断到整数。
      * <p>与 {@link #testRoundOneArgProvider()} 的关键区别：
      * 使用 {@link java.math.RoundingMode#DOWN}（向零），而 {@code round} 使用 HALF_UP。
      * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经截断后的结果。
      * <p>期望值通过 Oracle 执行 {@code SELECT TRUNC(x) FROM dual} 获得。
      */
-    static Stream<Arguments> testTruncOneArgProvider() {
+    static Stream<Arguments> testTruncNumberOneArgProvider() {
         return Stream.of(
                 Arguments.of("入参为 null", null, null),
                 Arguments.of("Long 已为整数且 scale=0 时直接返回原装箱对象", 42L, 42L),
@@ -453,10 +447,10 @@ public class OracleFunctionUtilsTest {
         );
     }
 
-    @DisplayName("trunc(number) 方法测试（等价于 newScale=0）")
+    @DisplayName("truncNumber(number) 方法测试（等价于 newScale=0）")
     @ParameterizedTest(name = "【{index}】{0}: n={1}, expected={2}")
-    @MethodSource("testTruncOneArgProvider")
-    public void testTruncOneArg(String caseId, Object n, Object expected) {
+    @MethodSource("testTruncNumberOneArgProvider")
+    public void testTruncNumberOneArg(String caseId, Object n, Object expected) {
         Number actual = OracleFunctionUtils.trunc((Number) n);
         Assertions.assertEquals(expected, actual);
     }
@@ -464,7 +458,7 @@ public class OracleFunctionUtilsTest {
     /**
      * {@link OracleFunctionUtils#trunc(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
      */
-    static Stream<Arguments> testTruncTwoArgsProvider() {
+    static Stream<Arguments> testTruncNumberTwoArgsProvider() {
         return Stream.of(
                 Arguments.of("number 为 null 时返回 null", null, 2, null),
                 // newScale 极限区间：>= 40 原样返回 number；<= -40 返回 0
@@ -660,19 +654,19 @@ public class OracleFunctionUtilsTest {
         );
     }
 
-    @DisplayName("trunc(number, newScale) 方法测试")
+    @DisplayName("truncNumber(number, newScale) 方法测试")
     @ParameterizedTest(name = "【{index}】{0}: number={1}, newScale={2}, expected={3}")
-    @MethodSource("testTruncTwoArgsProvider")
-    public void testTruncTwoArgs(String caseId, Object number, Object newScale, Object expected) {
+    @MethodSource("testTruncNumberTwoArgsProvider")
+    public void testTruncNumberTwoArgs(String caseId, Object number, Object newScale, Object expected) {
         Number actual = OracleFunctionUtils.trunc((Number) number, (Number) newScale);
         Assertions.assertEquals(expected, actual);
     }
 
     /**
-     * trunc 非法入参：{@code newScale==null} 或运行期类型不在实现支持范围内。
+     * truncNumber 非法入参：{@code newScale==null} 或运行期类型不在实现支持范围内。
      * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。
      */
-    static Stream<Arguments> testTruncTwoArgsInvalidProvider() {
+    static Stream<Arguments> testTruncNumberTwoArgsInvalidProvider() {
         //noinspection DataFlowIssue
         return Stream.of(
                 Arguments.of("newScale 为 null", (Executable) () -> OracleFunctionUtils.trunc(1.0, null)),
@@ -683,10 +677,10 @@ public class OracleFunctionUtilsTest {
         );
     }
 
-    @DisplayName("trunc(number, newScale) 非法入参测试")
+    @DisplayName("truncNumber(number, newScale) 非法入参测试")
     @ParameterizedTest(name = "【{index}】{0}")
-    @MethodSource("testTruncTwoArgsInvalidProvider")
-    public void testTruncTwoArgsInvalid(String caseId, Executable executable) {
+    @MethodSource("testTruncNumberTwoArgsInvalidProvider")
+    public void testTruncNumberTwoArgsInvalid(String caseId, Executable executable) {
         assertThrows(IllegalArgumentException.class, executable);
     }
 
