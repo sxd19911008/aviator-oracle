@@ -4,7 +4,7 @@ import com.eredar.aviatororacle.number.OraDecimal;
 
 import java.math.RoundingMode;
 
-public class OracleFunctionUtils {
+public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库的 DECODE 函数实现。

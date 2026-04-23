@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.function.orafunc;
 
 import com.eredar.aviatororacle.runtime.utils.AORuntimeUtils;
-import com.eredar.aviatororacle.runtime.utils.oracle.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
@@ -23,7 +23,7 @@ public class FloorFunction extends AbstractFunction {
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1) {
         Object obj = arg1.getValue(env);
         Number number = AORuntimeUtils.toNumber(obj, this.getName());
-        Number res = OracleFunctionUtils.floor(number);
+        Number res = OraFuncUtils.floor(number);
         return AORuntimeUtils.wrapAviatorObject(res);
     }
 }

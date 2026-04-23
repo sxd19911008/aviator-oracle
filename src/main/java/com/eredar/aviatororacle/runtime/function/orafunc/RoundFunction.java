@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.function.orafunc;
 
 import com.eredar.aviatororacle.runtime.utils.AORuntimeUtils;
-import com.eredar.aviatororacle.runtime.utils.oracle.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorNil;
 import com.googlecode.aviator.runtime.type.AviatorObject;
@@ -41,11 +41,11 @@ public class RoundFunction extends AbstractFunction {
         if (obj1 instanceof Number) {
             Number res;
             if (arg2 == null) {
-                res = OracleFunctionUtils.round((Number) obj1);
+                res = OraFuncUtils.round((Number) obj1);
             } else {
                 Object obj2 = arg2.getValue(env);
                 if (obj2 instanceof Number) {
-                    res = OracleFunctionUtils.round((Number) obj1, (Number) obj2);
+                    res = OraFuncUtils.round((Number) obj1, (Number) obj2);
                 } else {
                     // 与 Oracle 的 round 方法不同，第2个入参不允许为null
                     throw new IllegalArgumentException(String.format("round 方法第2个入参不能为[%s]类型", obj1.getClass().getName()));

@@ -2,7 +2,7 @@ package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.dto.DecodeParamTestDTO;
 import com.eredar.aviatororacle.number.OraDecimal;
-import com.eredar.aviatororacle.runtime.utils.oracle.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.utils.oracle.OraFuncUtils;
 import com.eredar.aviatororacle.testUtils.FileUtils;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import com.eredar.aviatororacle.testUtils.JsonUtils;
@@ -34,7 +34,7 @@ public class DecodeFunctionTest {
     /** 与 epochSecond=1 的 Instant 对应的 ISO-8601 字符串，用于 String↔Instant 交叉用例。 */
     private static final String ISO_INSTANT_1S = "1970-01-01T00:00:01Z";
 
-    /** 与 {@link OracleFunctionUtils} 中 Boolean↔Instant 约定一致：true ↔ epochSecond=1。 */
+    /** 与 {@link OraFuncUtils} 中 Boolean↔Instant 约定一致：true ↔ epochSecond=1。 */
     private static final Instant INSTANT_FOR_TRUE = Instant.ofEpochSecond(1);
 
     /**

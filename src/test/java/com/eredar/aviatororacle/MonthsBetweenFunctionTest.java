@@ -341,18 +341,18 @@ public class MonthsBetweenFunctionTest {
     }
 
     // -------------------------------------------------------------------------
-    // 与 OracleFunctionUtilsTest#testMonthsBetweenExceptions 场景对应（不做时区变体）
+    // 与 OraFuncUtilsTest#testMonthsBetweenExceptions 场景对应（不做时区变体）
     // -------------------------------------------------------------------------
 
     @Test
     @DisplayName("months_between：与工具类一致的非法入参（null）")
     public void testMonthsBetweenExpressionExceptions() {
         Instant now = Instant.now();
-        // beginDate 为 null：与 OracleFunctionUtils.monthsBetween(now, null) 同属非法
+        // beginDate 为 null：与 OraFuncUtils.monthsBetween(now, null) 同属非法
         assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_TWO_ARGS, varsTwoArgs(now, null))
         );
-        // 三参形式下 zoneId 为 null：与 OracleFunctionUtils.monthsBetween(end, begin, null) 同属非法
+        // 三参形式下 zoneId 为 null：与 OraFuncUtils.monthsBetween(end, begin, null) 同属非法
         assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_THREE_ARGS, varsThreeArgs(now, now.plus(1, ChronoUnit.DAYS), null))
         );

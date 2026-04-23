@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.runtime.function.orafunc;
 
 import com.eredar.aviatororacle.runtime.utils.AORuntimeUtils;
-import com.eredar.aviatororacle.runtime.utils.oracle.OracleFunctionUtils;
+import com.eredar.aviatororacle.runtime.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.runtime.function.AbstractFunction;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
@@ -31,7 +31,7 @@ public class DecodeFunction extends AbstractFunction {
         // 获取所有数据，组成数组
         Object[] arr = Arrays.stream(args).map(arg -> arg.getValue(env)).toArray();
         // 执行 decode 方法
-        Object res = OracleFunctionUtils.decode(arr);
+        Object res = OraFuncUtils.decode(arr);
         // 选择正确的包装类型并返回
         return AORuntimeUtils.wrapAviatorObject(res);
     }
