@@ -8,11 +8,6 @@ import java.util.Map;
 
 /**
  * Oracle数据库的 {@code coalesce()} 方法
- * <p>
- * 返回参数列表中第一个非 {@code null} 的值。
- * 如果所有参数都为 {@code null}，则返回 {@code null}。
- * 该方法至少需要 2 个参数，仅传入 1 个参数时将抛出异常。
- * </p>
  */
 public class CoalesceFunction extends AbstractFunction {
 
@@ -44,9 +39,6 @@ public class CoalesceFunction extends AbstractFunction {
         return AviatorNil.NIL;
     }
 
-    /**
-     * 仅 1 个参数时抛出异常，coalesce 至少需要 2 个参数
-     */
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1) {
         throw new IllegalArgumentException("coalesce方法最少需要2个入参");

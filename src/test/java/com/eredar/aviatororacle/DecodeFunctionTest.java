@@ -421,7 +421,7 @@ public class DecodeFunctionTest {
     }
 
     static Stream<Arguments> testParamsOrderProvider() {
-        return FileUtils.readFileAsLines("testParamsOrderData.dat").stream().map(line -> {
+        return FileUtils.readFileAsLines("testDecodeParamsOrderData.dat").stream().map(line -> {
             DecodeParamTestDTO dto = JsonUtils.readValue(line, new TypeReference<DecodeParamTestDTO>() {
             });
             return Arguments.of(
