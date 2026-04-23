@@ -312,6 +312,16 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
         return count;
     }
 
+    /**
+     * Returns the signum function of this {@code OraDecimal}.
+     *
+     * @return -1, 0, or 1 as the value of this {@code OraDecimal}
+     *         is negative, zero, or positive.
+     */
+    public int signum() {
+        return this.decimal.signum();
+    }
+
     public BigDecimal getDecimal() {
         return decimal;
     }

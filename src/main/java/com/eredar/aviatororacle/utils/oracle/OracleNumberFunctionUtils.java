@@ -1,7 +1,7 @@
 package com.eredar.aviatororacle.utils.oracle;
 
-import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.number.OraDecimal;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,6 +14,42 @@ public class OracleNumberFunctionUtils {
 
     private static final String NEW_SCALE_RES_THIS = "this";
     private static final String NEW_SCALE_RES_ZERO = "zero";
+
+    /**
+     * 模拟 Oracle {@code ABS(n)}：返回 {@code n} 的绝对值。
+     * <p>对 {@code NULL} 输入返回 {@code NULL}。
+     *
+     * @param n 目标数字
+     * @return {@code n} 的绝对值
+     */
+    protected static Number abs(Number n) {
+        if (n == null) {
+            return null;
+        }
+
+        // 直接返回 long 类型。因为正数类型到了aviator中也会被转换成long类型
+        if (n instanceof Long || n instanceof Integer || n instanceof Short || n instanceof Byte) {
+            long val = n.longValue();
+            if (val >= 0) {
+                return n;
+            }
+            // Long.MIN_VALUE 取反会溢出 long 范围，需提升为 OraDecimal
+            if (val == Long.MIN_VALUE) {
+                return OraDecimal.valueOf(val).abs();
+            } else {
+                return -val;
+            }
+        }
+
+        // BigInteger
+        if (n instanceof BigInteger) {
+            BigInteger bi = (BigInteger) n;
+            return bi.signum() >= 0 ? n : bi.abs();
+        }
+
+        OraDecimal od = OraDecimal.valueOf(n);
+        return od.signum() >= 0 ? od : od.abs();
+    }
 
     /**
      * 取整数，小数位直接舍去

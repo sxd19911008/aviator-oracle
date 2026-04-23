@@ -44,6 +44,18 @@ public class OraFuncUtils {
         return OracleConditionalFunctionUtils.decode(args);
     }
 
+
+    /**
+     * 模拟 Oracle {@code ABS(n)}：返回 {@code n} 的绝对值。
+     * <p>对 {@code NULL} 输入返回 {@code NULL}。
+     *
+     * @param n 目标数字
+     * @return {@code n} 的绝对值
+     */
+    public static Number abs(Number n) {
+        return OracleNumberFunctionUtils.abs(n);
+    }
+
     /**
      * 取整数，小数位直接舍去
      */

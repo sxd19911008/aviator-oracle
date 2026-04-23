@@ -1,11 +1,10 @@
 package com.eredar.aviatororacle.utils.oracle;
 
-import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.constants.AviatorOracleConstants;
+import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.utils.AOUtils;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -58,7 +57,7 @@ public class OracleDateUtils {
      * @return 天数对应的秒数
      */
     private static long daysToSeconds(Number days) {
-        if (days instanceof Long || days instanceof Integer || days instanceof BigInteger) {
+        if (days instanceof Long || days instanceof Integer || days instanceof Short || days instanceof Byte) {
             return days.longValue() * AviatorOracleConstants.SECONDS_OF_DAY_LONG;
         } else if (days instanceof OraDecimal) {
             return ((OraDecimal) days).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
@@ -69,6 +68,7 @@ public class OracleDateUtils {
                     .setScale(0) // 四舍五入保留整数
                     .longValueExact(); // 转换成long类型，如果溢出则报错
         } else {
+            // BigInteger和其他Number类型
             return OraDecimal.valueOf(days).multiply(AviatorOracleConstants.SECONDS_OF_DAY_ORA_DECIMAL) // 乘以1天的秒数，计算总秒数
                     .setScale(0) // 四舍五入保留整数
                     .longValueExact(); // 转换成long类型，如果溢出则报错

@@ -105,6 +105,7 @@ public class AviatorOracleBuilder {
         aviator.addFunction(new DecodeFunction());
         aviator.addFunction(new NvlFunction());
         aviator.addFunction(new CoalesceFunction());
+        aviator.addFunction(new AbsFunction());
         aviator.addFunction(new FloorFunction());
         aviator.addFunction(new CeilFunction());
         aviator.addFunction(new RoundFunction());

@@ -12,8 +12,3 @@ Oracle-compatible expression engine powered by Aviator.
 TODO
 
 1. 做复杂公式的单测，尽量用到aviator语法。该单测属于aviator单测
-2. abs 绝对值方法
-3. trunc 方法
-4. ADD_MONTHS 方法
-6. LAST_DAY 方法
-7. COALESCE 方法
