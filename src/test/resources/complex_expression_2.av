@@ -24,10 +24,10 @@ let addedDate = add_months(tradeDate, 3, 'Asia/Shanghai');
 ##    结果：2024-04-30T08:45:00Z（= Asia/Shanghai 的 2024-04-30 16:45:00）
 let lastDayDate = last_day(settleDate, 'Asia/Shanghai');
 
-## 4. truncWithZone：将交易日截断到天（去掉时分秒）
+## 4. trunc_with_zone：将交易日截断到天（去掉时分秒）
 ##    对应 Oracle: TRUNC(trade_date)
 ##    结果：2024-01-15T00:00:00+08:00 → UTC = 2024-01-14T16:00:00Z
-let truncTradeDate = truncWithZone('Asia/Shanghai', tradeDate);
+let truncTradeDate = trunc_with_zone('Asia/Shanghai', tradeDate);
 
 ## 5. 日期差（天数含小数）= 月末日期 - 截断后交易日
 ##    对应 Oracle: LAST_DAY(settle_date) - TRUNC(trade_date)

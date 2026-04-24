@@ -18,8 +18,8 @@ import java.util.stream.Stream;
 /**
  * AviatorOracle数据转换Function 测试，包括：
  * <p>1. {@code AODecimalFunction}，对应 {@code decimal()}。
- * <p>2. {@code AODate2StringFunction}，对应 {@code date_to_string()}。
- * <p>3. {@code AOString2DateFunction}，对应 {@code string_to_date()}。
+ * <p>2. {@code InstantToStringFunction}，对应 {@code instant_to_string()}。
+ * <p>3. {@code StringToInstantFunction}，对应 {@code string_to_instant()}。
  */
 @DisplayName("AviatorOracle数据转换Function 测试")
 public class AviatorTypeConversionTest {
@@ -27,7 +27,7 @@ public class AviatorTypeConversionTest {
     static Stream<Arguments> testTypeConversionProvider() {
         return Stream.of(
                 Arguments.of(
-                        "decimal(31.57349857284537940384752204323255406344) + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        "decimal(31.57349857284537940384752204323255406344) + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
                         HashMapBuilder.<String, Object>builder().build(),
                         Instant.parse("2020-03-17T03:36:19Z")
                 ),
@@ -42,17 +42,17 @@ public class AviatorTypeConversionTest {
                         true
                 ),
                 Arguments.of(
-                        "decimal(\"31.57349857284537940384752204323255406344\") + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        "decimal(\"31.57349857284537940384752204323255406344\") + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
                         HashMapBuilder.<String, Object>builder().build(),
                         Instant.parse("2020-03-17T03:36:19Z")
                 ),
                 Arguments.of(
-                        "decimal(a) + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        "decimal(a) + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
                         HashMapBuilder.<String, Object>builder().put("a", 31L).build(),
                         Instant.parse("2020-03-16T13:50:29Z")
                 ),
                 Arguments.of(
-                        "decimal(a) + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        "decimal(a) + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
                         HashMapBuilder.<String, Object>builder().put("a", 31).build(),
                         Instant.parse("2020-03-16T13:50:29Z")
                 ),
@@ -62,7 +62,7 @@ public class AviatorTypeConversionTest {
                         new OraDecimal("62.57349857284537940384752204323255406344")
                 ),
                 Arguments.of(
-                        "decimal(a) + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        "decimal(a) + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
                         HashMapBuilder.<String, Object>builder().put("a", 31.57349857284537940384752204323255406344d).build(),
                         Instant.parse("2020-03-17T03:36:19Z")
                 ),
@@ -72,7 +72,7 @@ public class AviatorTypeConversionTest {
                         new OraDecimal("33")
                 ),
                 Arguments.of(
-                        "decimal(a) + date_to_string(b, \"HH:mm:ss\", \"Asia/Tokyo\")",
+                        "decimal(a) + instant_to_string(b, \"HH:mm:ss\", \"Asia/Tokyo\")",
                         HashMapBuilder.<String, Object>builder()
                                 .put("a", new OraDecimal("31"))
                                 .put("b", Instant.parse("2020-03-16T13:50:29Z"))
@@ -80,7 +80,7 @@ public class AviatorTypeConversionTest {
                         "3122:50:29"
                 ),
                 Arguments.of(
-                        "decimal(a) + string_to_date(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        "decimal(a) + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
                         HashMapBuilder.<String, Object>builder().put("a", new DateFormatCacheKey("1", "2")).build(),
                         ClassCastException.class
                 ),

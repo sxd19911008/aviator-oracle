@@ -22,15 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * 测试：模拟Oracle数据库 {@code trunc()} 方法 — 带时区版本（仅支持 Instant）。
  */
-@DisplayName("truncWithZone 方法测试")
+@DisplayName("trunc_with_zone 方法测试")
 public class TruncWithZoneFunctionTest {
 
-    /** 两参数表达式：truncWithZone(zoneId, instant) */
-    private static final String EXPR_TWO_ARGS   = "truncWithZone(z, d)";
-    /** 三参数表达式：truncWithZone(zoneId, instant, format) */
-    private static final String EXPR_THREE_ARGS = "truncWithZone(z, d, f)";
+    // 两参数表达式
+    private static final String EXPR_TWO_ARGS   = "trunc_with_zone(z, d)";
+    // 三参数表达式
+    private static final String EXPR_THREE_ARGS = "trunc_with_zone(z, d, f)";
 
-    /** 上海时区（UTC+8） */
+    // 上海时区（UTC+8）
     private static final ZoneId SHANGHAI = ZoneId.of("Asia/Shanghai");
 
     // ── 辅助方法 ─────────────────────────────────────────────────────────────

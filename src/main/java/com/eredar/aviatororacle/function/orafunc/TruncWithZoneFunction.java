@@ -22,7 +22,7 @@ public class TruncWithZoneFunction extends AbstractFunction {
 
     @Override
     public String getName() {
-        return "truncWithZone";
+        return "trunc_with_zone";
     }
 
     /**

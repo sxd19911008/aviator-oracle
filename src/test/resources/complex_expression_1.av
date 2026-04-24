@@ -4,9 +4,9 @@ let daysDiff = endDate - startDate;
 let daysInt = floor(daysDiff);
 
 ## 逻辑判断：如果跨越了闰年2月29日
-let startMMDD = date_to_string(startDate, 'MMdd', 'Asia/Shanghai');
-let endMMDD = date_to_string(endDate, 'MMdd', 'Asia/Shanghai');
-let startYear = long(date_to_string(startDate, 'yyyy', 'Asia/Shanghai'));
+let startMMDD = instant_to_string(startDate, 'MMdd', 'Asia/Shanghai');
+let endMMDD = instant_to_string(endDate, 'MMdd', 'Asia/Shanghai');
+let startYear = long(instant_to_string(startDate, 'yyyy', 'Asia/Shanghai'));
 
 let leapFactor = (startMMDD <= '0229' && endMMDD >= '0229' && startYear % 4 == 0) ? 1.5 : 1.0;
 
@@ -14,7 +14,7 @@ let leapFactor = (startMMDD <= '0229' && endMMDD >= '0229' && startYear % 4 == 0
 let newDate = startDate + extraOffset;
 
 ## 4. 复杂 IF-ELSE 判断及四则运算
-if (category == 'STRATEGIC_PROJECT' && newDate > string_to_date('2024-02-29', 'yyyy-MM-dd', 'Asia/Shanghai') && baseValue > 10000) {
+if (category == 'STRATEGIC_PROJECT' && newDate > string_to_instant('2024-02-29', 'yyyy-MM-dd', 'Asia/Shanghai') && baseValue > 10000) {
     ## (基础值 * 比例) / 实际间隔天数 + (整数天数 * 权重)
     (baseValue * ratioLimit) / daysDiff + (daysInt * leapFactor)
 } elsif (category == 'NORMAL' || daysDiff < 1) {

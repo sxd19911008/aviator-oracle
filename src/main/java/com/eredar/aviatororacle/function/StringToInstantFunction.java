@@ -12,15 +12,15 @@ import java.util.Map;
 
 
 /**
- * string_to_date function
+ * string_to_instant function
  */
-public class AOString2DateFunction extends AbstractFunction {
+public class StringToInstantFunction extends AbstractFunction {
 
     private static final long serialVersionUID = -8780463814840818949L;
 
     @Override
     public String getName() {
-        return "string_to_date";
+        return "string_to_instant";
     }
 
     @Override

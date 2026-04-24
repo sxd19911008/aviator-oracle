@@ -98,8 +98,6 @@ public class AviatorOracleBuilder {
 
         // 使用自定义方法，替换框架方法
         aviator.addFunction(new AODecimalFunction());
-        aviator.addFunction(new AOString2DateFunction());
-        aviator.addFunction(new AODate2StringFunction());
 
         // 新增模拟Oracle数据库的方法
         aviator.addFunction(new DecodeFunction());
@@ -114,6 +112,10 @@ public class AviatorOracleBuilder {
         aviator.addFunction(new MonthsBetweenFunction());
         aviator.addFunction(new AddMonthsFunction());
         aviator.addFunction(new LastDayFunction());
+
+        // 新增自定义方法
+        aviator.addFunction(new StringToInstantFunction());
+        aviator.addFunction(new InstantToStringFunction());
 
         // 调试日志
         aviator.setOption(Options.TRACE_EVAL, AOUtils.defaultIfNull(this.traceEval, Boolean.FALSE));
