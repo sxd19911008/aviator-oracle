@@ -12,14 +12,17 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Stream;
 
 /**
  * AviatorOracle数据转换Function 测试，包括：
- * <p>1. {@code AODecimalFunction}，对应 {@code decimal()}。
- * <p>2. {@code InstantToStringFunction}，对应 {@code instant_to_string()}。
- * <p>3. {@code StringToInstantFunction}，对应 {@code string_to_instant()}。
+ * <p>1. {@code AODecimalFunction}，覆盖 Aviator 的 {@code decimal()}。
+ * <p>2. 新增 {@code InstantToStringFunction}
+ * <p>3. 新增 {@code StringToInstantFunction}
+ * <p>4. 新增 {@code LocalDateTimeToStringFunction}
+ * <p>5. 新增 {@code StringToLocalDateTimeFunction}
  */
 @DisplayName("AviatorOracle数据转换Function 测试")
 public class AviatorTypeConversionTest {
@@ -81,6 +84,57 @@ public class AviatorTypeConversionTest {
                 ),
                 Arguments.of(
                         "decimal(a) + string_to_instant(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\", \"UTC\")",
+                        HashMapBuilder.<String, Object>builder().put("a", new DateFormatCacheKey("1", "2")).build(),
+                        ClassCastException.class
+                ),
+                // ── LocalDateTimeToStringFunction 测试 ──────────────────────────────────
+                // 类比 instant_to_string 案例：local_datetime_to_string 不涉及时区转换，
+                // LocalDateTime(2020-03-16 13:50:29) 按 "HH:mm:ss" 格式化 → "13:50:29"，
+                // 再与 decimal("31") 字符串拼接 → "3113:50:29"
+                Arguments.of(
+                        "decimal(a) + local_datetime_to_string(b, \"HH:mm:ss\")",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("31"))
+                                .put("b", LocalDateTime.of(2020, 3, 16, 13, 50, 29))
+                                .build(),
+                        "3113:50:29"
+                ),
+                // ── StringToLocalDateTimeFunction 测试 ──────────────────────────────────
+                // 类比 string_to_instant 案例（去掉时区参数）：
+                // 31.573... 天 ≈ 31天 + 49550秒（13h45m50s），加到 2020-02-14 13:50:29 上
+                // → 2020-03-17 03:36:19（与 Instant 案例计算结果相同，但返回 LocalDateTime）
+                Arguments.of(
+                        "decimal(31.57349857284537940384752204323255406344) + string_to_local_datetime(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\")",
+                        HashMapBuilder.<String, Object>builder().build(),
+                        LocalDateTime.of(2020, 3, 17, 3, 36, 19)
+                ),
+                // decimal 入参为字符串时，结果应与 double 字面量一致
+                Arguments.of(
+                        "decimal(\"31.57349857284537940384752204323255406344\") + string_to_local_datetime(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\")",
+                        HashMapBuilder.<String, Object>builder().build(),
+                        LocalDateTime.of(2020, 3, 17, 3, 36, 19)
+                ),
+                // decimal 入参为 Long：31 整天，时分秒不变 → 2020-03-16 13:50:29
+                Arguments.of(
+                        "decimal(a) + string_to_local_datetime(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\")",
+                        HashMapBuilder.<String, Object>builder().put("a", 31L).build(),
+                        LocalDateTime.of(2020, 3, 16, 13, 50, 29)
+                ),
+                // decimal 入参为 int：与 Long 效果相同
+                Arguments.of(
+                        "decimal(a) + string_to_local_datetime(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\")",
+                        HashMapBuilder.<String, Object>builder().put("a", 31).build(),
+                        LocalDateTime.of(2020, 3, 16, 13, 50, 29)
+                ),
+                // decimal 入参为 double：含小数天数 → 2020-03-17 03:36:19
+                Arguments.of(
+                        "decimal(a) + string_to_local_datetime(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\")",
+                        HashMapBuilder.<String, Object>builder().put("a", 31.57349857284537940384752204323255406344d).build(),
+                        LocalDateTime.of(2020, 3, 17, 3, 36, 19)
+                ),
+                // decimal 入参类型不合法（DateFormatCacheKey）→ ClassCastException
+                Arguments.of(
+                        "decimal(a) + string_to_local_datetime(\"2020-02-14 13:50:29\", \"yyyy-MM-dd HH:mm:ss\")",
                         HashMapBuilder.<String, Object>builder().put("a", new DateFormatCacheKey("1", "2")).build(),
                         ClassCastException.class
                 ),
