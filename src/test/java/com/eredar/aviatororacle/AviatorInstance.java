@@ -6,7 +6,9 @@ import java.util.Map;
 
 public class AviatorInstance {
 
-    private static final AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder().build();
+    private static final AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder()
+            .traceEval(true)
+            .build();
 
     public static Object execute(String expression, Map<String, Object> env) {
         return aviator.execute(expression, env);

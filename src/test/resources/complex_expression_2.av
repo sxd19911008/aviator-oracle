@@ -1,0 +1,85 @@
+## ==================== 债券/股票/基金产品结算计算 ====================
+## 入参：
+##   tradeDate   - Instant 交易日（UTC），对应 Asia/Shanghai 的 2024-01-15 10:30:00
+##   settleDate  - Instant 结算日（UTC），对应 Asia/Shanghai 的 2024-04-20 16:45:00
+##   productType - String  产品类型（BOND / STOCK / FUND）
+##   faceValue   - Number  票面价值（100000.567）
+##   adjustFactor- Number  调整系数（-2.35，含负数，测试 abs）
+##   discountRate - Number  折扣率（可为 null，测试 nvl）
+##   backupRate  - Number  备用费率（可为 null，测试 coalesce）
+## ===================================================================
+
+## 1. months_between：计算结算日与交易日之间的月份数（含时分秒的小数部分）
+##    对应 Oracle: MONTHS_BETWEEN(settle_date, trade_date)
+##    结果 ≈ 3.16969086021505376344086021505376344086
+let monthsDiff = months_between(settleDate, tradeDate, 'Asia/Shanghai');
+
+## 2. add_months：在交易日基础上加 3 个月，得到参考日期
+##    对应 Oracle: ADD_MONTHS(trade_date, 3)
+##    结果：2024-01-15T02:30:00Z + 3个月（Asia/Shanghai时区）= 2024-04-15T02:30:00Z
+let addedDate = add_months(tradeDate, 3, 'Asia/Shanghai');
+
+## 3. last_day：取结算日所在月的最后一天（含原始时分秒）
+##    对应 Oracle: LAST_DAY(settle_date)
+##    结果：2024-04-30T08:45:00Z（= Asia/Shanghai 的 2024-04-30 16:45:00）
+let lastDayDate = last_day(settleDate, 'Asia/Shanghai');
+
+## 4. truncWithZone：将交易日截断到天（去掉时分秒）
+##    对应 Oracle: TRUNC(trade_date)
+##    结果：2024-01-15T00:00:00+08:00 → UTC = 2024-01-14T16:00:00Z
+let truncTradeDate = truncWithZone('Asia/Shanghai', tradeDate);
+
+## 5. 日期差（天数含小数）= 月末日期 - 截断后交易日
+##    对应 Oracle: LAST_DAY(settle_date) - TRUNC(trade_date)
+##    结果 ≈ 106.697916666...
+let daysGap = lastDayDate - truncTradeDate;
+
+## 6. decode：根据产品类型映射系数（对应 Oracle 的 DECODE 函数）
+##    BOND→1.25，STOCK→1.50，FUND→1.10，默认→1.00
+let productCoef = decode(productType, 'BOND', 1.25, 'STOCK', 1.50, 'FUND', 1.10, 1.00);
+
+## 7. nvl：有效折扣率，discountRate 为 null 时使用默认值 5.0
+##    对应 Oracle: NVL(discount_rate, 5.0)
+let effectiveRate = nvl(discountRate, 5.0);
+
+## 8. coalesce：优先使用备用费率，否则使用有效折扣率
+##    对应 Oracle: COALESCE(backup_rate, effective_rate)
+let finalRate = coalesce(backupRate, effectiveRate);
+
+## 9. abs：取调整系数的绝对值（对应 Oracle 的 ABS 函数）
+##    注：Java 实现 AbsFunction 使用 2-arg 签名，第 2 个参数为占位符会被忽略
+##    对应 Oracle: ABS(-2.35) = 2.35
+let absAdjFactor = abs(adjustFactor, adjustFactor);
+
+## 10. 主逻辑分支（三路 if/elsif/else，对应 Oracle 的 IF-ELSIF-ELSE）
+##     核心公式（三个分支共用）：
+##       round(trunc(abs(adjustFactor), 1) * faceValue / monthsDiff, 2)
+##       + ceil(daysGap * productCoef)
+##       + floor(finalRate * monthsDiff)
+if (productType == 'BOND' && addedDate < settleDate) {
+    ## BOND 分支：addedDate(2024-04-15) < settleDate(2024-04-20) → 条件为真
+    ## trunc(2.35, 1) = 2.3
+    ## round(2.3 * 100000.567 / 3.16969..., 2) = 72562.69
+    ## ceil(106.6979... * 1.25) = ceil(133.3723...) = 134
+    ## floor(5.0 * 3.16969...) = floor(15.8484...) = 15
+    ## 合计 = 72562.69 + 134 + 15 = 72711.69
+    round(trunc(absAdjFactor, 1) * faceValue / monthsDiff, 2)
+        + ceil(daysGap * productCoef)
+        + floor(finalRate * monthsDiff)
+} elsif (productType == 'STOCK' && monthsDiff > 0) {
+    ## STOCK 分支：monthsDiff(3.16...) > 0 → 条件为真
+    ## ceil(106.6979... * 1.50) = ceil(160.0468...) = 161
+    ## floor(3.5 * 3.16969...) = floor(11.0939...) = 11
+    ## 合计 = 72562.69 + 161 + 11 = 72734.69
+    round(trunc(absAdjFactor, 1) * faceValue / monthsDiff, 2)
+        + ceil(daysGap * productCoef)
+        + floor(finalRate * monthsDiff)
+} else {
+    ## FUND 及其他分支
+    ## ceil(106.6979... * 1.10) = ceil(117.3677...) = 118
+    ## floor(4.2 * 3.16969...) = floor(13.3127...) = 13
+    ## 合计 = 72562.69 + 118 + 13 = 72693.69
+    round(trunc(absAdjFactor, 1) * faceValue / monthsDiff, 2)
+        + ceil(daysGap * productCoef)
+        + floor(finalRate * monthsDiff)
+}
