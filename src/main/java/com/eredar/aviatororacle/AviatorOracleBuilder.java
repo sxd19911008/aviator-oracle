@@ -116,6 +116,8 @@ public class AviatorOracleBuilder {
         // 新增自定义方法
         aviator.addFunction(new StringToInstantFunction());
         aviator.addFunction(new InstantToStringFunction());
+        aviator.addFunction(new StringToLocalDateTimeFunction());
+        aviator.addFunction(new LocalDateTimeToStringFunction());
 
         // 调试日志
         aviator.setOption(Options.TRACE_EVAL, AOUtils.defaultIfNull(this.traceEval, Boolean.FALSE));

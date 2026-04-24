@@ -28,7 +28,7 @@ public class AODateUtils {
      * {@code String} 转换为 {@code Date} 对象
      *
      * @param dateStr 日期字符串
-     * @param format 日期格式字符串
+     * @param format 字符串日期格式
      * @return {@code Date} 对象
      */
     @SneakyThrows
@@ -51,7 +51,7 @@ public class AODateUtils {
      * {@code Date} 对象转换为 {@code String}
      *
      * @param date {@code Date} 对象
-     * @param format 日期格式字符串
+     * @param format 字符串日期格式
      * @return 日期字符串
      */
     @SneakyThrows

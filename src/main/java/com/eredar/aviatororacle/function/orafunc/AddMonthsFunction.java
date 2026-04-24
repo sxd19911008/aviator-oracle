@@ -35,7 +35,7 @@ public class AddMonthsFunction extends AbstractFunction {
         }
         if (!(obj2 instanceof Number)) {
             throw new IllegalArgumentException(String.format(
-                    "add_months方法第2个入参(months)必须是Number类型，不支持[%s]",
+                    "add_months方法第2个入参(months)必须是Number类型，不支持[%s]类型",
                     AORuntimeUtils.getClass(obj2)));
         }
         Number months = (Number) obj2;

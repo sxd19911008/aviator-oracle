@@ -8,7 +8,7 @@ import java.util.Objects;
  */
 public final class DateFormatCacheKey {
 
-    // 日期格式字符串
+    // 字符串日期格式
     private final String format;
     // 时区字符串
     private final String zoneId;
