@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -77,7 +78,19 @@ public class AbsFunctionTest {
                 // Oracle: ABS(-9.999999999999999999999999999999999999) = 9.999999999999999999999999999999999999
                 Arguments.of("OraDecimal 高精度负数取 OraDecimal.abs() 返回",
                         new OraDecimal("-9.999999999999999999999999999999999999"),
-                        new OraDecimal("9.999999999999999999999999999999999999"))
+                        new OraDecimal("9.999999999999999999999999999999999999")),
+                // 异常案例：String 不是 Number，AORuntimeUtils.toNumber 抛出 IllegalArgumentException
+                Arguments.of("String 类型抛出 IllegalArgumentException",
+                        "hello",
+                        IllegalArgumentException.class),
+                // 异常案例：Instant 不是 Number，AORuntimeUtils.toNumber 抛出 IllegalArgumentException
+                Arguments.of("Instant 类型抛出 IllegalArgumentException",
+                        Instant.now(),
+                        IllegalArgumentException.class),
+                // 异常案例：Boolean 不是 Number，AORuntimeUtils.toNumber 抛出 IllegalArgumentException
+                Arguments.of("Boolean 类型抛出 IllegalArgumentException",
+                        Boolean.TRUE,
+                        IllegalArgumentException.class)
         );
     }
 

@@ -1,5 +1,6 @@
 package com.eredar.aviatororacle;
 
+import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import com.eredar.aviatororacle.utils.AODateUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -49,13 +52,6 @@ public class AddMonthsFunctionTest {
     }
 
     /**
-     * 以上海时区构造 {@link Instant}（纳秒固定为 0）
-     */
-    private static Instant sh(int year, int month, int day, int hour, int minute, int second) {
-        return ZonedDateTime.of(year, month, day, hour, minute, second, 0, SHANGHAI).toInstant();
-    }
-
-    /**
      * 以上海时区构造 {@link Instant}（可指定纳秒），用于携带亚秒精度的输入和期望值
      */
     private static Instant sh(int year, int month, int day, int hour, int minute, int second, int nano) {
@@ -70,7 +66,7 @@ public class AddMonthsFunctionTest {
                 .build();
     }
 
-    private static Map<String, Object> vars3(Object d, Object m, String z) {
+    private static Map<String, Object> vars3(Object d, Object m, Object z) {
         return HashMapBuilder.<String, Object>builder()
                 .put("d", d).put("m", m).put("z", z)
                 .build();
@@ -310,6 +306,60 @@ public class AddMonthsFunctionTest {
     }
 
     // =========================================================================
+    // 类型错误异常场景：两参数公式 add_months(d, m)
+    // =========================================================================
+
+    static Stream<Arguments> testAddMonths2ErrorProvider() {
+        return Stream.of(
+                // add_months 两参数版本第1个入参仅支持 Date/LocalDateTime/Instant，
+                // 以下8种类型均不在支持范围内，应抛出 IllegalArgumentException
+                Arguments.of("Long 类型作为date入参",       1234567890L),
+                Arguments.of("Integer 类型作为date入参",    100),
+                Arguments.of("BigInteger 类型作为date入参", new BigInteger("99999999999999")),
+                Arguments.of("Double 类型作为date入参",     3.14d),
+                Arguments.of("BigDecimal 类型作为date入参", new BigDecimal("1.23456")),
+                Arguments.of("OraDecimal 类型作为date入参", new OraDecimal("9.99")),
+                Arguments.of("String 类型作为date入参",     "2024-01-01"),
+                Arguments.of("Boolean 类型作为date入参",    Boolean.TRUE)
+        );
+    }
+
+    @DisplayName("add_months(d, m)：日期入参类型错误抛出 IllegalArgumentException")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testAddMonths2ErrorProvider")
+    public void testAddMonths2Error(String caseId, Object invalidDate) {
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_TWO_ARGS, vars2(invalidDate, 1)));
+    }
+
+    // =========================================================================
+    // 类型错误异常场景：三参数公式 add_months(d, m, z)
+    // =========================================================================
+
+    static Stream<Arguments> testAddMonths3ErrorProvider() {
+        return Stream.of(
+                // add_months 三参数版本第1个入参必须是 Instant，
+                // 以下8种类型均不合法，应抛出 IllegalArgumentException
+                Arguments.of("Long 类型作为date入参",       1234567890L),
+                Arguments.of("Integer 类型作为date入参",    100),
+                Arguments.of("BigInteger 类型作为date入参", new BigInteger("99999999999999")),
+                Arguments.of("Double 类型作为date入参",     3.14d),
+                Arguments.of("BigDecimal 类型作为date入参", new BigDecimal("1.23456")),
+                Arguments.of("OraDecimal 类型作为date入参", new OraDecimal("9.99")),
+                Arguments.of("String 类型作为date入参",     "2024-01-01"),
+                Arguments.of("Boolean 类型作为date入参",    Boolean.TRUE)
+        );
+    }
+
+    @DisplayName("add_months(d, m, z)：日期入参类型错误抛出 IllegalArgumentException")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testAddMonths3ErrorProvider")
+    public void testAddMonths3Error(String caseId, Object invalidDate) {
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_THREE_ARGS, vars3(invalidDate, 1, "Asia/Shanghai")));
+    }
+
+    // =========================================================================
     // 异常场景
     // =========================================================================
 
@@ -350,11 +400,20 @@ public class AddMonthsFunctionTest {
         // months 为 null
         assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_TWO_ARGS, vars2(now, null)));
+        // months 类型错误
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_TWO_ARGS, vars2(null, "1")));
         // 两者均为 null
         assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_TWO_ARGS, vars2(null, null)));
         // 带时区版本：zoneId 为 null
         assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_THREE_ARGS, vars3(now, 1, null)));
+        // 带时区版本：months 类型错误
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_THREE_ARGS, vars3(now, "1", "Asia/Shanghai")));
+        // 带时区版本：zoneId 类型错误
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_THREE_ARGS, vars3(now, 1, 1)));
     }
 }

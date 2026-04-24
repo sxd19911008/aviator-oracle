@@ -1,5 +1,6 @@
 package com.eredar.aviatororacle;
 
+import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,11 +52,11 @@ public class TruncWithZoneFunctionTest {
 
     // ── 变量构造辅助方法 ──────────────────────────────────────────────────────
 
-    private static Map<String, Object> vars2(String z, Object d) {
+    private static Map<String, Object> vars2(Object z, Object d) {
         return HashMapBuilder.<String, Object>builder().put("z", z).put("d", d).build();
     }
 
-    private static Map<String, Object> vars3(String z, Object d, String f) {
+    private static Map<String, Object> vars3(Object z, Object d, Object f) {
         return HashMapBuilder.<String, Object>builder().put("z", z).put("d", d).put("f", f).build();
     }
 
@@ -156,6 +159,60 @@ public class TruncWithZoneFunctionTest {
     }
 
     // =========================================================================
+    // 类型错误异常场景：两参数公式 truncWithZone(z, d)
+    // =========================================================================
+
+    static Stream<Arguments> testTruncWithZone2ErrorProvider() {
+        return Stream.of(
+                // truncWithZone 两参数版本第2个入参必须是 Instant，
+                // 以下8种类型均不合法，应抛出 IllegalArgumentException
+                Arguments.of("Long 类型作为instant入参",       1234567890L),
+                Arguments.of("Integer 类型作为instant入参",    100),
+                Arguments.of("BigInteger 类型作为instant入参", new BigInteger("99999999999999")),
+                Arguments.of("Double 类型作为instant入参",     3.14d),
+                Arguments.of("BigDecimal 类型作为instant入参", new BigDecimal("1.23456")),
+                Arguments.of("OraDecimal 类型作为instant入参", new OraDecimal("9.99")),
+                Arguments.of("String 类型作为instant入参",     "2024-01-01T00:00:00Z"),
+                Arguments.of("Boolean 类型作为instant入参",    Boolean.TRUE)
+        );
+    }
+
+    @DisplayName("truncWithZone(z, d)：instant入参类型错误抛出 IllegalArgumentException")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testTruncWithZone2ErrorProvider")
+    public void testTruncWithZone2Error(String caseId, Object invalidInstant) {
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_TWO_ARGS, vars2("Asia/Shanghai", invalidInstant)));
+    }
+
+    // =========================================================================
+    // 类型错误异常场景：三参数公式 truncWithZone(z, d, f)
+    // =========================================================================
+
+    static Stream<Arguments> testTruncWithZone3ErrorProvider() {
+        return Stream.of(
+                // truncWithZone 三参数版本第2个入参必须是 Instant，
+                // 以下8种类型均不合法，应抛出 IllegalArgumentException
+                Arguments.of("Long 类型作为instant入参",       1234567890L),
+                Arguments.of("Integer 类型作为instant入参",    100),
+                Arguments.of("BigInteger 类型作为instant入参", new BigInteger("99999999999999")),
+                Arguments.of("Double 类型作为instant入参",     3.14d),
+                Arguments.of("BigDecimal 类型作为instant入参", new BigDecimal("1.23456")),
+                Arguments.of("OraDecimal 类型作为instant入参", new OraDecimal("9.99")),
+                Arguments.of("String 类型作为instant入参",     "2024-01-01T00:00:00Z"),
+                Arguments.of("Boolean 类型作为instant入参",    Boolean.TRUE)
+        );
+    }
+
+    @DisplayName("truncWithZone(z, d, f)：instant入参类型错误抛出 IllegalArgumentException")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testTruncWithZone3ErrorProvider")
+    public void testTruncWithZone3Error(String caseId, Object invalidInstant) {
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_THREE_ARGS, vars3("Asia/Shanghai", invalidInstant, "DD")));
+    }
+
+    // =========================================================================
     // 异常场景：不支持的格式模型
     // =========================================================================
 
@@ -164,6 +221,12 @@ public class TruncWithZoneFunctionTest {
     public void testTruncWithZoneInvalidFormat() {
         Instant input = sh(2026, 4, 22, 10, 14, 6, 123_456);
         assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_TWO_ARGS, vars2(new OraDecimal("1"), input)));
+        assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_THREE_ARGS, vars3("Asia/Shanghai", input, "XX")));
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_THREE_ARGS, vars3("Asia/Shanghai", input, 1)));
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_THREE_ARGS, vars3(new OraDecimal("1"), input, "DD")));
     }
 }

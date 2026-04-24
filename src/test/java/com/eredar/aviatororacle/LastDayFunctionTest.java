@@ -1,5 +1,6 @@
 package com.eredar.aviatororacle;
 
+import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
 import com.eredar.aviatororacle.utils.AODateUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -8,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -60,7 +63,7 @@ public class LastDayFunctionTest {
         return HashMapBuilder.<String, Object>builder().put("d", d).build();
     }
 
-    private static Map<String, Object> vars2(Object d, String z) {
+    private static Map<String, Object> vars2(Object d, Object z) {
         return HashMapBuilder.<String, Object>builder().put("d", d).put("z", z).build();
     }
 
@@ -222,6 +225,60 @@ public class LastDayFunctionTest {
     }
 
     // =========================================================================
+    // 类型错误异常场景：单参数公式 last_day(d)
+    // =========================================================================
+
+    static Stream<Arguments> testLastDay1ErrorProvider() {
+        return Stream.of(
+                // last_day 单参数版本入参仅支持 Date/LocalDateTime/Instant，
+                // 以下8种类型均不在支持范围内，应抛出 IllegalArgumentException
+                Arguments.of("Long 类型作为date入参",       1234567890L),
+                Arguments.of("Integer 类型作为date入参",    100),
+                Arguments.of("BigInteger 类型作为date入参", new BigInteger("99999999999999")),
+                Arguments.of("Double 类型作为date入参",     3.14d),
+                Arguments.of("BigDecimal 类型作为date入参", new BigDecimal("1.23456")),
+                Arguments.of("OraDecimal 类型作为date入参", new OraDecimal("9.99")),
+                Arguments.of("String 类型作为date入参",     "2024-01-01"),
+                Arguments.of("Boolean 类型作为date入参",    Boolean.TRUE)
+        );
+    }
+
+    @DisplayName("last_day(d)：日期入参类型错误抛出 IllegalArgumentException")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testLastDay1ErrorProvider")
+    public void testLastDay1Error(String caseId, Object invalidDate) {
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_ONE_ARG, vars1(invalidDate)));
+    }
+
+    // =========================================================================
+    // 类型错误异常场景：双参数公式 last_day(d, z)
+    // =========================================================================
+
+    static Stream<Arguments> testLastDay2ErrorProvider() {
+        return Stream.of(
+                // last_day 双参数版本第1个入参必须是 Instant，
+                // 以下8种类型均不合法，应抛出 IllegalArgumentException
+                Arguments.of("Long 类型作为date入参",       1234567890L),
+                Arguments.of("Integer 类型作为date入参",    100),
+                Arguments.of("BigInteger 类型作为date入参", new BigInteger("99999999999999")),
+                Arguments.of("Double 类型作为date入参",     3.14d),
+                Arguments.of("BigDecimal 类型作为date入参", new BigDecimal("1.23456")),
+                Arguments.of("OraDecimal 类型作为date入参", new OraDecimal("9.99")),
+                Arguments.of("String 类型作为date入参",     "2024-01-01"),
+                Arguments.of("Boolean 类型作为date入参",    Boolean.TRUE)
+        );
+    }
+
+    @DisplayName("last_day(d, z)：日期入参类型错误抛出 IllegalArgumentException")
+    @ParameterizedTest(name = "【{index}】{0}")
+    @MethodSource("testLastDay2ErrorProvider")
+    public void testLastDay2Error(String caseId, Object invalidDate) {
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_TWO_ARGS, vars2(invalidDate, "Asia/Shanghai")));
+    }
+
+    // =========================================================================
     // 异常场景
     // =========================================================================
 
@@ -248,5 +305,8 @@ public class LastDayFunctionTest {
         // 带时区版本：zoneId 为 null
         assertThrows(IllegalArgumentException.class, () ->
                 AviatorInstance.execute(EXPR_TWO_ARGS, vars2(Instant.now(), null)));
+        // 带时区版本：zoneId 为 Number
+        assertThrows(IllegalArgumentException.class, () ->
+                AviatorInstance.execute(EXPR_TWO_ARGS, vars2(Instant.now(), 1)));
     }
 }
