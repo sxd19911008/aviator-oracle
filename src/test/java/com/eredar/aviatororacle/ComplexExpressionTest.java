@@ -11,6 +11,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -103,6 +105,69 @@ public class ComplexExpressionTest {
                                 .put("backupRate", null)
                                 .build(),
                         new OraDecimal("72695.69")
+                ),
+
+                // ── complex_expression_3.av ──────────────────────────────────────
+                // 业务场景：投资凭证提前到期偿付金额计算
+                // 发行日 2023-04-01 00:00:00 CST / 到期日 2025-10-01 00:00:00 CST
+                // months_between = 30（整月），days_gap = 944，yearParity = 1（奇数年 2023）
+                // 公式：round(trunc(abs(-3.25),1)×200000.256÷30, 2) + ceil(944×coef) + floor(4.5×30+1)
+                //       = 21333.36 + ceil(...) + 136
+                //
+                // 案例A：dateType=INSTANT，gradeType=PRIME → ceil(944×1.30)=1228 → 22697.36
+                Arguments.of(
+                        "complex_expression_3.av",
+                        HashMapBuilder.<String, Object>builder()
+                                // issueDate = 2023-04-01 00:00:00 CST
+                                .put("issueDate", Instant.parse("2023-03-31T16:00:00Z"))
+                                // maturityDate = 2025-10-01 00:00:00 CST
+                                .put("maturityDate", Instant.parse("2025-09-30T16:00:00Z"))
+                                .put("gradeType", "PRIME")
+                                .put("principal", new OraDecimal("200000.256"))
+                                .put("couponRate", null)
+                                .put("discountFactor", null)
+                                .put("penaltyBasis", new OraDecimal("-3.25"))
+                                .put("dateType", "INSTANT")
+                                .build(),
+                        new OraDecimal("22697.36")
+                ),
+
+                // 案例B：dateType=LOCAL，gradeType=STANDARD → ceil(944×1.15)=1086 → 22555.36
+                Arguments.of(
+                        "complex_expression_3.av",
+                        HashMapBuilder.<String, Object>builder()
+                                // issueDate = 2023-04-01 00:00:00（LocalDateTime 无时区）
+                                .put("issueDate", LocalDateTime.of(2023, 4, 1, 0, 0, 0))
+                                // maturityDate = 2025-10-01 00:00:00
+                                .put("maturityDate", LocalDateTime.of(2025, 10, 1, 0, 0, 0))
+                                .put("gradeType", "STANDARD")
+                                .put("principal", new OraDecimal("200000.256"))
+                                .put("couponRate", null)
+                                .put("discountFactor", null)
+                                .put("penaltyBasis", new OraDecimal("-3.25"))
+                                .put("dateType", "LOCAL")
+                                .build(),
+                        new OraDecimal("22555.36")
+                ),
+
+                // 案例C：dateType=DATE，gradeType=BASIC → ceil(944×1.05)=992 → 22461.36
+                // java.util.Date 使用 Aviator 内置 date_to_string / string_to_date 进行字符串互转
+                // Calendar 在系统时区（Asia/Shanghai）下与 Instant 等效
+                Arguments.of(
+                        "complex_expression_3.av",
+                        HashMapBuilder.<String, Object>builder()
+                                // issueDate = 2023-04-01 00:00:00 CST（与 Instant 案例等效）
+                                .put("issueDate", Date.from(Instant.parse("2023-03-31T16:00:00Z")))
+                                // maturityDate = 2025-10-01 00:00:00 CST
+                                .put("maturityDate", Date.from(Instant.parse("2025-09-30T16:00:00Z")))
+                                .put("gradeType", "BASIC")
+                                .put("principal", new OraDecimal("200000.256"))
+                                .put("couponRate", null)
+                                .put("discountFactor", null)
+                                .put("penaltyBasis", new OraDecimal("-3.25"))
+                                .put("dateType", "DATE")
+                                .build(),
+                        new OraDecimal("22461.36")
                 )
         );
     }

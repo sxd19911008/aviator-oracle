@@ -1,0 +1,229 @@
+## ==================== 投资凭证提前到期偿付金额计算 ====================
+## 入参说明：
+##   issueDate      - 发行日期（类型由 dateType 控制）
+##   maturityDate   - 到期日期（类型由 dateType 控制）
+##   gradeType      - 等级类型（'PRIME' / 'STANDARD' / 'BASIC'）
+##   principal      - 本金金额（精确 Number）
+##   couponRate     - 票息率（可为 null，触发 nvl 默认值 4.5）
+##   discountFactor - 折扣系数（可为 null，触发 coalesce 兜底逻辑）
+##   penaltyBasis   - 违约基数（负数，触发 abs 与一元负号 NEG 运算符）
+##   dateType       - 日期类型标识：'INSTANT' / 'LOCAL' / 'DATE'
+##
+## 覆盖的函数包方法：
+##   orafunc: months_between, add_months, last_day, trunc（日期/数字两种重载）,
+##            trunc_with_zone, round, ceil, floor, abs, decode, nvl, coalesce
+##   function: instant_to_string, string_to_instant,
+##             local_datetime_to_string, string_to_local_datetime,
+##             decimal（AODecimalFunction）
+##   Aviator 内置: date_to_string, string_to_date（Date 类型字符串互转）
+##   自定义运算符: +（Add）、-（Sub）、*（Mult）、/（Div）、%（Mod）、
+##               -x（Neg）、<（Lt）、<=（Le）、>（Gt）、>=（Ge）、
+##               ==（Eq）、!=（Neq）、<<（ShiftLeft）、>>（ShiftRight）、
+##               >>>（UnsignedShiftRight）
+## ===================================================================
+
+## 按 dateType 参数选择对应的日期字符串转换函数
+if (dateType == 'INSTANT') {
+
+    ## ── 分支1：Instant 类型 ──────────────────────────────────────────
+    ## 使用 instant_to_string 将 Instant 格式化为字符串（含时区 Asia/Shanghai）
+    let yearStr  = instant_to_string(issueDate, 'yyyy', 'Asia/Shanghai');
+    let monthStr = instant_to_string(issueDate, 'MM',   'Asia/Shanghai');
+    ## 使用 string_to_instant 将字符串解析为 Instant，作为参考基准日
+    let refDate = string_to_instant('2025-01-01', 'yyyy-MM-dd', 'Asia/Shanghai');
+
+    ## 1. months_between（带时区）：两端均为月初1日，结果为整数 30
+    let monthsDiff = months_between(maturityDate, issueDate, 'Asia/Shanghai');
+
+    ## 2. add_months（带时区）：发行日 +12 个月
+    ##    2023-04-01 CST + 12 月 = 2024-04-01 CST
+    let oneYearDate = add_months(issueDate, 12, 'Asia/Shanghai');
+
+    ## 3. last_day（带时区）：取到期月最后一天（保留原时分秒）
+    ##    2025-10-01 CST → 2025-10-31 CST
+    let lastDayDate = last_day(maturityDate, 'Asia/Shanghai');
+
+    ## 4. trunc_with_zone：将发行日截断到天（带时区）
+    ##    2023-04-01 00:00:00 CST → 已为零点，结果不变
+    let truncIssueDate = trunc_with_zone('Asia/Shanghai', issueDate);
+
+    ## 5. 日期相减（Sub 运算符）：从截断发行日到月末日的天数差
+    ##    lastDayDate - truncIssueDate = 944 天
+    let daysGap = lastDayDate - truncIssueDate;
+
+    ## ── 年份位移演示（>> / << / >>> 运算符）──────────────────────────
+    let yearVal      = long(yearStr);                  ## 2023
+    let yearHalf     = yearVal >> 1;                   ## 2023 >> 1  = 1011（整数右移1位，相当于÷2取整）
+    let yearRestored = yearHalf << 1;                  ## 1011 << 1  = 2022（整数左移1位，相当于×2）
+    let uYearHalf    = yearVal >>> 1;                  ## 2023 >>> 1 = 1011（无符号右移，正数与>>结果相同）
+    ## yearParity = yearVal - yearRestored = 2023 - 2022 = 1（奇数年）
+    ## 等价于 Oracle 的 MOD(2023, 2) = 1，此处通过位移+减法（Sub）得到相同结果
+    let yearParity   = yearVal - yearRestored;         ## 1（奇数年）
+    ## leapCheck 使用 % 运算符（Mod）：2023 % 4 = 3（非闰年，用于 != 条件判断）
+    let leapCheck    = yearVal % 4;                    ## 3
+    ## decimal() 函数：将 Long 型 yearParity 转换为精确的 OraDecimal，参与后续数值运算
+    let yearParityDec = decimal(yearParity);           ## OraDecimal("1")
+    let monthVal     = long(monthStr);                 ## 4（4月，用于 <= 条件判断）
+
+    ## 6. decode：根据等级类型映射系数（PRIME→1.30, STANDARD→1.15, BASIC→1.05, 默认→1.00）
+    let gradeCoef = decode(gradeType, 'PRIME', 1.30, 'STANDARD', 1.15, 'BASIC', 1.05, 1.00);
+
+    ## 7. nvl：票息率为 null 时取默认值 4.5
+    let effectiveRate = nvl(couponRate, 4.5);
+
+    ## 8. coalesce：优先取折扣系数，为 null 则取有效票息率
+    let finalRate = coalesce(discountFactor, effectiveRate);
+
+    ## 9. abs：取违约基数绝对值（2 参数签名，第2参数为占位符）
+    let absPenalty = abs(penaltyBasis, penaltyBasis);
+
+    ## 10. 一元负号（NEG 运算符）：对负数取反，验证运算符。
+    ##     penaltyBasis = -3.25 → negPenalty = 3.25（与 absPenalty 相同）
+    let negPenalty = -penaltyBasis;
+
+    ## 11. 主逻辑分支（对应 Oracle 的 IF/ELSIF/ELSE）
+    ##
+    ##  条件说明（PRIME）：
+    ##    gradeType == 'PRIME'      → Eq 运算符（==）
+    ##    oneYearDate < lastDayDate → Lt 运算符（<）：2024-04-01 < 2025-10-31，真
+    ##    leapCheck != 0            → Neq 运算符（!=）：3 ≠ 0，真（非闰年）
+    ##    maturityDate >= refDate   → Ge 运算符（>=）：2025-10-01 >= 2025-01-01，真
+    ##
+    ##  条件说明（STANDARD）：
+    ##    monthsDiff > 0            → Gt 运算符（>）：30 > 0，真
+    ##    monthVal <= 6             → Le 运算符（<=）：4 ≤ 6，真（发行月在上半年）
+    if (gradeType == 'PRIME' && oneYearDate < lastDayDate && leapCheck != 0 && maturityDate >= refDate) {
+        ## PRIME 分支
+        ## round(trunc(3.25,1) × 200000.256 ÷ 30, 2) + ceil(944 × 1.30) + floor(4.5 × 30 + 1)
+        ## = round(21333.36064, 2) + ceil(1227.2) + floor(136)
+        ## = 21333.36 + 1228 + 136 = 22697.36
+        round(trunc(absPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    } elsif (gradeType == 'STANDARD' && monthsDiff > 0 && monthVal <= 6 && leapCheck != 0 && maturityDate >= refDate) {
+        ## STANDARD 分支
+        ## ceil(944 × 1.15) = ceil(1085.6) = 1086
+        ## 21333.36 + 1086 + 136 = 22555.36
+        round(trunc(absPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    } else {
+        ## BASIC 及其他分支（此处用 negPenalty 代替 absPenalty，结果相同）
+        ## ceil(944 × 1.05) = ceil(991.2) = 992
+        ## 21333.36 + 992 + 136 = 22461.36
+        round(trunc(negPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    }
+
+} elsif (dateType == 'LOCAL') {
+
+    ## ── 分支2：LocalDateTime 类型 ────────────────────────────────────
+    ## 使用 local_datetime_to_string 将 LocalDateTime 格式化为字符串（无需时区）
+    let yearStr  = local_datetime_to_string(issueDate, 'yyyy');
+    let monthStr = local_datetime_to_string(issueDate, 'MM');
+    ## 使用 string_to_local_datetime 将字符串解析为 LocalDateTime
+    let refDate = string_to_local_datetime('2025-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss');
+
+    ## 1. months_between（无时区）：两端均为月初1日，结果为整数 30
+    let monthsDiff = months_between(maturityDate, issueDate);
+
+    ## 2. add_months（无时区）：2023-04-01 + 12月 = 2024-04-01
+    let oneYearDate = add_months(issueDate, 12);
+
+    ## 3. last_day（无时区）：2025-10-01 → 2025-10-31
+    let lastDayDate = last_day(maturityDate);
+
+    ## 4. trunc（无时区）：将发行日截断到天零点（已为零点，结果不变）
+    let truncIssueDate = trunc(issueDate);
+
+    ## 5. 日期相减：2025-10-31 − 2023-04-01 = 944 天
+    let daysGap = lastDayDate - truncIssueDate;
+
+    ## ── 年份位移演示 ─────────────────────────────────────────────────
+    let yearVal      = long(yearStr);
+    let yearHalf     = yearVal >> 1;
+    let yearRestored = yearHalf << 1;
+    let uYearHalf    = yearVal >>> 1;
+    let yearParity   = yearVal - yearRestored;
+    let leapCheck    = yearVal % 4;
+    let yearParityDec = decimal(yearParity);
+    let monthVal     = long(monthStr);
+
+    ## 6-10. 各业务函数调用（同 INSTANT 分支，仅日期类型不同）
+    let gradeCoef     = decode(gradeType, 'PRIME', 1.30, 'STANDARD', 1.15, 'BASIC', 1.05, 1.00);
+    let effectiveRate = nvl(couponRate, 4.5);
+    let finalRate     = coalesce(discountFactor, effectiveRate);
+    let absPenalty    = abs(penaltyBasis, penaltyBasis);
+    let negPenalty    = -penaltyBasis;
+
+    if (gradeType == 'PRIME' && oneYearDate < lastDayDate && leapCheck != 0 && maturityDate >= refDate) {
+        round(trunc(absPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    } elsif (gradeType == 'STANDARD' && monthsDiff > 0 && monthVal <= 6 && leapCheck != 0 && maturityDate >= refDate) {
+        round(trunc(absPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    } else {
+        round(trunc(negPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    }
+
+} else {
+
+    ## ── 分支3：java.util.Date 类型（使用 Aviator 框架内置函数）─────────
+    ## date_to_string / string_to_date 为 Aviator 框架内置函数，使用系统时区（Asia/Shanghai）
+    let yearStr  = date_to_string(issueDate, 'yyyy');
+    let monthStr = date_to_string(issueDate, 'MM');
+    ## string_to_date：将字符串解析为 java.util.Date（系统时区）
+    let refDate = string_to_date('2025-01-01', 'yyyy-MM-dd');
+
+    ## 1. months_between（无时区，Calendar 使用系统时区）：两端均为月初，结果为整数 30
+    let monthsDiff = months_between(maturityDate, issueDate);
+
+    ## 2. add_months：Calendar 计算，2023-04-01 CST + 12月 = 2024-04-01 CST
+    let oneYearDate = add_months(issueDate, 12);
+
+    ## 3. last_day：Calendar 计算，2025-10-01 CST → 2025-10-31 CST
+    let lastDayDate = last_day(maturityDate);
+
+    ## 4. trunc：Calendar 清零时分秒（已为零点，结果不变）
+    let truncIssueDate = trunc(issueDate);
+
+    ## 5. 日期相减：与 Instant 分支等效，daysGap = 944 天
+    let daysGap = lastDayDate - truncIssueDate;
+
+    ## ── 年份位移演示 ─────────────────────────────────────────────────
+    let yearVal      = long(yearStr);
+    let yearHalf     = yearVal >> 1;
+    let yearRestored = yearHalf << 1;
+    let uYearHalf    = yearVal >>> 1;
+    let yearParity   = yearVal - yearRestored;
+    let leapCheck    = yearVal % 4;
+    let yearParityDec = decimal(yearParity);
+    let monthVal     = long(monthStr);
+
+    ## 6-10. 各业务函数调用
+    let gradeCoef     = decode(gradeType, 'PRIME', 1.30, 'STANDARD', 1.15, 'BASIC', 1.05, 1.00);
+    let effectiveRate = nvl(couponRate, 4.5);
+    let finalRate     = coalesce(discountFactor, effectiveRate);
+    let absPenalty    = abs(penaltyBasis, penaltyBasis);
+    let negPenalty    = -penaltyBasis;
+
+    if (gradeType == 'PRIME' && oneYearDate < lastDayDate && leapCheck != 0 && maturityDate >= refDate) {
+        round(trunc(absPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    } elsif (gradeType == 'STANDARD' && monthsDiff > 0 && monthVal <= 6 && leapCheck != 0 && maturityDate >= refDate) {
+        round(trunc(absPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    } else {
+        round(trunc(negPenalty, 1) * principal / monthsDiff, 2)
+            + ceil(daysGap * gradeCoef)
+            + floor(finalRate * monthsDiff + yearParityDec)
+    }
+
+}

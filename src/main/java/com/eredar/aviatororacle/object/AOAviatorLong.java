@@ -13,6 +13,7 @@
  **/
 package com.eredar.aviatororacle.object;
 
+import com.eredar.aviatororacle.utils.AORuntimeUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import com.googlecode.aviator.runtime.type.*;
@@ -180,43 +181,43 @@ public class AOAviatorLong extends AOAviatorNumber {
 
     protected AviatorObject innerBitAnd(final AviatorObject other) {
         ensureLong(other);
-        AOAviatorLong otherLong = (AOAviatorLong) other;
-        return AOAviatorLong.valueOf(this.longValue & otherLong.longValue());
+        long otherLong = this.getOtherLongValue(other);
+        return AOAviatorLong.valueOf(this.longValue & otherLong);
     }
 
 
     protected AviatorObject innerBitOr(final AviatorObject other) {
         ensureLong(other);
-        AOAviatorLong otherLong = (AOAviatorLong) other;
-        return AOAviatorLong.valueOf(this.longValue | otherLong.longValue());
+        long otherLong = this.getOtherLongValue(other);
+        return AOAviatorLong.valueOf(this.longValue | otherLong);
     }
 
 
     protected AviatorObject innerBitXor(final AviatorObject other) {
         ensureLong(other);
-        AOAviatorLong otherLong = (AOAviatorLong) other;
-        return AOAviatorLong.valueOf(this.longValue ^ otherLong.longValue());
+        long otherLong = this.getOtherLongValue(other);
+        return AOAviatorLong.valueOf(this.longValue ^ otherLong);
     }
 
 
     protected AviatorObject innerShiftLeft(final AviatorObject other) {
         ensureLong(other);
-        AOAviatorLong otherLong = (AOAviatorLong) other;
-        return AOAviatorLong.valueOf(this.longValue << otherLong.longValue());
+        long otherLong = this.getOtherLongValue(other);
+        return AOAviatorLong.valueOf(this.longValue << otherLong);
     }
 
 
     protected AviatorObject innerShiftRight(final AviatorObject other) {
         ensureLong(other);
-        AOAviatorLong otherLong = (AOAviatorLong) other;
-        return AOAviatorLong.valueOf(this.longValue >> otherLong.longValue());
+        long otherLong = this.getOtherLongValue(other);
+        return AOAviatorLong.valueOf(this.longValue >> otherLong);
     }
 
 
     protected AviatorObject innerUnsignedShiftRight(final AviatorObject other) {
         ensureLong(other);
-        AOAviatorLong otherLong = (AOAviatorLong) other;
-        return AOAviatorLong.valueOf(this.longValue >>> otherLong.longValue());
+        long otherLong = this.getOtherLongValue(other);
+        return AOAviatorLong.valueOf(this.longValue >>> otherLong);
     }
 
 
@@ -361,5 +362,15 @@ public class AOAviatorLong extends AOAviatorNumber {
     @Override
     public AviatorType getAviatorType() {
         return AviatorType.Long;
+    }
+
+    protected long getOtherLongValue(AviatorObject other) {
+        if (other instanceof AviatorNumber) {
+            return ((AviatorLong) other).longValue();
+        } else if (other instanceof AOAviatorNumber) {
+            return ((AOAviatorLong) other).longValue();
+        } else {
+            throw new ExpressionRuntimeException(String.format("Unknown AviatorObject type [%s]", AORuntimeUtils.getClass(other)));
+        }
     }
 }
