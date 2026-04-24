@@ -62,8 +62,8 @@ public class LocalDateTimeToStringFunction extends AbstractFunction {
         // 获取无时区的 DateTimeFormatter（LocalDateTime 不需要时区信息）
         DateTimeFormatter dtf = AODateTimeFormatCache.getOrCreateDateFormat(format);
         // 将 LocalDateTime 格式化为字符串
-        String dateString = dtf.format(dateTime);
+        String dateStr = dtf.format(dateTime);
         // 返回结果
-        return new AviatorString(dateString);
+        return new AviatorString(dateStr);
     }
 }

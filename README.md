@@ -12,3 +12,4 @@ Oracle-compatible expression engine powered by Aviator.
 TODO
 
 1. 做复杂公式的单测，尽量用到aviator语法。该单测属于aviator单测
+2. 添加单测案例，针对LocalDateTime与String的转换

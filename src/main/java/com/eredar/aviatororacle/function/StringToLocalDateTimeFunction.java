@@ -67,6 +67,6 @@ public class StringToLocalDateTimeFunction extends AbstractFunction {
         // 将字符串解析为 LocalDateTime
         LocalDateTime dateTime = LocalDateTime.from(dtf.parse(dateStr));
         // 返回结果
-        return AOAviatorRuntimeJavaType.valueOf(dateStr);
+        return AOAviatorRuntimeJavaType.valueOf(dateTime);
     }
 }
