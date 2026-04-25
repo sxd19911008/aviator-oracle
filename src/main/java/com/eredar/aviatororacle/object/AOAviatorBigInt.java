@@ -1,6 +1,8 @@
 package com.eredar.aviatororacle.object;
 
+import com.eredar.aviatororacle.utils.AORuntimeUtils;
 import com.googlecode.aviator.exception.ExpressionRuntimeException;
+import com.googlecode.aviator.runtime.type.AviatorNumber;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.runtime.type.AviatorType;
 
@@ -145,33 +147,38 @@ public class AOAviatorBigInt extends AOAviatorLong {
 
     @Override
     protected AviatorObject innerBitAnd(AviatorObject other) {
-        return valueOf(this.toBigInt().and(((AOAviatorNumber) other).toBigInt()));
+        BigInteger otherValue = this.getOtherBigIntegerValue(other);
+        return valueOf(this.toBigInt().and(otherValue));
     }
 
 
     @Override
     protected AviatorObject innerBitOr(AviatorObject other) {
-        return valueOf(this.toBigInt().or(((AOAviatorNumber) other).toBigInt()));
+        BigInteger otherValue = this.getOtherBigIntegerValue(other);
+        return valueOf(this.toBigInt().or(otherValue));
     }
 
 
     @Override
     protected AviatorObject innerBitXor(AviatorObject other) {
-        return valueOf(this.toBigInt().xor(((AOAviatorNumber) other).toBigInt()));
+        BigInteger otherValue = this.getOtherBigIntegerValue(other);
+        return valueOf(this.toBigInt().xor(otherValue));
     }
 
 
     @Override
     protected AviatorObject innerShiftLeft(AviatorObject other) {
         this.ensureLong(other);
-        return valueOf(this.toBigInt().shiftLeft((int) ((AOAviatorNumber) other).longValue()));
+        int otherValue = (int) this.getOtherLongValue(other);
+        return valueOf(this.toBigInt().shiftLeft(otherValue));
     }
 
 
     @Override
     protected AviatorObject innerShiftRight(AviatorObject other) {
         this.ensureLong(other);
-        return valueOf(this.toBigInt().shiftRight((int) ((AOAviatorNumber) other).longValue()));
+        int otherValue = (int) this.getOtherLongValue(other);
+        return valueOf(this.toBigInt().shiftRight(otherValue));
     }
 
 
@@ -185,5 +192,15 @@ public class AOAviatorBigInt extends AOAviatorLong {
     @Override
     public AviatorType getAviatorType() {
         return AviatorType.BigInt;
+    }
+
+    protected BigInteger getOtherBigIntegerValue(AviatorObject other) {
+        if (other instanceof AviatorNumber) {
+            return ((AviatorNumber) other).toBigInt();
+        } else if (other instanceof AOAviatorNumber) {
+            return ((AOAviatorNumber) other).toBigInt();
+        } else {
+            throw new ExpressionRuntimeException(String.format("Unknown AviatorObject type [%s]", AORuntimeUtils.getClass(other)));
+        }
     }
 }
