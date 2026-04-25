@@ -169,7 +169,7 @@ public class AOAviatorBigInt extends AOAviatorLong {
     @Override
     protected AviatorObject innerShiftLeft(AviatorObject other) {
         this.ensureLong(other);
-        int otherValue = (int) this.getOtherLongValue(other);
+        int otherValue = Math.toIntExact(this.getOtherLongValue(other));
         return valueOf(this.toBigInt().shiftLeft(otherValue));
     }
 
@@ -177,7 +177,7 @@ public class AOAviatorBigInt extends AOAviatorLong {
     @Override
     protected AviatorObject innerShiftRight(AviatorObject other) {
         this.ensureLong(other);
-        int otherValue = (int) this.getOtherLongValue(other);
+        int otherValue = Math.toIntExact(this.getOtherLongValue(other));
         return valueOf(this.toBigInt().shiftRight(otherValue));
     }
 
@@ -186,6 +186,12 @@ public class AOAviatorBigInt extends AOAviatorLong {
     protected AviatorObject innerUnsignedShiftRight(AviatorObject other) {
         // BigInteger 没有无符号右移API，报错防止误导开发者，强制开发者使用普通右移操作
         throw new ExpressionRuntimeException("BigInteger不能执行[>>>]运算");
+    }
+
+    @Override
+    public AviatorObject bitNot(final Map<String, Object> env) {
+        BigInteger bi = (BigInteger) this.number;
+        return AOAviatorBigInt.valueOf(bi.not());
     }
 
 

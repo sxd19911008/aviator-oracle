@@ -19,6 +19,7 @@ import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import com.googlecode.aviator.runtime.type.*;
 import com.googlecode.aviator.utils.TypeUtils;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 
@@ -366,9 +367,29 @@ public class AOAviatorLong extends AOAviatorNumber {
 
     protected long getOtherLongValue(AviatorObject other) {
         if (other instanceof AviatorNumber) {
-            return ((AviatorLong) other).longValue();
+            AviatorNumber otherNumber = (AviatorNumber) other;
+            Object numberValue = otherNumber.getValue(null);
+            if (numberValue == null) {
+                return otherNumber.longValue();
+            } else {
+                if (numberValue instanceof BigInteger) {
+                    return ((BigInteger) numberValue).longValueExact();
+                } else {
+                    throw new  ExpressionRuntimeException(String.format("数字[%s]为[%s]类型，不能转换为long类型", numberValue, AORuntimeUtils.getClass(numberValue)));
+                }
+            }
         } else if (other instanceof AOAviatorNumber) {
-            return ((AOAviatorLong) other).longValue();
+            AOAviatorNumber otherNumber = (AOAviatorNumber) other;
+            Object numberValue = otherNumber.getValue(null);
+            if (numberValue == null) {
+                return otherNumber.longValue();
+            } else {
+                if (numberValue instanceof BigInteger) {
+                    return ((BigInteger) numberValue).longValueExact();
+                } else {
+                    throw new  ExpressionRuntimeException(String.format("数字[%s]为[%s]类型，不能转换为long类型", numberValue, AORuntimeUtils.getClass(numberValue)));
+                }
+            }
         } else {
             throw new ExpressionRuntimeException(String.format("Unknown AviatorObject type [%s]", AORuntimeUtils.getClass(other)));
         }
