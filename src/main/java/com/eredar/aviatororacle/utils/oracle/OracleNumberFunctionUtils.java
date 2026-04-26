@@ -275,7 +275,7 @@ public class OracleNumberFunctionUtils {
      * @throws ArithmeticException 当 {@code base = 0} 且 {@code exponent < 0}，
      *                             或 {@code base < 0} 且 {@code exponent} 为非整数时
      */
-    protected static Number power(Number number, Number exponent) {
+    protected static OraDecimal power(Number number, Number exponent) {
         if (number == null || exponent == null) {
             return null;
         }

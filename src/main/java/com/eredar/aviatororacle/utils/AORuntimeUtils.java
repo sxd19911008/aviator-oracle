@@ -5,7 +5,36 @@ import com.eredar.aviatororacle.object.AOAviatorRuntimeJavaType;
 import com.googlecode.aviator.runtime.type.AviatorNil;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 
+import java.util.Map;
+
 public class AORuntimeUtils {
+
+    /**
+     * 判断 AviatorObject 是否为null
+     *
+     * @param env 上下文数据
+     * @param arg AviatorObject对象
+     * @return true-为null；false-不为null
+     */
+    public static boolean isNull(Map<String, Object> env, AviatorObject arg) {
+        if (arg instanceof AviatorNil) {
+            return true;
+        } else {
+            Object obj = arg.getValue(env);
+            return obj == null;
+        }
+    }
+
+    /**
+     * 判断 AviatorObject 是否不为null
+     *
+     * @param env 上下文数据
+     * @param arg AviatorObject对象
+     * @return true-不为null；false-为null
+     */
+    public static boolean isNotNull(Map<String, Object> env, AviatorObject arg) {
+        return !isNull(env, arg);
+    }
 
     /**
      * 包装成正确的 {@code AviatorObject} 类型

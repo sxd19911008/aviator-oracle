@@ -32,7 +32,7 @@ public class RoundFunction extends AbstractFunction {
 
     private AviatorObject round(Map<String, Object> env, AviatorObject arg1, AviatorObject arg2) {
         if (arg1 instanceof AviatorNil) {
-            return arg1;
+            return AviatorNil.NIL;
         }
         Object obj1 = arg1.getValue(env);
         if (obj1 == null) {

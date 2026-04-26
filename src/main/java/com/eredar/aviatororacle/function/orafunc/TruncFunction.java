@@ -26,7 +26,7 @@ public class TruncFunction extends AbstractFunction {
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1) {
         if (arg1 instanceof AviatorNil) {
-            return arg1;
+            return AviatorNil.NIL;
         }
         Object obj1 = arg1.getValue(env);
         if (obj1 == null) {
@@ -58,7 +58,7 @@ public class TruncFunction extends AbstractFunction {
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1, final AviatorObject arg2) {
         if (arg1 instanceof AviatorNil) {
-            return arg1;
+            return AviatorNil.NIL;
         }
         Object obj1 = arg1.getValue(env);
         if (obj1 == null) {

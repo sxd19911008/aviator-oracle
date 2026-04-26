@@ -515,4 +515,25 @@ public class OraFuncUtils {
     public static Instant truncWithZone(ZoneId zoneId, Instant date, String format) {
         return OracleInstantUtils.truncInstantWithZone(zoneId, date, format);
     }
+
+    /**
+     * 模拟 Oracle {@code POWER(m, n)}：返回 {@code m} 的 {@code n} 次幂。
+     *
+     * <p>行为对齐 Oracle：
+     * <ul>
+     *   <li>任一入参为 {@code NULL} 时返回 {@code NULL}。</li>
+     *   <li>{@code 0^0 = 1}（Oracle 约定）。</li>
+     *   <li>{@code 0} 的负数次幂抛出 {@link ArithmeticException}（等同 Oracle 除零错误）。</li>
+     *   <li>负底数若指数不是整数，抛出 {@link ArithmeticException}（等同 Oracle ORA-01428）。</li>
+     * </ul>
+     *
+     * @param number   底数；为 {@code null} 时返回 {@code null}
+     * @param exponent 指数；为 {@code null} 时返回 {@code null}
+     * @return 幂运算结果，类型为 {@link OraDecimal}
+     * @throws ArithmeticException 当 {@code base = 0} 且 {@code exponent < 0}，
+     *                             或 {@code base < 0} 且 {@code exponent} 为非整数时
+     */
+    public static OraDecimal power(Number number, Number exponent) {
+        return OracleNumberFunctionUtils.power(number, exponent);
+    }
 }
