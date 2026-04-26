@@ -103,6 +103,26 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
     }
 
     /**
+     * Returns a {@code OraDecimal} whose value is
+     * <tt>(this<sup>n</sup>)</tt>, The power is computed exactly, to
+     * unlimited precision.
+     *
+     * <p>The parameter {@code n} must be in the range 0 through
+     * 999999999, inclusive.  {@code ZERO.pow(0)} returns {@link
+     * #ONE}.
+     *
+     * Note that future releases may expand the allowable exponent
+     * range of this method.
+     *
+     * @param  n power to raise this {@code OraDecimal} to.
+     * @return <tt>this<sup>n</sup></tt>
+     * @throws ArithmeticException if {@code n} is out of range.
+     */
+    public OraDecimal pow(int n) {
+        return new OraDecimal(this.decimal.pow(n));
+    }
+
+    /**
      * 取余数
      * <p>this % divisor
      */

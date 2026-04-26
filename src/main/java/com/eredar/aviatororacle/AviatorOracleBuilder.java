@@ -95,6 +95,11 @@ public class AviatorOracleBuilder {
         aviator.addOpFunction(OperatorType.SHIFT_LEFT, new ShiftLeftFunction());
         aviator.addOpFunction(OperatorType.SHIFT_RIGHT, new ShiftRightFunction());
         aviator.addOpFunction(OperatorType.U_SHIFT_RIGHT, new UnsignedShiftRightFunction());
+        aviator.addOpFunction(OperatorType.BIT_AND, new BitAndFunction());
+        aviator.addOpFunction(OperatorType.BIT_OR, new BitOrFunction());
+        aviator.addOpFunction(OperatorType.BIT_XOR, new BitXorFunction());
+        aviator.addOpFunction(OperatorType.BIT_NOT, new BitNotFunction());
+        aviator.addOpFunction(OperatorType.BIT_NOT, new ExponentFunction());
 
         // 使用自定义方法，替换框架方法
         aviator.addFunction(new AODecimalFunction());
