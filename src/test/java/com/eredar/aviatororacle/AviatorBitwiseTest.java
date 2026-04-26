@@ -2,6 +2,7 @@ package com.eredar.aviatororacle;
 
 import com.eredar.aviatororacle.number.OraDecimal;
 import com.eredar.aviatororacle.testUtils.HashMapBuilder;
+import com.googlecode.aviator.exception.ExpressionRuntimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,27 +11,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * AviatorOracle 位运算单元测试，覆盖 {@code &}（与）、{@code |}（或）、{@code ^}（异或）。
- *
- * <p><b>类型支持规则说明：</b></p>
- * <ul>
- *   <li>{@code BigInteger} 作为左操作数时，右操作数可以是任意 Number 类型
- *       （内部通过 {@code toBigInt()} 转换，不做类型检查），结果为 {@code BigInteger}。</li>
- *   <li>{@code Long} / {@code Integer} 作为左操作数时，右操作数只能是 {@code Long} 或
- *       {@code Integer}（内部 {@code ensureLong} 检查），否则抛出异常。</li>
- *   <li>{@code Double} / {@code BigDecimal} / {@code OraDecimal} 作为左操作数时不支持
- *       位运算，直接抛出异常。</li>
- * </ul>
- *
- * <p><b>表达式设计策略：</b>将 {@code BigInteger} 置于表达式最左侧，确保链式运算中后续
- * 所有类型（Long、Integer、Double、BigDecimal、OraDecimal）均以右操作数的身份参与运算，
- * 从而在单个表达式内覆盖全部六种类型。</p>
+ * AviatorOracle 位运算单元测试
  */
-@DisplayName("AviatorOracle 位运算（与 & / 或 | / 异或 ^）测试")
+@DisplayName("AviatorOracle 位运算（与 & / 或 | / 异或 ^ / ~ 非）测试")
 public class AviatorBitwiseTest {
 
     // ========================= 与运算 (&) =========================
@@ -58,6 +46,7 @@ public class AviatorBitwiseTest {
      */
     static Stream<Arguments> testBitAndProvider() {
         return Stream.of(
+                // 正常用例：BigInteger & Long & Integer & Double & BigDecimal & OraDecimal 混合与运算
                 Arguments.of(
                         "a & b & c & d & e & f",
                         HashMapBuilder.<String, Object>builder()
@@ -69,6 +58,60 @@ public class AviatorBitwiseTest {
                                 .put("f", new OraDecimal("9"))   // OraDecimal，toBigInt() 截断为整数 9
                                 .build(),
                         new BigInteger("1")
+                ),
+                // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .put("b", true)                  // Boolean，不是数值类型，不支持 &
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .put("b", "hello")               // String，不是数值类型，不支持 &
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))                        // BigInteger，合法左操作数
+                                .put("b", Instant.parse("2024-01-01T00:00:00Z"))      // Instant，不是数值类型，不支持 &
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", true)                  // Boolean，不是数值类型，不支持 &
+                                .put("b", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", "hello")               // String，不是数值类型，不支持 &
+                                .put("b", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", Instant.parse("2024-01-01T00:00:00Z"))      // Instant，不是数值类型，不支持 &
+                                .put("b", new BigInteger("5"))                        // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -112,17 +155,72 @@ public class AviatorBitwiseTest {
      */
     static Stream<Arguments> testBitOrProvider() {
         return Stream.of(
+                // 正常用例：BigInteger | Long | Integer | Double | BigDecimal | OraDecimal 混合或运算
                 Arguments.of(
                         "a | b | c | d | e | f",
                         HashMapBuilder.<String, Object>builder()
                                 .put("a", new BigInteger("8"))   // BigInteger，作为首个左操作数
-                                .put("b", 4L)                        // Long
-                                .put("c", 2)                         // Integer
-                                .put("d", 1.0)                       // Double，toBigInt() = 1
+                                .put("b", 4L)                    // Long
+                                .put("c", 2)                     // Integer
+                                .put("d", 1.0)                   // Double，toBigInt() = 1
                                 .put("e", new BigDecimal("16"))  // BigDecimal，toBigInt() = 16
                                 .put("f", new OraDecimal("32"))  // OraDecimal，toBigInt() = 32
                                 .build(),
                         new BigInteger("63")
+                ),
+                // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .put("b", false)                 // Boolean，不是数值类型，不支持 |
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .put("b", "world")               // String，不是数值类型，不支持 |
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))                        // BigInteger，合法左操作数
+                                .put("b", Instant.parse("2024-06-01T00:00:00Z"))      // Instant，不是数值类型，不支持 |
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", false)                 // Boolean，不是数值类型，不支持 |
+                                .put("b", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", "world")               // String，不是数值类型，不支持 |
+                                .put("b", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", Instant.parse("2024-06-01T00:00:00Z"))      // Instant，不是数值类型，不支持 |
+                                .put("b", new BigInteger("5"))                        // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -166,6 +264,7 @@ public class AviatorBitwiseTest {
      */
     static Stream<Arguments> testBitXorProvider() {
         return Stream.of(
+                // 正常用例：BigInteger ^ Long ^ Integer ^ Double ^ BigDecimal ^ OraDecimal 混合异或运算
                 Arguments.of(
                         "a ^ b ^ c ^ d ^ e ^ f",
                         HashMapBuilder.<String, Object>builder()
@@ -177,6 +276,60 @@ public class AviatorBitwiseTest {
                                 .put("f", new OraDecimal("9"))   // OraDecimal，toBigInt() = 9
                                 .build(),
                         new BigInteger("15")
+                ),
+                // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .put("b", true)                  // Boolean，不是数值类型，不支持 ^
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .put("b", "foo")                 // String，不是数值类型，不支持 ^
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))                        // BigInteger，合法左操作数
+                                .put("b", Instant.parse("2024-12-01T00:00:00Z"))      // Instant，不是数值类型，不支持 ^
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", true)                  // Boolean，不是数值类型，不支持 ^
+                                .put("b", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", "foo")                 // String，不是数值类型，不支持 ^
+                                .put("b", new BigInteger("5"))   // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不支持位运算，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", Instant.parse("2024-12-01T00:00:00Z"))      // Instant，不是数值类型，不支持 ^
+                                .put("b", new BigInteger("5"))                        // BigInteger，合法左操作数
+                                .build(),
+                        ExpressionRuntimeException.class
                 )
         );
     }
@@ -185,6 +338,121 @@ public class AviatorBitwiseTest {
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testBitXorProvider")
     public void testBitXor(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
+        } else {
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    // ========================= 非运算 (~) =========================
+
+    /**
+     * 非运算（~，按位取反）测试数据。
+     *
+     * <p>表达式：{@code ~a}，一元前缀运算符：</p>
+     * <pre>
+     *   BigInteger 取反（java.math.BigInteger.not()，按二进制补码取反）：
+     *     ~BigInteger("5")  → BigInteger("-6")   (0b...0101 → 0b...1010 补码 = -6)
+     *
+     *   Long/Integer 取反（Java 按位取反，结果仍为 long）：
+     *     ~Long(5L)         → -6L                (~0b...0101 = 0b...1010 = -6)
+     *     ~Integer(5)       → -6L                (Integer 视为 Long 处理)
+     *
+     *   报错场景（Double/BigDecimal/OraDecimal 的 AOAviatorDecimal 未实现 bitNot；
+     *            String/Instant/Boolean 不是数值类型，均抛出 ExpressionRuntimeException）：
+     *     ~Double(5.0)          → ExpressionRuntimeException
+     *     ~BigDecimal("5")      → ExpressionRuntimeException
+     *     ~OraDecimal("5")      → ExpressionRuntimeException
+     *     ~String("5")          → ExpressionRuntimeException
+     *     ~Instant              → ExpressionRuntimeException
+     *     ~Boolean(true)        → ExpressionRuntimeException
+     * </pre>
+     */
+    static Stream<Arguments> testBitNotProvider() {
+        return Stream.of(
+                // 正常用例：~BigInteger("5") → BigInteger("-6")
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，not() 按补码取反
+                                .build(),
+                        new BigInteger("-6")
+                ),
+                // 正常用例：~Long(5L) → -6L
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 5L)                    // Long，Java ~5L = -6L
+                                .build(),
+                        -6L
+                ),
+                // 正常用例：~Integer(5) → -6L（Integer 在框架中被提升为 Long 处理）
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 5)                     // Integer，被提升为 Long，~5L = -6L
+                                .build(),
+                        -6L
+                ),
+                // 报错用例：Double 对应 AOAviatorDecimal，未实现 bitNot，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 5.0)                   // Double → AOAviatorDecimal，不支持 ~
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：BigDecimal 对应 AOAviatorDecimal，未实现 bitNot，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("5"))   // BigDecimal → AOAviatorDecimal，不支持 ~
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：OraDecimal 对应 AOAviatorDecimal，未实现 bitNot，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("5"))   // OraDecimal → AOAviatorDecimal，不支持 ~
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：字符串（String）不是数值类型，不支持 ~，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", "5")                   // String，不是数值，不支持 ~
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：日期类型（Instant）不是数值类型，不支持 ~，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", Instant.parse("2024-01-01T00:00:00Z"))   // Instant，不是数值，不支持 ~
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：布尔型（Boolean）不是数值类型，不支持 ~，抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "~a",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", true)                  // Boolean，不是数值，不支持 ~
+                                .build(),
+                        ExpressionRuntimeException.class
+                )
+        );
+    }
+
+    @DisplayName("非运算 (~)")
+    @ParameterizedTest(name = "【{index}】{0}: vars={1}")
+    @MethodSource("testBitNotProvider")
+    public void testBitNot(String expression, Map<String, Object> vars, Object expected) {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;

@@ -99,7 +99,8 @@ public class AviatorOracleBuilder {
         aviator.addOpFunction(OperatorType.BIT_OR, new BitOrFunction());
         aviator.addOpFunction(OperatorType.BIT_XOR, new BitXorFunction());
         aviator.addOpFunction(OperatorType.BIT_NOT, new BitNotFunction());
-        aviator.addOpFunction(OperatorType.BIT_NOT, new ExponentFunction());
+        // 指数运算（**）注册到 Exponent，与按位取反（~）是不同的操作符
+        aviator.addOpFunction(OperatorType.Exponent, new ExponentFunction());
 
         // 使用自定义方法，替换框架方法
         aviator.addFunction(new AODecimalFunction());
