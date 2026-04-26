@@ -59,6 +59,63 @@ public class AviatorBitwiseTest {
                                 .build(),
                         new BigInteger("1")
                 ),
+                // 正常用例：BigInteger & Double —— Double 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) & 3.9(截断为3, 0b011) = 1(0b001)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，左操作数
+                                .put("b", 3.9)                   // Double，toBigInt() 截断为整数 3
+                                .build(),
+                        new BigInteger("1")
+                ),
+                // 正常用例：BigInteger & BigDecimal —— BigDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) & 3.7(截断为3, 0b011) = 1(0b001)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("b", new BigDecimal("3.7"))     // BigDecimal，toBigInt() 截断为整数 3
+                                .build(),
+                        new BigInteger("1")
+                ),
+                // 正常用例：BigInteger & OraDecimal —— OraDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) & 3.7(截断为3, 0b011) = 1(0b001)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("b", new OraDecimal("3.7"))     // OraDecimal，toBigInt() 截断为整数 3
+                                .build(),
+                        new BigInteger("1")
+                ),
+                // 报错用例：Double 作左操作数（AOAviatorDecimal 未继承 bitAnd 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 5.0)                   // Double → AOAviatorDecimal，左操作数不支持 &
+                                .put("b", new BigInteger("3"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：BigDecimal 作左操作数（AOAviatorDecimal 未继承 bitAnd 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("5"))   // BigDecimal → AOAviatorDecimal，左操作数不支持 &
+                                .put("b", new BigInteger("3"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：OraDecimal 作左操作数（AOAviatorDecimal 未继承 bitAnd 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("5"))   // OraDecimal → AOAviatorDecimal，左操作数不支持 &
+                                .put("b", new BigInteger("3"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
                 // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
                 Arguments.of(
                         "a & b",
@@ -167,6 +224,63 @@ public class AviatorBitwiseTest {
                                 .put("f", new OraDecimal("32"))  // OraDecimal，toBigInt() = 32
                                 .build(),
                         new BigInteger("63")
+                ),
+                // 正常用例：BigInteger | Double —— Double 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) | 2.9(截断为2, 0b010) = 7(0b111)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，左操作数
+                                .put("b", 2.9)                   // Double，toBigInt() 截断为整数 2
+                                .build(),
+                        new BigInteger("7")
+                ),
+                // 正常用例：BigInteger | BigDecimal —— BigDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) | 2.8(截断为2, 0b010) = 7(0b111)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("b", new BigDecimal("2.8"))     // BigDecimal，toBigInt() 截断为整数 2
+                                .build(),
+                        new BigInteger("7")
+                ),
+                // 正常用例：BigInteger | OraDecimal —— OraDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) | 2.8(截断为2, 0b010) = 7(0b111)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("b", new OraDecimal("2.8"))     // OraDecimal，toBigInt() 截断为整数 2
+                                .build(),
+                        new BigInteger("7")
+                ),
+                // 报错用例：Double 作左操作数（AOAviatorDecimal 未继承 bitOr 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 5.0)                   // Double → AOAviatorDecimal，左操作数不支持 |
+                                .put("b", new BigInteger("2"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：BigDecimal 作左操作数（AOAviatorDecimal 未继承 bitOr 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("5"))   // BigDecimal → AOAviatorDecimal，左操作数不支持 |
+                                .put("b", new BigInteger("2"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：OraDecimal 作左操作数（AOAviatorDecimal 未继承 bitOr 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("5"))   // OraDecimal → AOAviatorDecimal，左操作数不支持 |
+                                .put("b", new BigInteger("2"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
                 ),
                 // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
                 Arguments.of(
@@ -277,6 +391,63 @@ public class AviatorBitwiseTest {
                                 .build(),
                         new BigInteger("15")
                 ),
+                // 正常用例：BigInteger ^ Double —— Double 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) ^ 3.9(截断为3, 0b011) = 6(0b110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))   // BigInteger，左操作数
+                                .put("b", 3.9)                   // Double，toBigInt() 截断为整数 3
+                                .build(),
+                        new BigInteger("6")
+                ),
+                // 正常用例：BigInteger ^ BigDecimal —— BigDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) ^ 3.6(截断为3, 0b011) = 6(0b110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("b", new BigDecimal("3.6"))     // BigDecimal，toBigInt() 截断为整数 3
+                                .build(),
+                        new BigInteger("6")
+                ),
+                // 正常用例：BigInteger ^ OraDecimal —— OraDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
+                // 5(0b101) ^ 3.6(截断为3, 0b011) = 6(0b110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("b", new OraDecimal("3.6"))     // OraDecimal，toBigInt() 截断为整数 3
+                                .build(),
+                        new BigInteger("6")
+                ),
+                // 报错用例：Double 作左操作数（AOAviatorDecimal 未继承 bitXor 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 5.0)                   // Double → AOAviatorDecimal，左操作数不支持 ^
+                                .put("b", new BigInteger("3"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：BigDecimal 作左操作数（AOAviatorDecimal 未继承 bitXor 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("5"))   // BigDecimal → AOAviatorDecimal，左操作数不支持 ^
+                                .put("b", new BigInteger("3"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
+                // 报错用例：OraDecimal 作左操作数（AOAviatorDecimal 未继承 bitXor 实现），抛出 ExpressionRuntimeException
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new OraDecimal("5"))   // OraDecimal → AOAviatorDecimal，左操作数不支持 ^
+                                .put("b", new BigInteger("3"))   // BigInteger，右操作数
+                                .build(),
+                        ExpressionRuntimeException.class
+                ),
                 // 报错用例：布尔型（Boolean）不支持位运算，抛出 ExpressionRuntimeException
                 Arguments.of(
                         "a ^ b",
@@ -382,6 +553,14 @@ public class AviatorBitwiseTest {
                                 .build(),
                         new BigInteger("-6")
                 ),
+                Arguments.of(
+                        "~(a + b)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("2"))
+                                .put("b", new BigInteger("3"))
+                                .build(),
+                        new BigInteger("-6")
+                ),
                 // 正常用例：~Long(5L) → -6L
                 Arguments.of(
                         "~a",
@@ -390,11 +569,27 @@ public class AviatorBitwiseTest {
                                 .build(),
                         -6L
                 ),
+                Arguments.of(
+                        "~(a + b)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 2L)
+                                .put("b", 3L)
+                                .build(),
+                        -6L
+                ),
                 // 正常用例：~Integer(5) → -6L（Integer 在框架中被提升为 Long 处理）
                 Arguments.of(
                         "~a",
                         HashMapBuilder.<String, Object>builder()
                                 .put("a", 5)                     // Integer，被提升为 Long，~5L = -6L
+                                .build(),
+                        -6L
+                ),
+                Arguments.of(
+                        "~(a + b)",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 2)
+                                .put("b", 3)
                                 .build(),
                         -6L
                 ),
