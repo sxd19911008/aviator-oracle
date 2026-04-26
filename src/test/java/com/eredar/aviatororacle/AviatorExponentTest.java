@@ -734,24 +734,42 @@ public class AviatorExponentTest {
     // ========================= 复杂公式 =========================
 
     /**
-     * 连续三次指数运算：{@code ((a ** b) ** c) ** d}。
-     *
-     * <p>计算过程（全为 Long 类型，结果为 OraDecimal）：
-     * <pre>
-     *   a=2, b=2 → step1 = 2^2 = 4
-     *   step1=4, c=3 → step2 = 4^3 = 64
-     *   step2=64, d=2 → result = 64^2 = 4096
-     * </pre>
+     * 连续三次指数运算：{@code ((a ** b) ** c) ** d}
      */
     static Stream<Arguments> testComplexExponentProvider() {
         return Stream.of(
-                // ((2L ** 2L) ** 3L) ** 2L = ((4)^3)^2 = 64^2 = 4096
+                // Case1: a(Long) ** b(Integer) ** c(BigInteger) ** d(Double)
+                // ((2L^3)^2)^2 = (8^2)^2 = 64^2 = 4096 → OraDecimal
                 Arguments.of(
                         "(( a ** b ) ** c ) ** d",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", 2L).put("b", 2L).put("c", 3L).put("d", 2L)
+                                .put("a", 2L).put("b", 3).put("c", new BigInteger("2")).put("d", 2.9)
                                 .build(),
                         new OraDecimal("4096")
+                ),
+                // Case2: a(BigDecimal) ** b(OraDecimal) ** c(Long) ** d(Integer)
+                // ((2^3)^2)^2 = (8^2)^2 = 64^2 = 4096 → OraDecimal
+                Arguments.of(
+                        "(( a ** b ) ** c ) ** d",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigDecimal("2"))
+                                .put("b", new OraDecimal("3.5"))
+                                .put("c", 2L)
+                                .put("d", 2)
+                                .build(),
+                        new OraDecimal("4096")
+                ),
+                // Case3: a(BigInteger) ** b(Double) ** c(BigDecimal) ** d(OraDecimal)
+                // ((3^2)^2)^3 = (9^2)^3 = 81^3 = 531441 → BigInteger（n1 始终为 BigInteger）
+                Arguments.of(
+                        "(( a ** b ) ** c ) ** d",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("3"))
+                                .put("b", 2.8)
+                                .put("c", new BigDecimal("2"))
+                                .put("d", new OraDecimal("3.1"))
+                                .build(),
+                        new BigInteger("531441")
                 )
         );
     }
