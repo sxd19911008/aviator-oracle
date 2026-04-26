@@ -115,6 +115,7 @@ public class AviatorOracleBuilder {
         aviator.addFunction(new RoundFunction());
         aviator.addFunction(new TruncFunction());
         aviator.addFunction(new TruncWithZoneFunction());
+        aviator.addFunction(new PowerFunction());
         aviator.addFunction(new MonthsBetweenFunction());
         aviator.addFunction(new AddMonthsFunction());
         aviator.addFunction(new LastDayFunction());
