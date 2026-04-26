@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * 对于其他非整数指数（如 {@code 2^1.5}），结果与 Oracle 一致至 38 位小数，末位存在不超过 2 的偏差（100 位中间精度的误差范围内）。
  */
 @DisplayName("Oracle POWER 函数测试")
-public class OracleNumberFunctionPowerTest {
+public class PowerTest {
 
     // -------------------------------------------------------------------------
     // power — 正常返回场景
