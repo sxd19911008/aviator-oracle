@@ -64,30 +64,100 @@ public class AviatorBitwiseTest {
                 Arguments.of(
                         "a & b",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("5"))   // BigInteger，左操作数
+                                .put("a", new BigInteger("15"))   // BigInteger，左操作数
                                 .put("b", 3.9)                   // Double，toBigInt() 截断为整数 3
                                 .build(),
-                        new BigInteger("1")
+                        new BigInteger("3")
                 ),
                 // 正常用例：BigInteger & BigDecimal —— BigDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
                 // 5(0b101) & 3.7(截断为3, 0b011) = 1(0b001)
                 Arguments.of(
                         "a & b",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("a", new BigInteger("15"))       // BigInteger，左操作数
                                 .put("b", new BigDecimal("3.7"))     // BigDecimal，toBigInt() 截断为整数 3
                                 .build(),
-                        new BigInteger("1")
+                        new BigInteger("3")
                 ),
                 // 正常用例：BigInteger & OraDecimal —— OraDecimal 作右操作数时经 toBigInt() 截断小数位后参与运算
                 // 5(0b101) & 3.7(截断为3, 0b011) = 1(0b001)
                 Arguments.of(
                         "a & b",
                         HashMapBuilder.<String, Object>builder()
-                                .put("a", new BigInteger("5"))       // BigInteger，左操作数
+                                .put("a", new BigInteger("15"))       // BigInteger，左操作数
                                 .put("b", new OraDecimal("3.7"))     // OraDecimal，toBigInt() 截断为整数 3
                                 .build(),
-                        new BigInteger("1")
+                        new BigInteger("3")
+                ),
+                // 正常用例：BigInteger & BigInteger —— 纯整数类型与运算
+                // 12(0b1100) & 10(0b1010) = 8(0b1000)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", new BigInteger("10"))  // BigInteger，右操作数
+                                .build(),
+                        new BigInteger("8")
+                ),
+                // 正常用例：BigInteger & Long —— Long 会被 toBigInt() 转换后与 BigInteger 做与运算
+                // 14(0b1110) & 11(0b1011) = 10(0b1010)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("14"))  // BigInteger，左操作数
+                                .put("b", 11L)                   // Long，右操作数
+                                .build(),
+                        new BigInteger("10")
+                ),
+                // 正常用例：BigInteger & Integer —— Integer 被提升为 Long 后 toBigInt() 转换，再做与运算
+                // 12(0b1100) & 6(0b0110) = 4(0b0100)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", 6)                     // Integer，右操作数，提升为 Long
+                                .build(),
+                        new BigInteger("4")
+                ),
+                // 正常用例：Long & Long —— AOAviatorLong.innerBitAnd 对 long 值做位与，结果为 Long
+                // 14L(0b1110) & 11L(0b1011) = 10L(0b1010)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 14L)   // Long，左操作数
+                                .put("b", 11L)   // Long，右操作数
+                                .build(),
+                        10L
+                ),
+                // 正常用例：Long & Integer —— Integer 被提升为 Long，两侧均为 Long 做位与，结果为 Long
+                // 14L(0b1110) & 11(0b1011) = 10L(0b1010)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 14L)  // Long，左操作数
+                                .put("b", 11)   // Integer，右操作数，提升为 Long
+                                .build(),
+                        10L
+                ),
+                // 正常用例：Integer & Long —— Integer 左操作数经 AOAviatorNumber.valueOf() 提升为 AOAviatorLong，结果为 Long
+                // 14(0b1110) & 11L(0b1011) = 10L(0b1010)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 14)    // Integer，左操作数，提升为 Long
+                                .put("b", 11L)   // Long，右操作数
+                                .build(),
+                        10L
+                ),
+                // 正常用例：Integer & Integer —— 两侧均提升为 Long 处理，结果为 Long
+                // 14(0b1110) & 11(0b1011) = 10L(0b1010)
+                Arguments.of(
+                        "a & b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 14)  // Integer，左操作数，提升为 Long
+                                .put("b", 11)  // Integer，右操作数，提升为 Long
+                                .build(),
+                        10L
                 ),
                 // 报错用例：Double 作左操作数（AOAviatorDecimal 未继承 bitAnd 实现），抛出 ExpressionRuntimeException
                 Arguments.of(
@@ -255,6 +325,76 @@ public class AviatorBitwiseTest {
                                 .build(),
                         new BigInteger("7")
                 ),
+                // 正常用例：BigInteger | BigInteger —— 纯整数类型或运算
+                // 12(0b1100) | 10(0b1010) = 14(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", new BigInteger("10"))  // BigInteger，右操作数
+                                .build(),
+                        new BigInteger("14")
+                ),
+                // 正常用例：BigInteger | Long —— Long 会被 toBigInt() 转换后与 BigInteger 做或运算
+                // 12(0b1100) | 10L(0b1010) = 14(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", 10L)                   // Long，右操作数
+                                .build(),
+                        new BigInteger("14")
+                ),
+                // 正常用例：BigInteger | Integer —— Integer 被提升为 Long 后 toBigInt() 转换，再做或运算
+                // 12(0b1100) | 10(0b1010) = 14(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", 10)                    // Integer，右操作数，提升为 Long
+                                .build(),
+                        new BigInteger("14")
+                ),
+                // 正常用例：Long | Long —— AOAviatorLong.innerBitOr 对 long 值做位或，结果为 Long
+                // 12L(0b1100) | 10L(0b1010) = 14L(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12L)   // Long，左操作数
+                                .put("b", 10L)   // Long，右操作数
+                                .build(),
+                        14L
+                ),
+                // 正常用例：Long | Integer —— Integer 被提升为 Long，两侧均为 Long 做位或，结果为 Long
+                // 12L(0b1100) | 10(0b1010) = 14L(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12L)  // Long，左操作数
+                                .put("b", 10)   // Integer，右操作数，提升为 Long
+                                .build(),
+                        14L
+                ),
+                // 正常用例：Integer | Long —— Integer 左操作数经 AOAviatorNumber.valueOf() 提升为 AOAviatorLong，结果为 Long
+                // 12(0b1100) | 10L(0b1010) = 14L(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12)    // Integer，左操作数，提升为 Long
+                                .put("b", 10L)   // Long，右操作数
+                                .build(),
+                        14L
+                ),
+                // 正常用例：Integer | Integer —— 两侧均提升为 Long 处理，结果为 Long
+                // 12(0b1100) | 10(0b1010) = 14L(0b1110)
+                Arguments.of(
+                        "a | b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12)  // Integer，左操作数，提升为 Long
+                                .put("b", 10)  // Integer，右操作数，提升为 Long
+                                .build(),
+                        14L
+                ),
                 // 报错用例：Double 作左操作数（AOAviatorDecimal 未继承 bitOr 实现），抛出 ExpressionRuntimeException
                 Arguments.of(
                         "a | b",
@@ -420,6 +560,76 @@ public class AviatorBitwiseTest {
                                 .put("b", new OraDecimal("3.6"))     // OraDecimal，toBigInt() 截断为整数 3
                                 .build(),
                         new BigInteger("6")
+                ),
+                // 正常用例：BigInteger ^ BigInteger —— 纯整数类型异或运算
+                // 12(0b1100) ^ 10(0b1010) = 6(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", new BigInteger("10"))  // BigInteger，右操作数
+                                .build(),
+                        new BigInteger("6")
+                ),
+                // 正常用例：BigInteger ^ Long —— Long 会被 toBigInt() 转换后与 BigInteger 做异或运算
+                // 12(0b1100) ^ 10L(0b1010) = 6(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", 10L)                   // Long，右操作数
+                                .build(),
+                        new BigInteger("6")
+                ),
+                // 正常用例：BigInteger ^ Integer —— Integer 被提升为 Long 后 toBigInt() 转换，再做异或运算
+                // 12(0b1100) ^ 10(0b1010) = 6(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", new BigInteger("12"))  // BigInteger，左操作数
+                                .put("b", 10)                    // Integer，右操作数，提升为 Long
+                                .build(),
+                        new BigInteger("6")
+                ),
+                // 正常用例：Long ^ Long —— AOAviatorLong.innerBitXor 对 long 值做位异或，结果为 Long
+                // 12L(0b1100) ^ 10L(0b1010) = 6L(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12L)   // Long，左操作数
+                                .put("b", 10L)   // Long，右操作数
+                                .build(),
+                        6L
+                ),
+                // 正常用例：Long ^ Integer —— Integer 被提升为 Long，两侧均为 Long 做位异或，结果为 Long
+                // 12L(0b1100) ^ 10(0b1010) = 6L(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12L)  // Long，左操作数
+                                .put("b", 10)   // Integer，右操作数，提升为 Long
+                                .build(),
+                        6L
+                ),
+                // 正常用例：Integer ^ Long —— Integer 左操作数经 AOAviatorNumber.valueOf() 提升为 AOAviatorLong，结果为 Long
+                // 12(0b1100) ^ 10L(0b1010) = 6L(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12)    // Integer，左操作数，提升为 Long
+                                .put("b", 10L)   // Long，右操作数
+                                .build(),
+                        6L
+                ),
+                // 正常用例：Integer ^ Integer —— 两侧均提升为 Long 处理，结果为 Long
+                // 12(0b1100) ^ 10(0b1010) = 6L(0b0110)
+                Arguments.of(
+                        "a ^ b",
+                        HashMapBuilder.<String, Object>builder()
+                                .put("a", 12)  // Integer，左操作数，提升为 Long
+                                .put("b", 10)  // Integer，右操作数，提升为 Long
+                                .build(),
+                        6L
                 ),
                 // 报错用例：Double 作左操作数（AOAviatorDecimal 未继承 bitXor 实现），抛出 ExpressionRuntimeException
                 Arguments.of(
