@@ -25,6 +25,8 @@
         <slf4j.version>1.7.36</slf4j.version>
         <!-- 编译器插件版本：集中维护 -->
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+        <!-- big-math 版本（注意：2.3.1 有缺陷，必须跳过，直接用 2.3.2） -->
+        <big-math.version>2.3.2</big-math.version>
     </properties>
 
     <dependencies>
@@ -33,6 +35,12 @@
             <groupId>com.googlecode.aviator</groupId>
             <artifactId>aviator</artifactId>
             <version>${aviator.version}</version>
+        </dependency>
+        <!-- 高精度 BigDecimal 数学函数 -->
+        <dependency>
+            <groupId>ch.obermuhlner</groupId>
+            <artifactId>big-math</artifactId>
+            <version>${big-math.version}</version>
         </dependency>
         <!-- 日志框架 -->
         <dependency>

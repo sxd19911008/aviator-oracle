@@ -1,7 +1,10 @@
 package com.eredar.aviatororacle.number;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 public class OraDecimal extends Number implements Comparable<OraDecimal> {
@@ -10,6 +13,16 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     public static final OraDecimal ZERO = new OraDecimal(BigDecimal.ZERO);
     public static final OraDecimal ONE = new OraDecimal(BigDecimal.ONE);
+
+    /**
+     * 用于 {@link #pow(OraDecimal)} 的中间计算精度上下文。
+     * <p>保留 100 位有效数字，为 {@code BigDecimalMath.pow} 的 ln/exp 迭代提供足够精度余量，
+     */
+    private static final MathContext POW_MATH_CONTEXT;
+
+    static {
+        POW_MATH_CONTEXT = new MathContext(100, RoundingMode.DOWN);
+    }
 
     public OraDecimal(int val) {
         this(new BigDecimal(val));
@@ -120,6 +133,17 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      */
     public OraDecimal pow(int n) {
         return new OraDecimal(this.decimal.pow(n));
+    }
+
+    /**
+     * 返回 {@code this} 的 {@code exponent} 次幂，支持非整数指数。
+     *
+     * @param exponent 指数
+     * @return {@code this ^ exponent}
+     */
+    public OraDecimal pow(OraDecimal exponent) {
+        BigDecimal result = BigDecimalMath.pow(this.decimal, exponent.getDecimal(), POW_MATH_CONTEXT);
+        return new OraDecimal(result);
     }
 
     /**

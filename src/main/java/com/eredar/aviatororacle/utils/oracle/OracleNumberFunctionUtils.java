@@ -259,6 +259,64 @@ public class OracleNumberFunctionUtils {
     }
 
     /**
+     * 模拟 Oracle {@code POWER(m, n)}：返回 {@code m} 的 {@code n} 次幂。
+     *
+     * <p>行为对齐 Oracle：
+     * <ul>
+     *   <li>任一入参为 {@code NULL} 时返回 {@code NULL}。</li>
+     *   <li>{@code 0^0 = 1}（Oracle 约定）。</li>
+     *   <li>{@code 0} 的负数次幂抛出 {@link ArithmeticException}（等同 Oracle 除零错误）。</li>
+     *   <li>负底数若指数不是整数，抛出 {@link ArithmeticException}（等同 Oracle ORA-01428）。</li>
+     * </ul>
+     *
+     * @param number   底数；为 {@code null} 时返回 {@code null}
+     * @param exponent 指数；为 {@code null} 时返回 {@code null}
+     * @return 幂运算结果，类型为 {@link OraDecimal}
+     * @throws ArithmeticException 当 {@code base = 0} 且 {@code exponent < 0}，
+     *                             或 {@code base < 0} 且 {@code exponent} 为非整数时
+     */
+    protected static Number power(Number number, Number exponent) {
+        if (number == null || exponent == null) {
+            return null;
+        }
+
+        OraDecimal n = OraDecimal.valueOf(number);
+        OraDecimal e = OraDecimal.valueOf(exponent);
+
+        int nSign = n.signum();
+        int eSign = e.signum();
+
+        /* ---- 底数为 0 的特殊情况 ---- */
+        if (nSign == 0) {
+            if (eSign == 0) {
+                // 0^0 = 1（Oracle 约定）
+                return OraDecimal.ONE;
+            }
+            if (eSign < 0) {
+                // 0 的负次幂等价于除以零
+                throw new ArithmeticException("numeric or value error: POWER(0, negative exponent)");
+            }
+            // 0^n (n > 0) = 0
+            return OraDecimal.ZERO;
+        }
+
+        /* ---- 指数为 0：任意非零底数的 0 次幂 = 1 ---- */
+        if (eSign == 0) {
+            return OraDecimal.ONE;
+        }
+
+        boolean expIsInteger = e.isInteger();
+
+        /* 负底数不允许非整数指数 */
+        if (nSign < 0 && !expIsInteger) {
+            throw new ArithmeticException(String.format("first argument [%s] is out of range", n));
+        }
+
+        /* 直接计算并返回 */
+        return n.pow(e);
+    }
+
+    /**
      * 处理 {@code newScale}
      *
      * @param newScale 新精度
