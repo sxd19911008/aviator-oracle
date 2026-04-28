@@ -29,6 +29,6 @@ public final class DateFormatCacheKey {
 
     @Override
     public int hashCode() {
-        return Objects.hash(format, zoneId);
+        return Objects.hash(this.format, this.zoneId);
     }
 }
