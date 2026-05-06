@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 @DisplayName("abs 方法测试")
 public class AbsFunctionTest {
 
-    /** 所有案例使用同一表达式；第 2 个参数 0 为占位符，会被 AbsFunction 忽略 */
     private static final String EXPR = "abs(a)";
 
     static Stream<Arguments> testAbsProvider() {
