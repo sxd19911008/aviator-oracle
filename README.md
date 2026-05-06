@@ -1,11 +1,52 @@
 # aviator-oracle
-基于 Aviator 的兼容 Oracle 的精度与函数的表达式引擎。
+基于 Aviator 的兼容 Oracle 数据库的精度与函数的表达式引擎。
+
+## 新增数据类型`OraDecimal`，用于保持与Oracle相同的精度
+
+`OraDecimal`与`BieDecimal`一样，都是不可变类型。内持有了一个`BieDecimal`对象，每次计算都使用该`BieDecimal`对象。
+
+通过每次计算完成后，根据Oracle的逻辑保留`BieDecimal`对象的精度，实现与Oracle的`NUMBER`类型的精度的统一。
+
+### Oracle数据库NUMBER类型精度逻辑
+
+- 不指定精度时，则默认整数+小数共40位。
+- 如果整数为0，则整数不占位，小数部分可以达到40位。
+- 整数部分占位一定是偶数。比如整数3位或4位，小数部分最多都是36位。
+- 如果整数部分为0，小数位开头的所有0都不算在40位中。
+- 负号不占位，不影响以上判断，直接去掉负号当正数判断即可。
+
+### 将新增数据类型`OraDecimal`接入aviator
+
+由于aviator框架将类型与计算符号之间的关联全部写死，根本没有留下新增数据类型的方案，所以如果简单的新增一个Number类型，只会被作为一个java对象来操作，无法具备Number类型的各种特性。
+
+解决这个难题需要分2步：
+
+1. 重写部分继承`AviatorObject`的基本类型：通过将原本的基本类型复制出来，然后对其稍作修改，保留其原本功能的前提下增加对`OraDecimal`类型的支持，删除不需要的逻辑。
+2. 重新实现涉及上述基本类型的计算符号：通过`addOpFunction`重写所有涉及到的符号（目前共20个），能够用基本类型实现的全部通过基本类型实现，这样可以保留原本框架的全部特性；不能用基本类型实现的则自己实现。
 
 ## 支持的日期类型
 
 - `java.time.Instant`
 - `java.time.LocalDateTime`
 - `java.util.Date`
+
+由于aviator本身支持`java.util.Date`类型，所以新增了另外两个日期类型与字符串之间，相互转换的工具方法。
+
+### 函数`instant_to_string(instant, format, zoneId)`
+
+`instant`根据日期格式字符串`format`和时区`zoneId`，转换成字符串。
+
+### 函数`string_to_instant(string, format, zoneId)`
+
+字符串`string`根据日期格式字符串`format`和时区`zoneId`，转换`java.time.Instant`对象。
+
+### 函数`local_datetime_to_string(dateTime, format, zoneId)`
+
+`dateTime`根据日期格式字符串`format`和时区`zoneId`，转换成字符串。
+
+### 函数`string_to_local_datetime(string, format, zoneId)`
+
+字符串`string`根据日期格式字符串`format`和时区`zoneId`，转换`java.time.LocalDateTime`对象。
 
 ## 添加计算逻辑：
 
