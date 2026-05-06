@@ -1,5 +1,5 @@
 # aviator-oracle
-Oracle-compatible expression engine powered by Aviator.
+基于 Aviator 的兼容 Oracle 的精度与函数的表达式引擎。
 
 ## 支持的日期类型
 
