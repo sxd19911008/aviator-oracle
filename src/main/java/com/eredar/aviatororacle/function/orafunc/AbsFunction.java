@@ -20,7 +20,7 @@ public class AbsFunction extends AbstractFunction {
     }
 
     @Override
-    public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1, final AviatorObject arg2) {
+    public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1) {
         Object obj = arg1.getValue(env);
         Number number = AORuntimeUtils.toNumber(obj, this.getName());
         Number res = OraFuncUtils.abs(number);
