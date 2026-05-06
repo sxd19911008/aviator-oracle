@@ -47,9 +47,8 @@ let effectiveRate = nvl(discountRate, 5.0);
 let finalRate = coalesce(backupRate, effectiveRate);
 
 ## 9. abs：取调整系数的绝对值（对应 Oracle 的 ABS 函数）
-##    注：Java 实现 AbsFunction 使用 2-arg 签名，第 2 个参数为占位符会被忽略
 ##    对应 Oracle: ABS(-2.35) = 2.35
-let absAdjFactor = abs(adjustFactor, adjustFactor);
+let absAdjFactor = abs(adjustFactor);
 
 ## 10. 主逻辑分支（三路 if/elsif/else，对应 Oracle 的 IF-ELSIF-ELSE）
 ##     核心公式（三个分支共用）：

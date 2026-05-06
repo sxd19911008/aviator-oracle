@@ -74,8 +74,8 @@ if (dateType == 'INSTANT') {
     ## 8. coalesce：优先取折扣系数，为 null 则取有效票息率
     let finalRate = coalesce(discountFactor, effectiveRate);
 
-    ## 9. abs：取违约基数绝对值（2 参数签名，第2参数为占位符）
-    let absPenalty = abs(penaltyBasis, penaltyBasis);
+    ## 9. abs：取违约基数绝对值
+    let absPenalty = abs(penaltyBasis);
 
     ## 10. 一元负号（NEG 运算符）：对负数取反，验证运算符。
     ##     penaltyBasis = -3.25 → negPenalty = 3.25（与 absPenalty 相同）
@@ -154,7 +154,7 @@ if (dateType == 'INSTANT') {
     let gradeCoef     = decode(gradeType, 'PRIME', 1.30, 'STANDARD', 1.15, 'BASIC', 1.05, 1.00);
     let effectiveRate = nvl(couponRate, 4.5);
     let finalRate     = coalesce(discountFactor, effectiveRate);
-    let absPenalty    = abs(penaltyBasis, penaltyBasis);
+    let absPenalty    = abs(penaltyBasis);
     let negPenalty    = -penaltyBasis;
 
     if (gradeType == 'PRIME' && oneYearDate < lastDayDate && leapCheck != 0 && maturityDate >= refDate) {
@@ -209,7 +209,7 @@ if (dateType == 'INSTANT') {
     let gradeCoef     = decode(gradeType, 'PRIME', 1.30, 'STANDARD', 1.15, 'BASIC', 1.05, 1.00);
     let effectiveRate = nvl(couponRate, 4.5);
     let finalRate     = coalesce(discountFactor, effectiveRate);
-    let absPenalty    = abs(penaltyBasis, penaltyBasis);
+    let absPenalty    = abs(penaltyBasis);
     let negPenalty    = -penaltyBasis;
 
     if (gradeType == 'PRIME' && oneYearDate < lastDayDate && leapCheck != 0 && maturityDate >= refDate) {
