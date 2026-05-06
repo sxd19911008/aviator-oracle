@@ -3,6 +3,8 @@ package com.eredar.aviatororacle.utils.oracle;
 import com.eredar.aviatororacle.number.OraDecimal;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -119,7 +121,9 @@ public class OracleConditionalFunctionUtils {
         /* String、Boolean、Instant: 直接比较 */
         if (o1 instanceof String && o2 instanceof String
                 || o1 instanceof Boolean && o2 instanceof Boolean
-                || o1 instanceof Instant && o2 instanceof Instant) {
+                || o1 instanceof Instant && o2 instanceof Instant
+                || o1 instanceof LocalDateTime && o2 instanceof LocalDateTime
+                || o1 instanceof Date && o2 instanceof Date) {
             return Objects.equals(o1, o2);
         }
 

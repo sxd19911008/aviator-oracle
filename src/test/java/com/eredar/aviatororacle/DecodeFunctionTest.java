@@ -16,6 +16,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -31,10 +33,14 @@ public class DecodeFunctionTest {
      */
     private static final String DECODE_AB_4 = "decode(a, b, \"MATCH\", \"NO_MATCH\")";
 
-    /** 与 epochSecond=1 的 Instant 对应的 ISO-8601 字符串，用于 String↔Instant 交叉用例。 */
+    /**
+     * 与 epochSecond=1 的 Instant 对应的 ISO-8601 字符串，用于 String↔Instant 交叉用例。
+     */
     private static final String ISO_INSTANT_1S = "1970-01-01T00:00:01Z";
 
-    /** 与 {@link OraFuncUtils} 中 Boolean↔Instant 约定一致：true ↔ epochSecond=1。 */
+    /**
+     * 与 {@link OraFuncUtils} 中 Boolean↔Instant 约定一致：true ↔ epochSecond=1。
+     */
     private static final Instant INSTANT_FOR_TRUE = Instant.ofEpochSecond(1);
 
     /**
@@ -410,6 +416,51 @@ public class DecodeFunctionTest {
     @ParameterizedTest(name = "【{index}】{0}: vars={1}")
     @MethodSource("testErrorProvider")
     public void testError(String expression, Map<String, Object> vars, Object expected) {
+        if (expected instanceof Class) {
+            @SuppressWarnings("unchecked")
+            Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
+            Assertions.assertThrows(exceptionClass, () -> AviatorInstance.execute(expression, vars));
+        } else {
+            Object actual = AviatorInstance.execute(expression, vars);
+            Assertions.assertEquals(expected, actual);
+        }
+    }
+
+    // ========================= 嵌套 decode：日期类型交叉比较 =========================
+
+    private static final String NESTED_DECODE = "decode(a, decode(b, c, \"MATCH\", \"NO_MATCH\"), \"MATCH\", \"NO_MATCH\")";
+
+    private static Map<String, Object> abc(Object aVal, Object bVal, Object cVal) {
+        return HashMapBuilder.<String, Object>builder()
+                .put("a", aVal).put("b", bVal).put("c", cVal).build();
+    }
+
+    static Stream<Arguments> testNestedDecodeDateTypesProvider() {
+        return Stream.of(
+                // Instant vs Instant：同类型同值，内层返回 "MATCH"，外层 a="MATCH" 匹配
+                Arguments.of(NESTED_DECODE, abc("MATCH", Instant.parse("2020-06-15T10:30:00Z"), Instant.parse("2020-06-15T10:30:00Z")), "MATCH"),
+                // LocalDateTime vs LocalDateTime：同类型同值
+                Arguments.of(NESTED_DECODE, abc(
+                        "MATCH",
+                        LocalDateTime.of(2020, 6, 15, 10, 30, 0),
+                        LocalDateTime.of(2020, 6, 15, 10, 30, 0)
+                ), "MATCH"),
+                // Date vs Date：同类型同值
+                Arguments.of(NESTED_DECODE, abc("MATCH", new Date(1592216400000L), new Date(1592216400000L)), "MATCH"),
+
+                // Date vs Instant：不同日期类型无法比较
+                Arguments.of(NESTED_DECODE, abc("MATCH", new Date(1592216400000L), Instant.parse("2020-06-15T10:30:00Z")), IllegalArgumentException.class),
+                // Instant vs LocalDateTime：不同日期类型无法比较
+                Arguments.of(NESTED_DECODE, abc("MATCH", Instant.parse("2020-06-15T10:30:00Z"), LocalDateTime.of(2020, 6, 15, 10, 30, 0)), IllegalArgumentException.class),
+                // Date vs LocalDateTime：不同日期类型无法比较
+                Arguments.of(NESTED_DECODE, abc("MATCH", new Date(1592216400000L), LocalDateTime.of(2020, 6, 15, 10, 30, 0)), IllegalArgumentException.class)
+        );
+    }
+
+    @DisplayName("嵌套 decode - 日期类型（Instant/LocalDateTime/Date）")
+    @ParameterizedTest(name = "【{index}】{0}: vars={1}")
+    @MethodSource("testNestedDecodeDateTypesProvider")
+    public void testNestedDecodeDateTypes(String expression, Map<String, Object> vars, Object expected) {
         if (expected instanceof Class) {
             @SuppressWarnings("unchecked")
             Class<? extends Throwable> exceptionClass = (Class<? extends Throwable>) expected;
