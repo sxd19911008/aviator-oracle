@@ -19,7 +19,7 @@
 
 - 表达式最大缓存数量`useLRUExpressionCache`
 - 最大循环次数，防止死循环`maxLoopCount`
-- 是否开启调试日期`traceEval`
+- 是否开启调试日志`traceEval`
 
 ```java
 AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder()
@@ -32,9 +32,9 @@ aviator.addFunction(new XxxFunction());
 
 ## 新增数据类型`OraDecimal`，用于保持与Oracle相同的精度
 
-`OraDecimal`与`BieDecimal`一样，都是不可变类型。内持有了一个`BieDecimal`对象，每次计算都使用该`BieDecimal`对象。
+`OraDecimal`与`BigDecimal`一样，都是不可变类型。内持有了一个`BigDecimal`对象，每次计算都使用该`BigDecimal`对象。
 
-通过每次计算完成后，根据Oracle的逻辑保留`BieDecimal`对象的精度，实现与Oracle的`NUMBER`类型的精度的统一。
+通过每次计算完成后，根据Oracle的逻辑保留`BigDecimal`对象的精度，实现与Oracle的`NUMBER`类型的精度的统一。
 
 ### Oracle数据库NUMBER类型精度逻辑
 
@@ -69,13 +69,13 @@ aviator.addFunction(new XxxFunction());
 
 字符串`string`根据日期格式字符串`format`和时区`zoneId`，转换`java.time.Instant`对象。
 
-### 函数`local_datetime_to_string(dateTime, format, zoneId)`
+### 函数`local_datetime_to_string(dateTime, format)`
 
-`dateTime`根据日期格式字符串`format`和时区`zoneId`，转换成字符串。
+`dateTime`根据日期格式字符串`format`，转换成字符串。
 
-### 函数`string_to_local_datetime(string, format, zoneId)`
+### 函数`string_to_local_datetime(string, format)`
 
-字符串`string`根据日期格式字符串`format`和时区`zoneId`，转换`java.time.LocalDateTime`对象。
+字符串`string`根据日期格式字符串`format`，转换`java.time.LocalDateTime`对象。
 
 ## 添加计算逻辑：
 
