@@ -1,6 +1,25 @@
 # aviator-oracle
 基于 Aviator 的兼容 Oracle 数据库的精度与函数的表达式引擎。
 
+## Quick Start
+
+通过`AviatorOracleBuilder`直接build一个`AviatorEvaluatorInstance`对象，之后的使用方式和aviator框架一样。
+
+默认支持3个配置项，如果需要配置其他属性，可以直接用`AviatorEvaluatorInstance`进行设置。
+
+- 表达式最大缓存数量`useLRUExpressionCache`
+- 最大循环次数，防止死循环`maxLoopCount`
+- 是否开启调试日期`traceEval`
+
+```java
+AviatorEvaluatorInstance aviator = AviatorOracleBuilder.builder()
+            .useLRUExpressionCache(4096)
+            .maxLoopCount(10000)
+            .traceEval(false)
+            .build();
+aviator.addFunction(new XxxFunction());
+```
+
 ## 新增数据类型`OraDecimal`，用于保持与Oracle相同的精度
 
 `OraDecimal`与`BieDecimal`一样，都是不可变类型。内持有了一个`BieDecimal`对象，每次计算都使用该`BieDecimal`对象。
