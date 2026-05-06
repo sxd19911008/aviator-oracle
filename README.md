@@ -3,6 +3,16 @@
 
 ## Quick Start
 
+在`pom`文件里添加**aviator-oracle**即可使用。
+
+```xml
+    <dependency>
+        <groupId>com.eredar</groupId>
+        <artifactId>aviator-oracle</artifactId>
+        <version>5.4.3.0</version>
+    </dependency>
+```
+
 通过`AviatorOracleBuilder`直接build一个`AviatorEvaluatorInstance`对象，之后的使用方式和aviator框架一样。
 
 默认支持3个配置项，如果需要配置其他属性，可以直接用`AviatorEvaluatorInstance`进行设置。
