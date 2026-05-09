@@ -5,7 +5,7 @@
 
     <groupId>io.github.kenta-sun</groupId>
     <artifactId>aviator-oracle</artifactId>
-    <version>5.4.3.0-SNAPSHOT</version>
+    <version>5.4.3.0</version>
 
     <name>aviator-oracle</name>
     <description>Oracle-compatible expression engine powered by Aviator.</description>
@@ -156,10 +156,25 @@
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
+                        <!-- 在 Maven 生命周期的 verify 阶段运行 -->
                         <phase>verify</phase>
                         <goals>
+                            <!-- 调用插件的签名功能 -->
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <!-- 告诉 Maven 去 settings.xml 中查找 ID 为 gpg 的 server 配置，从中读取密码。 -->
+                            <passphraseServerId>gpg</passphraseServerId>
+                            <gpgArguments>
+                                <!-- pinentry-mode 用来指定GPG密码工具的工作模式，类似一个key -->
+                                <arg>--pinentry-mode</arg>
+                                <!-- loopback 是那个具体的工作模式，类似上面那个key的value。2者是一个组合，不能单独存在 -->
+                                <!-- loopback 环回模式：不再通过输入框让用户输入密码，而是把输入权交给调用程序 -->
+                                <arg>loopback</arg>
+                                <!-- 让 GPG 不要占用终端 -->
+                                <arg>--no-tty</arg>
+                            </gpgArguments>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -169,6 +184,7 @@
                 <version>0.4.0</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <!-- 告诉 Maven 去 settings.xml 中查找 ID 为 central 的 server 配置，从中读取用户名和密码。 -->
                     <publishingServerId>central</publishingServerId>
                     <!-- 发布任务的显示名称 -->
                     <deploymentName>${project.artifactId}:${project.version}</deploymentName>
