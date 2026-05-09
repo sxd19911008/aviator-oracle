@@ -137,6 +137,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- 根据注释自动生成javadoc文档插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -149,6 +150,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- gpg签名插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -178,6 +180,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- 自动化发布至 Maven Central (Sonatype) 新版发布平台的官方插件 -->
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
