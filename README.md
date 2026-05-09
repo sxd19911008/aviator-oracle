@@ -7,7 +7,7 @@
 
 ```xml
     <dependency>
-        <groupId>com.eredar</groupId>
+        <groupId>io.github.kentasun</groupId>
         <artifactId>aviator-oracle</artifactId>
         <version>5.4.3.0</version>
     </dependency>
