@@ -11,7 +11,7 @@ import com.googlecode.aviator.runtime.type.AviatorObject;
 import java.util.Map;
 
 /**
- * 自定义 按位取反（~）运算 函数
+ * 自定义 按位取反（{@code ~}）运算 函数
  */
 public class BitNotFunction extends AbstractFunction {
 

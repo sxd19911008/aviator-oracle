@@ -58,6 +58,9 @@ public class OraFuncUtils {
 
     /**
      * 取整数，小数位直接舍去
+     *
+     * @param n 目标数字
+     * @return 取整后的数字
      */
     public static Number floor(Number n) {
         return OracleNumberFunctionUtils.floor(n);

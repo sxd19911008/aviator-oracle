@@ -53,6 +53,9 @@ public class OracleNumberFunctionUtils {
 
     /**
      * 取整数，小数位直接舍去
+     *
+     * @param n 目标数字
+     * @return 取整后的数字
      */
     protected static Number floor(Number n) {
         if (n == null) {
