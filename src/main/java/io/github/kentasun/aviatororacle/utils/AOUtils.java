@@ -98,10 +98,10 @@ public class AOUtils {
     /**
      * 默认值
      *
-     * @param object 目标对象
+     * @param object       目标对象
      * @param defaultValue 默认值对象
+     * @param <T>          目标对象的类型
      * @return 如果 {@code object} 不为 {@code null} 则返回 {@code object}；反之返回 {@code defaultValue}
-     * @param <T> 目标对象的类型
      */
     public static <T> T defaultIfNull(final T object, final T defaultValue) {
         return object != null ? object : defaultValue;
