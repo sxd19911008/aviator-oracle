@@ -100,6 +100,9 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     /**
      * 对应 Oracle 数据库中，未指定精度的 number 类型变量来承载除法结果
+     *
+     * @param  divisor value by which this {@code OraDecimal} is to be divided.
+     * @return {@code this / divisor}
      */
     public OraDecimal divide(OraDecimal divisor) {
         // 保留100位小数，但是舍弃多余小数，方便后面的 oracleDecimal 计算
@@ -110,6 +113,10 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
     /**
      * 对应 Oracle 数据库中，指定精度的变量来承载除法结果。必定四舍五入。
      * 示例：number(12,2)，保留2位小数。
+     *
+     * @param  divisor value by which this {@code OraDecimal} is to be divided.
+     * @param  scale scale of the {@code OraDecimal} quotient to be returned.
+     * @return {@code this / divisor}
      */
     public OraDecimal divide(OraDecimal divisor, int scale) {
         return this.divide(divisor).setScale(scale);
@@ -148,7 +155,9 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     /**
      * 取余数
-     * <p>this % divisor</p>
+     *
+     * @param  divisor value by which this {@code OraDecimal} is to be divided.
+     * @return {@code this % divisor}.
      */
     public OraDecimal remainder(OraDecimal divisor) {
         return new OraDecimal(this.decimal.remainder(divisor.getDecimal()));
@@ -157,6 +166,8 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     /**
      * 取绝对值
+     *
+     * @return {@code abs(this)}
      */
     public OraDecimal abs() {
         return new OraDecimal(this.decimal.abs());
@@ -164,6 +175,8 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     /**
      * 返回其数值乘以 -1 的结果
+     *
+     * @return {@code -this}.
      */
     public OraDecimal negate() {
         return new OraDecimal(this.decimal.negate());

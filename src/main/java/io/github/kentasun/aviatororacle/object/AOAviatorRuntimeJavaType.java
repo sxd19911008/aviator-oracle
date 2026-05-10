@@ -37,6 +37,9 @@ public class AOAviatorRuntimeJavaType extends AOAviatorJavaType {
 
     /**
      * please use {@link AOAviatorRuntimeJavaType#valueOf(Object)} instead.
+     *
+     * @deprecated
+     * @param object 被包装的原始对象
      */
     @Deprecated
     public AOAviatorRuntimeJavaType(final Object object) {
