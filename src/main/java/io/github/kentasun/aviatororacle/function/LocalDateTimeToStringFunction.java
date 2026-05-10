@@ -14,8 +14,8 @@ import java.util.Map;
 
 /**
  * local_datetime_to_string function
- * <p>将 LocalDateTime 对象格式化为字符串，不涉及时区转换
- * <p>函数签名：{@code local_datetime_to_string(localDateTime, format)}
+ * <p>将 LocalDateTime 对象格式化为字符串，不涉及时区转换</p>
+ * <p>函数签名：{@code local_datetime_to_string(localDateTime, format)}</p>
  * <ul>
  *   <li>arg1 —— LocalDateTime 对象</li>
  *   <li>arg2 —— 字符串日期格式，如 "yyyy-MM-dd HH:mm:ss"</li>

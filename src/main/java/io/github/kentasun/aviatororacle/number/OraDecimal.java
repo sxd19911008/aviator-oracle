@@ -16,7 +16,7 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     /**
      * 用于 {@link #pow(OraDecimal)} 的中间计算精度上下文。
-     * <p>保留 100 位有效数字，为 {@code BigDecimalMath.pow} 的 ln/exp 迭代提供足够精度余量，
+     * <p>保留 100 位有效数字，为 {@code BigDecimalMath.pow} 的 ln/exp 迭代提供足够精度余量，</p>
      */
     private static final MathContext POW_MATH_CONTEXT;
 
@@ -120,7 +120,7 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
      * <tt>(this<sup>n</sup>)</tt>, The power is computed exactly, to
      * unlimited precision.
      *
-     * <p>The parameter {@code n} must be in the range 0 through
+     * <p>The parameter {@code n} must be in the range 0 through</p>
      * 999999999, inclusive.  {@code ZERO.pow(0)} returns {@link
      * #ONE}.
      *
@@ -148,7 +148,7 @@ public class OraDecimal extends Number implements Comparable<OraDecimal> {
 
     /**
      * 取余数
-     * <p>this % divisor
+     * <p>this % divisor</p>
      */
     public OraDecimal remainder(OraDecimal divisor) {
         return new OraDecimal(this.decimal.remainder(divisor.getDecimal()));

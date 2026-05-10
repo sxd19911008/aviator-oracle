@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * 为了缓存用于日期-字符串转换的 DateTimeFormatter，创建该类作为缓存key
- * <p>可防止因字符串拼接导致的哈希碰撞风险
+ * <p>可防止因字符串拼接导致的哈希碰撞风险</p>
  */
 public final class DateFormatCacheKey {
 

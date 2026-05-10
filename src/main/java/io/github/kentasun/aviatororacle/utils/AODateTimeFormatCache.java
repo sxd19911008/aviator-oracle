@@ -10,7 +10,7 @@ import java.time.temporal.ChronoField;
 
 /**
  * DateFormat 缓存工具类
- * <p>提供两种重载：
+ * <p>提供两种重载：</p>
  * <ul>
  *   <li>{@link #getOrCreateDateFormat(String, String)} —— 带时区，适用于 Instant 的格式化/解析</li>
  *   <li>{@link #getOrCreateDateFormat(String)} —— 不带时区，适用于 LocalDateTime 的格式化/解析</li>
@@ -57,7 +57,7 @@ public class AODateTimeFormatCache {
 
     /**
      * 获取或创建不带时区的 DateTimeFormatter，适用于 LocalDateTime 场景
-     * <p>不调用 {@code withZone()}，保留 LocalDateTime 的时区无关性
+     * <p>不调用 {@code withZone()}，保留 LocalDateTime 的时区无关性</p>
      *
      * @param format 字符串日期格式，不能为空
      * @return 不带时区的 DateTimeFormatter

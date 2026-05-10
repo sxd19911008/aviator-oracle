@@ -236,8 +236,7 @@ public class OracleDateUtilsTest {
 
     /**
      * truncDate(date, format) 场景数据，覆盖 Oracle TRUNC(date, fmt) 所有支持的格式模型。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出
-     * <p>
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出</p>
          -- CC / SCC：世纪
          select '世纪截断-CC' as descr, to_date('2026-04-22 10:14:06', 'YYYY-MM-DD HH24:MI:SS') as origin_date, truncNumber(to_date('2026-04-22 10:14:06', 'YYYY-MM-DD HH24:MI:SS'), 'CC') as test_result from dual
          union all
@@ -423,8 +422,7 @@ public class OracleDateUtilsTest {
 
     /**
      * addMonths 场景数据，覆盖 Oracle ADD_MONTHS(date, months) 所有行为规则。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出:
-     * <p>
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出:</p>
      *     SELECT '正常场景：月中日期+正数月份' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-03-15 10:30:45', 'YYYY-MM-DD HH24:MI:SS'), 2), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
      *     UNION ALL
      *     SELECT '月末→月末：闰年2月末+1月' AS descr, TO_CHAR(ADD_MONTHS(TO_DATE('2024-02-29 14:22:33', 'YYYY-MM-DD HH24:MI:SS'), 1), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
@@ -526,8 +524,7 @@ public class OracleDateUtilsTest {
 
     /**
      * lastDay 场景数据，覆盖 Oracle LAST_DAY(date) 所有行为规则。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出:
-     * <p>
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出:</p>
      *     SELECT '31天月份(1月)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-01-15 10:30:45', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual
      *     UNION ALL
      *     SELECT '30天月份(4月)' AS descr, TO_CHAR(LAST_DAY(TO_DATE('2024-04-10 14:22:33', 'YYYY-MM-DD HH24:MI:SS')), 'YYYY-MM-DD HH24:MI:SS') AS result FROM dual

@@ -18,11 +18,11 @@ import java.util.stream.Stream;
 
 /**
  * AviatorOracle数据转换Function 测试，包括：
- * <p>1. {@code AODecimalFunction}，覆盖 Aviator 的 {@code decimal()}。
- * <p>2. 新增 {@code InstantToStringFunction}
- * <p>3. 新增 {@code StringToInstantFunction}
- * <p>4. 新增 {@code LocalDateTimeToStringFunction}
- * <p>5. 新增 {@code StringToLocalDateTimeFunction}
+ * <p>1. {@code AODecimalFunction}，覆盖 Aviator 的 {@code decimal()}。</p>
+ * <p>2. 新增 {@code InstantToStringFunction}</p>
+ * <p>3. 新增 {@code StringToInstantFunction}</p>
+ * <p>4. 新增 {@code LocalDateTimeToStringFunction}</p>
+ * <p>5. 新增 {@code StringToLocalDateTimeFunction}</p>
  */
 @DisplayName("AviatorOracle数据转换Function 测试")
 public class AviatorTypeConversionTest {

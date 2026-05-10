@@ -16,7 +16,7 @@ public class OraFuncUtils {
 
 
     /**
-     * 模拟 Oracle 数据库的 DECODE 函数实现。
+     * <p>模拟 Oracle 数据库的 DECODE 函数实现。</p>
      * <p>
      * <b>语法：</b><br>
      * {@code decode(expression, search1, result1, search2, result2, ..., [default])}
@@ -47,7 +47,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code ABS(n)}：返回 {@code n} 的绝对值。
-     * <p>对 {@code NULL} 输入返回 {@code NULL}。
+     * <p>对 {@code NULL} 输入返回 {@code NULL}。</p>
      *
      * @param n 目标数字
      * @return {@code n} 的绝对值
@@ -65,7 +65,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code CEIL(n)}：返回大于或等于 {@code n} 的最小整数（向正无穷方向取整）。
-     * <p>{@link java.math.RoundingMode#CEILING} 一致：正数小数部分进位，负数向零靠近（例如 {@code ceil(-2.1) = -2}）。
+     * <p>{@link java.math.RoundingMode#CEILING} 一致：正数小数部分进位，负数向零靠近（例如 {@code ceil(-2.1) = -2}）。</p>
      *
      * @param n 目标数字；为 {@code null} 时返回 {@code null}
      * @return 上取整后的数字
@@ -86,9 +86,9 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code ROUND(number, integer)}：按指定位数四舍五入（{@link RoundingMode#HALF_UP}）。
-     * <p>{@code newScale > 0} 表示保留的小数位数；
-     * <p>{@code newScale = 0} 表示保留整数；
-     * <p>{@code newScale < 0} 表示在小数点左侧按数量级舍入（如 -1 表示十位）。
+     * <p>{@code newScale > 0} 表示保留的小数位数；</p>
+     * <p>{@code newScale = 0} 表示保留整数；</p>
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级舍入（如 -1 表示十位）。</p>
      *
      * @param number   待舍入的值；为 {@code null} 时返回 {@code null}
      * @param newScale 目标标度（可为负）
@@ -104,7 +104,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库: {@link Date} + 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -117,7 +117,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库: {@link LocalDateTime} + 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -130,7 +130,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库: {@link Instant} + 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -147,7 +147,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库: {@link Date} - 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -160,7 +160,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库: {@link LocalDateTime} - 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -173,7 +173,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle 数据库: {@link Instant} - 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -283,7 +283,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code ADD_MONTHS}：为 {@link Date} 加上指定月数
-     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</p>
      *
      * @param date   日期对象；不允许为 {@code null}
      * @param months 要增加的月数，小数部分会被截断
@@ -296,7 +296,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code ADD_MONTHS}：为 {@link LocalDateTime} 加上指定月数
-     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</p>
      *
      * @param date   日期对象；不允许为 {@code null}
      * @param months 要增加的月数，小数部分会被截断
@@ -309,7 +309,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code ADD_MONTHS}：为 {@link Instant} 加上指定月数（使用 UTC 时区）
-     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</p>
      *
      * @param date   日期对象；不允许为 {@code null}
      * @param months 要增加的月数，小数部分会被截断
@@ -322,7 +322,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code ADD_MONTHS}：为 {@link Instant} 加上指定月数（指定时区）
-     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）
+     * <p>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</p>
      *
      * @param date   日期对象；不允许为 {@code null}
      * @param months 要增加的月数，小数部分会被截断
@@ -389,7 +389,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #trunc(Number, Number) truncDate(n, 0)}。
-     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
+     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。</p>
      * 例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
      *
      * @param number 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
@@ -401,10 +401,10 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。
-     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；
-     * <p>{@code newScale = 0} 表示仅保留整数部分；
-     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。
-     * <p>示例：
+     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；</p>
+     * <p>{@code newScale = 0} 表示仅保留整数部分；</p>
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。</p>
+     * <p>示例：</p>
      * <pre>
      *   truncDate(15.79)      = 15
      *   truncDate(15.79,  1)  = 15.7
@@ -491,7 +491,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(date)}：将 {@link Instant} 截断到天（指定时区）
-     * <p>参数设计：zoneId 放首位，使得后续参数 {@code (date [, format])} 与 {@link #trunc(Instant)} 系列保持一致。
+     * <p>参数设计：zoneId 放首位，使得后续参数 {@code (date [, format])} 与 {@link #trunc(Instant)} 系列保持一致。</p>
      *
      * @param zoneId 时区，不可为 {@code null}
      * @param date   日期对象；为 {@code null} 时返回 {@code null}
@@ -504,7 +504,7 @@ public class OraFuncUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(date, format)}：按指定格式模型截断 {@link Instant}（指定时区）
-     * <p>参数设计：zoneId 放首位，使得后续参数 {@code (date, format)} 与 {@link #trunc(Instant, String)} 保持一致。
+     * <p>参数设计：zoneId 放首位，使得后续参数 {@code (date, format)} 与 {@link #trunc(Instant, String)} 保持一致。</p>
      *
      * @param zoneId 时区，不可为 {@code null}
      * @param date   日期对象；为 {@code null} 时返回 {@code null}
@@ -519,7 +519,7 @@ public class OraFuncUtils {
     /**
      * 模拟 Oracle {@code POWER(m, n)}：返回 {@code m} 的 {@code n} 次幂。
      *
-     * <p>行为对齐 Oracle：
+     * <p>行为对齐 Oracle：</p>
      * <ul>
      *   <li>任一入参为 {@code NULL} 时返回 {@code NULL}。</li>
      *   <li>{@code 0^0 = 1}（Oracle 约定）。</li>

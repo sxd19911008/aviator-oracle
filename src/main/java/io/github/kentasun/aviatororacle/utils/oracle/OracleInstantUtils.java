@@ -22,7 +22,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库: Date对象 + 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -41,7 +41,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库: Date对象 - 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -59,7 +59,7 @@ public class OracleInstantUtils {
 
     /**
      * 将天数换算成 {@code Long} 型的秒数
-     * <p>必定返回整数，如果有小数部分，则四舍五入
+     * <p>必定返回整数，如果有小数部分，则四舍五入</p>
      *
      * @param days 天数，可以带小数
      * @return 天数对应的秒数
@@ -201,9 +201,8 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code ADD_MONTHS(date, months)} 函数：为日期加上指定月数。
-     * <p>使用 UTC 时区。
-     * <p>
-     * Oracle 的 {@code ADD_MONTHS} 行为规则：
+     * <p>使用 UTC 时区。</p>
+     * <p>Oracle 的 {@code ADD_MONTHS} 行为规则：</p>
      * <ol>
      *   <li>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</li>
      *   <li>如果原始日期是所在月份的最后一天，则结果一定是目标月份的最后一天
@@ -225,8 +224,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code ADD_MONTHS(date, months)} 函数：为日期加上指定月数。
-     * <p>
-     * Oracle 的 {@code ADD_MONTHS} 行为规则：
+     * <p>Oracle 的 {@code ADD_MONTHS} 行为规则：</p>
      * <ol>
      *   <li>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</li>
      *   <li>如果原始日期是所在月份的最后一天，则结果一定是目标月份的最后一天
@@ -294,8 +292,8 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code LAST_DAY(date)} 函数：返回给定日期所在月份的最后一天。
-     * <p>使用 UTC 时区。
-     * <p>
+     * <p>使用 UTC 时区。</p>
+     * <p></p>
      * Oracle 的 {@code LAST_DAY} 行为规则：
      * <ul>
      *   <li>返回日期所在月份的最后一天，会正确处理闰年（如2月28日/29日）</li>
@@ -312,8 +310,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code LAST_DAY(date)} 函数：返回给定日期所在月份的最后一天。
-     * <p>
-     * Oracle 的 {@code LAST_DAY} 行为规则：
+     * <p>Oracle 的 {@code LAST_DAY} 行为规则：</p>
      * <ul>
      *   <li>返回日期所在月份的最后一天，会正确处理闰年（如2月28日/29日）</li>
      *   <li>时分秒及纳秒部分保持不变</li>
@@ -347,7 +344,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
-     * <p>等价于 {@code TRUNC(date, 'DD')}，使用 UTC 时区。
+     * <p>等价于 {@code TRUNC(date, 'DD')}，使用 UTC 时区。</p>
      *
      * @param date 日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link Instant} 对象
@@ -369,7 +366,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
-     * <p>等价于 {@code TRUNC(date, 'DD')}
+     * <p>等价于 {@code TRUNC(date, 'DD')}</p>
      *
      * @param zoneId 时区，不可为 {@code null}
      * @param date   日期对象；为 {@code null} 时返回 {@code null}
@@ -381,8 +378,7 @@ public class OracleInstantUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code TRUNC(date, format)} 函数：按指定格式模型截断日期。
-     * <p>
-     * 支持的格式模型（不区分大小写）：
+     * <p>支持的格式模型（不区分大小写）：</p>
      * <ul>
      *   <li>{@code CC / SCC}：世纪——截断到当前世纪首年的 1 月 1 日（如 2026 年 → 2001-01-01）</li>
      *   <li>{@code SYYYY / YYYY / YEAR / SYEAR / YYY / YY / Y}：年——截断到当年 1 月 1 日</li>
@@ -537,10 +533,8 @@ public class OracleInstantUtils {
 
     /**
      * 截断到 ISO 年的第一天（ISO 第1周的周一）。
-     * <p>
-     * ISO 8601 规定：包含该年第一个周四的那一周是第1周，且 ISO 周以周一为起始。
-     * 因此 ISO 年的第一天可能早于日历年的 1 月 1 日（最多早 3 天）。
-     * <p>
+     * <p>ISO 8601 规定：包含该年第一个周四的那一周是第1周，且 ISO 周以周一为起始。</p>
+     * <p>因此 ISO 年的第一天可能早于日历年的 1 月 1 日（最多早 3 天）。</p>
      * 算法：
      * <ol>
      *   <li>通过 {@link IsoFields#WEEK_BASED_YEAR} 字段获取 ISO 年编号</li>

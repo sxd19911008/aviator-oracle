@@ -581,7 +581,7 @@ public class PowerFunctionTest {
     /**
      * 参数为非 {@code Number} 类型时，{@code AORuntimeUtils.toNumber} 抛出 {@link IllegalArgumentException}。
      *
-     * <p>共 6 个案例：第一个参数（底数）非法 3 个，第二个参数（指数）非法 3 个；
+     * <p>共 6 个案例：第一个参数（底数）非法 3 个，第二个参数（指数）非法 3 个；</p>
      * 每组分别对应 {@code String}、{@code Instant}（日期）、{@code Boolean} 三种类型。
      * 合法的另一个参数固定使用 {@code 2L}（Long）。
      */
@@ -643,7 +643,7 @@ public class PowerFunctionTest {
     /**
      * 表达式 {@code power(power(a, b), power(c, d))} 测试，4 个参数各使用不同类型。
      *
-     * <p>计算过程（先分别求两个内层 power，再求外层 power）：
+     * <p>计算过程（先分别求两个内层 power，再求外层 power）：</p>
      * <ul>
      *   <li><b>案例 1</b>：a=Long(2), b=BigDecimal(3), c=Integer(2), d=OraDecimal(2)
      *     <ol>

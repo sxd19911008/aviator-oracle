@@ -238,7 +238,7 @@ public class OracleLocalDateTimeUtilsTest {
 
     /**
      * truncLocalDateTime(date, format) 场景数据，覆盖 Oracle TRUNC(date, fmt) 所有支持的格式模型。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出</p>
      */
     static Stream<Arguments> testTruncLocalDateTimeProvider() {
         return Stream.of(
@@ -349,7 +349,7 @@ public class OracleLocalDateTimeUtilsTest {
 
     /**
      * addMonths 场景数据，覆盖 Oracle ADD_MONTHS(date, months) 所有行为规则。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出</p>
      */
     static Stream<Arguments> testAddMonthsProvider() {
         return Stream.of(
@@ -420,7 +420,7 @@ public class OracleLocalDateTimeUtilsTest {
 
     /**
      * lastDay 场景数据，覆盖 Oracle LAST_DAY(date) 所有行为规则。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出</p>
      */
     static Stream<Arguments> testLastDayProvider() {
         return Stream.of(

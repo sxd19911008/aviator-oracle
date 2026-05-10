@@ -16,13 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * {@link OracleNumberFunctionUtils#power(Number, Number)} 单元测试。
- *
- * <p>期望值通过 {@code SELECT POWER(m, n) FROM dual} 在 Oracle 23c（AL32UTF8）中执行获得。
- *
- * <p><b>精度说明：</b>非整数指数场景由 {@link ch.obermuhlner.math.big.BigDecimalMath#pow} 以 100 位中间精度计算，
- * 结果经 {@code OraDecimal} 构造器归一化至 Oracle NUMBER 40 位精度。
- * 对于完全平方根（如 {@code 4^0.5}），{@code BigDecimalMath} 精确返回整数（比 Oracle ln/exp 算法更准确）；
- * 对于其他非整数指数（如 {@code 2^1.5}），结果与 Oracle 一致至 38 位小数，末位存在不超过 2 的偏差（100 位中间精度的误差范围内）。
  */
 @DisplayName("Oracle POWER 函数测试")
 public class PowerTest {

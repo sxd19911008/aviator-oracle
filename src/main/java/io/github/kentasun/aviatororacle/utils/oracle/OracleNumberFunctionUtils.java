@@ -17,7 +17,7 @@ public class OracleNumberFunctionUtils {
 
     /**
      * 模拟 Oracle {@code ABS(n)}：返回 {@code n} 的绝对值。
-     * <p>对 {@code NULL} 输入返回 {@code NULL}。
+     * <p>对 {@code NULL} 输入返回 {@code NULL}。</p>
      *
      * @param n 目标数字
      * @return {@code n} 的绝对值
@@ -71,7 +71,7 @@ public class OracleNumberFunctionUtils {
 
     /**
      * 模拟 Oracle {@code CEIL(n)}：返回大于或等于 {@code n} 的最小整数（向正无穷方向取整）。
-     * <p>{@link java.math.RoundingMode#CEILING} 一致：正数小数部分进位，负数向零靠近（例如 {@code ceil(-2.1) = -2}）。
+     * <p>{@link java.math.RoundingMode#CEILING} 一致：正数小数部分进位，负数向零靠近（例如 {@code ceil(-2.1) = -2}）。</p>
      *
      * @param n 目标数字；为 {@code null} 时返回 {@code null}
      * @return 上取整后的数字
@@ -103,9 +103,9 @@ public class OracleNumberFunctionUtils {
 
     /**
      * 模拟 Oracle {@code ROUND(number, integer)}：按指定位数四舍五入（{@link RoundingMode#HALF_UP}）。
-     * <p>{@code newScale > 0} 表示保留的小数位数；
-     * <p>{@code newScale = 0} 表示保留整数；
-     * <p>{@code newScale < 0} 表示在小数点左侧按数量级舍入（如 -1 表示十位）。
+     * <p>{@code newScale > 0} 表示保留的小数位数；</p>
+     * <p>{@code newScale = 0} 表示保留整数；</p>
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级舍入（如 -1 表示十位）。</p>
      *
      * @param number   待舍入的值；为 {@code null} 时返回 {@code null}
      * @param newScale 目标标度（可为负）
@@ -166,8 +166,8 @@ public class OracleNumberFunctionUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(number)}：向零方向截断，等价于 {@link #truncNumber(Number, Number) truncDate(n, 0)}。
-     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。
-     * <p>例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。
+     * <p>与 {@link #floor(Number) floor} 的区别：{@code floor} 向负无穷方向取整，而 {@code truncDate} 向零方向截断。</p>
+     * <p>例如 {@code truncDate(-2.9) = -2}，而 {@code floor(-2.9) = -3}。</p>
      *
      * @param number 待截断的 {@link Number}；为 {@code null} 时返回 {@code null}
      * @return 如果经过计算，一定返回 {@link OraDecimal} 类型；无需计算的场景返回 {@code n} 本身
@@ -179,10 +179,10 @@ public class OracleNumberFunctionUtils {
 
     /**
      * 模拟 Oracle {@code TRUNC(number, integer)}：按指定位数向零方向截断（{@link RoundingMode#DOWN}）。
-     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；
-     * <p>{@code newScale = 0} 表示仅保留整数部分；
-     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。
-     * <p>示例：
+     * <p>{@code newScale > 0} 表示保留的小数位数，多余部分直接丢弃；</p>
+     * <p>{@code newScale = 0} 表示仅保留整数部分；</p>
+     * <p>{@code newScale < 0} 表示在小数点左侧按数量级截断（如 -1 对十位截断）。</p>
+     * <p>示例：</p>
      * <pre>
      *   truncDate(15.79)      = 15
      *   truncDate(15.79,  1)  = 15.7
@@ -261,7 +261,7 @@ public class OracleNumberFunctionUtils {
     /**
      * 模拟 Oracle {@code POWER(m, n)}：返回 {@code m} 的 {@code n} 次幂。
      *
-     * <p>行为对齐 Oracle：
+     * <p>行为对齐 Oracle：</p>
      * <ul>
      *   <li>任一入参为 {@code NULL} 时返回 {@code NULL}。</li>
      *   <li>{@code 0^0 = 1}（Oracle 约定）。</li>

@@ -25,7 +25,7 @@ public class RoundFunctionTest {
 
     /**
      * 单参数 {@code round(n)}：等价于 {@code round(n, 0)}。
-     * <p>第三列期望为 {@code null} 表示表达式结果为 {@code null}。
+     * <p>第三列期望为 {@code null} 表示表达式结果为 {@code null}。</p>
      */
     static Stream<Arguments> testRoundOneArgProvider() {
         return Stream.of(
@@ -404,7 +404,7 @@ public class RoundFunctionTest {
 
     /**
      * 非法入参：与工具类测试语义一致——{@code newScale==null} 或非 {@link Number} 的第二实参。
-     * <p>此处通过表达式变量传入 {@code null} / {@link Instant}，覆盖 {@link RoundFunction} 的运行期校验。
+     * <p>此处通过表达式变量传入 {@code null} / {@link Instant}，覆盖 {@link RoundFunction} 的运行期校验。</p>
      */
     static Stream<Arguments> testRoundTwoArgsInvalidProvider() {
         return Stream.of(

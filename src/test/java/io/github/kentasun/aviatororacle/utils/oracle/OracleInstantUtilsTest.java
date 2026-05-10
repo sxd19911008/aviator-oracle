@@ -247,7 +247,7 @@ public class OracleInstantUtilsTest {
 
     /**
      * addMonths(instant, months) 场景数据（UTC），覆盖 Oracle ADD_MONTHS(date, months) 所有行为规则。
-     * <p>案例与 {@link OracleDateUtilsTest#testAddMonthsProvider()} 使用完全相同的日期和期望值。
+     * <p>案例与 {@link OracleDateUtilsTest#testAddMonthsProvider()} 使用完全相同的日期和期望值。</p>
      */
     static Stream<Arguments> testAddMonthsProvider() {
         return Stream.of(
@@ -304,11 +304,11 @@ public class OracleInstantUtilsTest {
     }
 
     /**
-     * addMonths(instant, months, zoneId) 场景数据（上海时区 UTC+8）。
+     * <p>addMonths(instant, months, zoneId) 场景数据（上海时区 UTC+8）。</p>
      * <p>案例日期与 {@link #testAddMonthsProvider()} 完全相同（年/月/日/时/分/秒数字不变），
-     * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行。
+     * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行。</p>
      * <p>输入和期望均通过 {@code sh(...)} 构造，所有输入均携带非零纳秒（123_456_789），
-     * 期望值也携带相同纳秒，以验证 addMonths 能够正确保留亚秒精度。
+     * 期望值也携带相同纳秒，以验证 addMonths 能够正确保留亚秒精度。</p>
      */
     static Stream<Arguments> testAddMonthsWithZoneProvider() {
         final int nano = 123_456_789;
@@ -382,7 +382,7 @@ public class OracleInstantUtilsTest {
 
     /**
      * lastDay(instant) 场景数据（UTC），覆盖 Oracle LAST_DAY(date) 所有行为规则。
-     * <p>案例与 {@link OracleDateUtilsTest#testLastDayProvider()} 使用完全相同的日期和期望值。
+     * <p>案例与 {@link OracleDateUtilsTest#testLastDayProvider()} 使用完全相同的日期和期望值。</p>
      */
     static Stream<Arguments> testLastDayProvider() {
         return Stream.of(
@@ -429,11 +429,11 @@ public class OracleInstantUtilsTest {
     }
 
     /**
-     * lastDay(instant, zoneId) 场景数据（上海时区 UTC+8）。
+     * <p>lastDay(instant, zoneId) 场景数据（上海时区 UTC+8）。</p>
      * <p>案例日期与 {@link #testLastDayProvider()} 完全相同（年/月/日/时/分/秒数字不变），
-     * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行。
+     * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行。</p>
      * <p>输入和期望均通过 {@code sh(...)} 构造，所有输入均携带非零纳秒（123_456_789），
-     * 期望值也携带相同纳秒，以验证 lastDay 能够正确保留亚秒精度。
+     * 期望值也携带相同纳秒，以验证 lastDay 能够正确保留亚秒精度。</p>
      */
     static Stream<Arguments> testLastDayWithZoneProvider() {
         final int nano = 123_456_789;
@@ -479,8 +479,8 @@ public class OracleInstantUtilsTest {
 
     /**
      * truncInstant(instant, format) 场景数据，覆盖 Oracle TRUNC(date, fmt) 所有支持的格式模型。
-     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出，与 {@link OracleDateUtilsTest#testTruncDateProvider()} 使用完全相同的日期和期望值。
-     * <p>所有 Instant 均以 UTC（Z）解析，与 Oracle 默认行为一致。
+     * <p>期望值均通过在 Oracle 数据库执行对应 SQL 验证得出，与 {@link OracleDateUtilsTest#testTruncDateProvider()} 使用完全相同的日期和期望值。</p>
+     * <p>所有 Instant 均以 UTC（Z）解析，与 Oracle 默认行为一致。</p>
      */
     static Stream<Arguments> testTruncInstantProvider() {
         return Stream.of(
@@ -590,11 +590,11 @@ public class OracleInstantUtilsTest {
     // -------------------------------------------------------------------------
 
     /**
-     * truncInstantWithZone(zoneId, instant, format) 场景数据。
+     * <p>truncInstantWithZone(zoneId, instant, format) 场景数据。</p>
      * <p>案例日期与 {@link #testTruncInstantProvider()} 完全相同（年/月/日/时/分/秒数字不变），
-     * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行截断。
+     * 但以上海时区（UTC+8）解释该本地时间后再转为 Instant，验证方法能够在指定时区下正确执行截断。</p>
      * <p>输入和期望均通过 {@code ZonedDateTime.of(..., SHANGHAI).toInstant()} 构造，
-     * 确保截断逻辑与时区挂钩，而非直接在 UTC 上操作。
+     * 确保截断逻辑与时区挂钩，而非直接在 UTC 上操作。</p>
      */
     static Stream<Arguments> testTruncInstantWithZoneProvider() {
         // 所有输入均携带非零纳秒（123_456_789），期望值纳秒为 0，

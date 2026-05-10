@@ -24,7 +24,7 @@ public class MonthsBetweenFunctionTest {
 
     /*
      * Aviator 表达式：两参数形式，语义为 months_between(endDate, beginDate)。
-     * <p>注意：变量名避免使用 {@code begin}，否则可能被 Aviator 词法当作关键字解析导致语法错误。
+     * <p>注意：变量名避免使用 {@code begin}，否则可能被 Aviator 词法当作关键字解析导致语法错误。</p>
      */
     private static final String EXPR_TWO_ARGS = "months_between(endDate, beginDate)";
 

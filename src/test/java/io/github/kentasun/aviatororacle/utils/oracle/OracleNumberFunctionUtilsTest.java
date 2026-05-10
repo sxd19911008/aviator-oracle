@@ -158,7 +158,7 @@ public class OracleNumberFunctionUtilsTest {
 
     /**
      * {@link OracleNumberFunctionUtils#round(Number)} 场景数据：等价于 {@code round(n, 0)}。
-     * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经 Oracle NUMBER 规则舍入后的结果。
+     * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经 Oracle NUMBER 规则舍入后的结果。</p>
      */
     static Stream<Arguments> testRoundOneArgProvider() {
         return Stream.of(
@@ -183,10 +183,10 @@ public class OracleNumberFunctionUtilsTest {
 
     /**
      * {@link OracleNumberFunctionUtils#round(Number, Number)} 场景数据（均为正常返回或 {@code number == null}）。
-     * <p>与 Oracle 极限标度一致：
-     * <p>{@code newScale >= 40} 时直接返回入参 {@code number}；
-     * <p>{@code newScale <= -40} 时结果为 {@code 0}；
-     * <p>其余列与 {@link OraDecimal} 舍入行为一致。
+     * <p>与 Oracle 极限标度一致：</p>
+     * <p>{@code newScale >= 40} 时直接返回入参 {@code number}；</p>
+     * <p>{@code newScale <= -40} 时结果为 {@code 0}；</p>
+     * <p>其余列与 {@link OraDecimal} 舍入行为一致。</p>
      */
     static Stream<Arguments> testRoundTwoArgsProvider() {
         return Stream.of(
@@ -373,7 +373,7 @@ public class OracleNumberFunctionUtilsTest {
 
     /**
      * round 非法入参：{@code newScale==null} 或运行期类型不在实现支持范围内。
-     * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。
+     * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。</p>
      */
     static Stream<Arguments> testRoundTwoArgsInvalidProvider() {
         //noinspection DataFlowIssue
@@ -395,8 +395,8 @@ public class OracleNumberFunctionUtilsTest {
 
     /**
      * {@link OracleNumberFunctionUtils#truncNumber(Number)} 场景数据：等价于 {@code truncNumber(n, 0)}，向零方向截断到整数。
-     * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经截断后的结果。
-     * <p>期望值通过 Oracle 执行 {@code SELECT TRUNC(x) FROM dual} 获得。
+     * <p>第三列期望值为 {@code null} 表示返回 {@code null}；为 {@link OraDecimal} 时表示经截断后的结果。</p>
+     * <p>期望值通过 Oracle 执行 {@code SELECT TRUNC(x) FROM dual} 获得。</p>
      */
     static Stream<Arguments> testTruncNumberOneArgProvider() {
         return Stream.of(
@@ -637,7 +637,7 @@ public class OracleNumberFunctionUtilsTest {
 
     /**
      * truncNumber 非法入参：{@code newScale==null} 或运行期类型不在实现支持范围内。
-     * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。
+     * <p>后者无法通过 Java 源码直接传入非 {@link Number}，故用反射调用模拟字节码层面的实参类型。</p>
      */
     static Stream<Arguments> testTruncNumberTwoArgsInvalidProvider() {
         //noinspection DataFlowIssue

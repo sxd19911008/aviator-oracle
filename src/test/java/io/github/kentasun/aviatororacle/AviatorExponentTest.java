@@ -25,7 +25,7 @@ public class AviatorExponentTest {
 
     /**
      * 第一个操作数为 {@code Long}（3L），第二个操作数循环全部类型。
-     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 4，结果 3^4 = 81。
+     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 4，结果 3^4 = 81。</p>
      */
     static Stream<Arguments> testLongProvider() {
         return Stream.of(
@@ -104,7 +104,7 @@ public class AviatorExponentTest {
 
     /**
      * 第一个操作数为 {@code Integer}（2），第二个操作数循环全部类型。
-     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 5，结果 2^5 = 32。
+     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 5，结果 2^5 = 32。</p>
      */
     static Stream<Arguments> testIntegerProvider() {
         return Stream.of(
@@ -183,8 +183,8 @@ public class AviatorExponentTest {
 
     /**
      * 第一个操作数为 {@code BigInteger}（3），第二个操作数循环全部类型。
-     * <p>n1 为 BigInteger 时，结果类型为 {@link BigInteger}（而非 OraDecimal）。
-     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 4，结果 3^4 = 81。
+     * <p>n1 为 BigInteger 时，结果类型为 {@link BigInteger}（而非 OraDecimal）。</p>
+     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 4，结果 3^4 = 81。</p>
      */
     static Stream<Arguments> testBigIntegerProvider() {
         return Stream.of(
@@ -263,8 +263,8 @@ public class AviatorExponentTest {
 
     /**
      * 第一个操作数为 {@code Double}（2.5），第二个操作数循环全部类型。
-     * <p>2.5 通过 {@code String.valueOf} 路径转为 OraDecimal("2.5")，结果精确。
-     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 2，结果 2.5^2 = 6.25。
+     * <p>2.5 通过 {@code String.valueOf} 路径转为 OraDecimal("2.5")，结果精确。</p>
+     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 2，结果 2.5^2 = 6.25。</p>
      */
     static Stream<Arguments> testDoubleProvider() {
         return Stream.of(
@@ -343,7 +343,7 @@ public class AviatorExponentTest {
 
     /**
      * 第一个操作数为 {@code BigDecimal}（3.5），第二个操作数循环全部类型。
-     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 2，结果 3.5^2 = 12.25。
+     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 2，结果 3.5^2 = 12.25。</p>
      */
     static Stream<Arguments> testBigDecimalProvider() {
         return Stream.of(
@@ -422,7 +422,7 @@ public class AviatorExponentTest {
 
     /**
      * 第一个操作数为 {@code OraDecimal}（2.5），第二个操作数循环全部类型。
-     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 3，结果 2.5^3 = 15.625。
+     * <p>小数类型的第二操作数均使用带小数的值，其 intValue() = 3，结果 2.5^3 = 15.625。</p>
      */
     static Stream<Arguments> testOraDecimalProvider() {
         return Stream.of(

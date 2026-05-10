@@ -15,7 +15,7 @@ public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库: Date对象 + 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -33,7 +33,7 @@ public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库: Date对象 - 数字
-     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数
+     * <p>小数部分会根据一天有多少秒换算成秒数，四舍五入精确到秒数</p>
      *
      * @param date 日期对象
      * @param days 天数，可以带小数
@@ -51,7 +51,7 @@ public class OracleDateUtils {
 
     /**
      * 将天数换算成 {@code Long} 型的秒数
-     * <p>必定返回整数，如果有小数部分，则四舍五入
+     * <p>必定返回整数，如果有小数部分，则四舍五入</p>
      *
      * @param days 天数，可以带小数
      * @return 天数对应的秒数
@@ -194,8 +194,7 @@ public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code ADD_MONTHS(date, months)} 函数：为日期加上指定月数。
-     * <p>
-     * Oracle 的 {@code ADD_MONTHS} 行为规则：
+     * <p>Oracle 的 {@code ADD_MONTHS} 行为规则：</p>
      * <ol>
      *   <li>月数参数会被截断为整数（小数部分直接丢弃，与 Oracle 行为一致）</li>
      *   <li>如果原始日期是所在月份的最后一天，则结果一定是目标月份的最后一天
@@ -260,8 +259,7 @@ public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code LAST_DAY(date)} 函数：返回给定日期所在月份的最后一天。
-     * <p>
-     * Oracle 的 {@code LAST_DAY} 行为规则：
+     * <p>Oracle 的 {@code LAST_DAY} 行为规则：</p>
      * <ul>
      *   <li>返回日期所在月份的最后一天，会正确处理闰年（如2月28日/29日）</li>
      *   <li>时分秒部分保持不变</li>
@@ -292,7 +290,7 @@ public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code TRUNC(date)} 函数：将日期截断到天（当天午夜零点）。
-     * <p>等价于 {@code TRUNC(date, 'DD')}
+     * <p>等价于 {@code TRUNC(date, 'DD')}</p>
      *
      * @param date 日期对象；为 {@code null} 时返回 {@code null}
      * @return 截断到天的新 {@link Date} 对象
@@ -303,8 +301,7 @@ public class OracleDateUtils {
 
     /**
      * 模拟 Oracle 数据库的 {@code TRUNC(date, format)} 函数：按指定格式模型截断日期。
-     * <p>
-     * 支持的格式模型（不区分大小写）：
+     * <p>支持的格式模型（不区分大小写）：</p>
      * <ul>
      *   <li>{@code CC / SCC}：世纪——截断到当前世纪首年的 1 月 1 日（如 2026 年 → 2001-01-01）</li>
      *   <li>{@code SYYYY / YYYY / YEAR / SYEAR / YYY / YY / Y}：年——截断到当年 1 月 1 日</li>
@@ -468,11 +465,9 @@ public class OracleDateUtils {
 
     /**
      * 截断到 ISO 年的第一天（ISO 第1周的周一）。
-     * <p>
-     * ISO 8601 规定：包含该年第一个周四的那一周是第1周，且 ISO 周以周一为起始。
-     * 因此 ISO 年的第一天可能早于日历年的 1 月 1 日（最多早 3 天）。
-     * <p>
-     * 算法：
+     * <p>ISO 8601 规定：包含该年第一个周四的那一周是第1周，且 ISO 周以周一为起始。</p>
+     * <p>因此 ISO 年的第一天可能早于日历年的 1 月 1 日（最多早 3 天）。</p>
+     * <p>算法：</p>
      * <ol>
      *   <li>确定目标日期所属的 ISO 年（仅 1 月和 12 月边界处与日历年不同）</li>
      *   <li>取该 ISO 年的 1 月 4 日——根据 ISO 8601，1 月 4 日必在第1周内</li>
@@ -497,7 +492,7 @@ public class OracleDateUtils {
 
     /**
      * 截断到 ISO 周的第一天（周一）。
-     * <p>ISO 8601 规定 ISO 周从周一开始，周日是一周的最后一天。
+     * <p>ISO 8601 规定 ISO 周从周一开始，周日是一周的最后一天。</p>
      */
     private static Calendar truncToIsoWeek(Calendar cal) {
         Calendar result = (Calendar) cal.clone();
@@ -511,8 +506,7 @@ public class OracleDateUtils {
 
     /**
      * 获取日期所属的 ISO 年编号。
-     * <p>
-     * ISO 年与日历年在 1 月和 12 月的边界处可能不同：
+     * <p>ISO 年与日历年在 1 月和 12 月的边界处可能不同：</p>
      * <ul>
      *   <li>12 月末：若所属 ISO 周的周四在下一年 1 月，则该日期属于下一 ISO 年</li>
      *   <li>1 月初：若所属 ISO 周的周四在上一年 12 月，则该日期属于上一 ISO 年</li>
@@ -542,7 +536,7 @@ public class OracleDateUtils {
 
     /**
      * 计算该日期，属于所在 ISO 周的周几
-     * <p>ISO 周的周一到周日与数字1到7是对应的
+     * <p>ISO 周的周一到周日与数字1到7是对应的</p>
      */
     private static int getIsoDayOfWeek(Calendar cal) {
         // Java: 周一到周日是[2,3,4,5,6,7,1]

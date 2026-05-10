@@ -27,7 +27,7 @@ public class TruncWithZoneFunction extends AbstractFunction {
 
     /**
      * 两参数重载：{@code truncWithZone(zoneId, instant)}
-     * <p>将 {@link Instant} 在指定时区下截断到天（当天午夜零点）。
+     * <p>将 {@link Instant} 在指定时区下截断到天。</p>
      */
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1, final AviatorObject arg2) {
@@ -60,9 +60,7 @@ public class TruncWithZoneFunction extends AbstractFunction {
 
     /**
      * 三参数重载：{@code truncWithZone(zoneId, instant, format)}
-     * <p>将 {@link Instant} 在指定时区下按格式模型截断。
-     * <p>参数设计：zoneId 放首位，后面的 {@code (instant, format)} 与 {@code trunc(instant, format)} 保持一致，
-     * 方便使用者从 trunc 迁移到 truncWithZone 时只需在前面加上时区参数。
+     * <p>将 {@link Instant} 在指定时区下按格式模型截断。</p>
      */
     @Override
     public AviatorObject call(final Map<String, Object> env, final AviatorObject arg1,
