@@ -39,9 +39,11 @@ public class AOUtils {
 
     /**
      * 字符串是否非空
+     *
+     * @param cs the CharSequence to check, may be null
      */
-    public static boolean isNotBlank(String str) {
-        return !isBlank(str);
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
     }
 
     /**
