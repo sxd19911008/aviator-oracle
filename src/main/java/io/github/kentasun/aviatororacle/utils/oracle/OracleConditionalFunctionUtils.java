@@ -15,19 +15,19 @@ public class OracleConditionalFunctionUtils {
     /**
      * 模拟 Oracle 数据库的 DECODE 函数实现。
      * <p>
-     * <b>语法：</b><br/>
+     * <b>语法：</b><br>
      * {@code decode(expression, search1, result1, search2, result2, ..., [default])}
      * </p>
      * <p>
-     * <b>功能说明：</b><br/>
+     * <b>功能说明：</b><br>
      * 该函数逐个比较 {@code expression} 和 {@code search}。
      * 如果 {@code expression} 等于某个 {@code search}，则返回对应的 {@code result}。
      * 如果没有匹配项，则返回 {@code default}。
      * 如果没有匹配项且未指定 {@code default}，则返回 {@code null}。
      * </p>
      * <p>
-     * <b>特殊处理：</b><br/>
-     * 1. <b>Null 值比较：</b> 与 Oracle 的 DECODE 一致，本方法认为 {@code null} 等于 {@code null}。<br/>
+     * <b>特殊处理：</b><br>
+     * 1. <b>Null 值比较：</b> 与 Oracle 的 DECODE 一致，本方法认为 {@code null} 等于 {@code null}。<br>
      * 2. <b>数值比较：</b> 内部使用 {@link OraDecimal} 进行数值比较，以确保不同类型数字（如 Integer、Long、OraDecimal）在数值相等时能正确匹配。
      * </p>
      *
