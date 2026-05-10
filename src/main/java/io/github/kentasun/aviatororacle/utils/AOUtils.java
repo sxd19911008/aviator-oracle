@@ -8,9 +8,7 @@ public class AOUtils {
 
     /**
      * <p>Checks if a CharSequence is empty (""), null or whitespace only.</p>
-     *
      * <p>Whitespace is defined by {@link Character#isWhitespace(char)}.</p>
-     *
      * <pre>
      * StringUtils.isBlank(null)      = true
      * StringUtils.isBlank("")        = true
