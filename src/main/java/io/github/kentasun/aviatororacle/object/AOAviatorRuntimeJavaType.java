@@ -4,8 +4,6 @@ import com.googlecode.aviator.runtime.type.AviatorNil;
 import com.googlecode.aviator.runtime.type.AviatorObject;
 import com.googlecode.aviator.utils.Reflector;
 import com.googlecode.aviator.utils.VarNameGenerator;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -21,8 +19,7 @@ public class AOAviatorRuntimeJavaType extends AOAviatorJavaType {
     public static final ThreadLocal<VarNameGenerator> TEMP_VAR_GEN = ThreadLocal.withInitial(VarNameGenerator::new);
 
     protected Object object;
-    @Setter
-    @Getter
+
     protected Callable<Object> callable;
 
     public static AviatorObject valueOf(final Object object) {
@@ -45,6 +42,14 @@ public class AOAviatorRuntimeJavaType extends AOAviatorJavaType {
     public AOAviatorRuntimeJavaType(final Object object) {
         super(null);
         this.object = object;
+    }
+
+    public Callable<Object> getCallable() {
+        return callable;
+    }
+
+    public void setCallable(Callable<Object> callable) {
+        this.callable = callable;
     }
 
     public static String genName() {

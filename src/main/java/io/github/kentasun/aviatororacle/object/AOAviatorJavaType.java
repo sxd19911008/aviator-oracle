@@ -1,11 +1,10 @@
 package io.github.kentasun.aviatororacle.object;
 
-import io.github.kentasun.aviatororacle.utils.oracle.OraFuncUtils;
 import com.googlecode.aviator.exception.CompareNotSupportedException;
 import com.googlecode.aviator.lexer.SymbolTable;
 import com.googlecode.aviator.runtime.type.*;
 import com.googlecode.aviator.utils.TypeUtils;
-import lombok.extern.slf4j.Slf4j;
+import io.github.kentasun.aviatororacle.utils.oracle.OraFuncUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ import java.util.Map;
 /**
  * AviatorOracle 框架计算过程总入口
  */
-@Slf4j
 public class AOAviatorJavaType extends AviatorJavaType {
 
     private static final long serialVersionUID = 4742012682922854365L;

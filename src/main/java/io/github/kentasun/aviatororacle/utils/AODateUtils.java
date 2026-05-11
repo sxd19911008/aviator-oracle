@@ -1,8 +1,8 @@
 package io.github.kentasun.aviatororacle.utils;
 
 import com.googlecode.aviator.runtime.function.system.DateFormatCache;
-import lombok.SneakyThrows;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -31,10 +31,13 @@ public class AODateUtils {
      * @param format 字符串日期格式
      * @return {@code Date} 对象
      */
-    @SneakyThrows
     public static Date strToDate(String dateStr, String format) {
         SimpleDateFormat sdf = DateFormatCache.getOrCreateDateFormat(format);
-        return sdf.parse(dateStr);
+        try {
+            return sdf.parse(dateStr);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -54,7 +57,6 @@ public class AODateUtils {
      * @param format 字符串日期格式
      * @return 日期字符串
      */
-    @SneakyThrows
     public static String dateToStr(Date date, String format) {
         SimpleDateFormat sdf = DateFormatCache.getOrCreateDateFormat(format);
         return sdf.format(date);
