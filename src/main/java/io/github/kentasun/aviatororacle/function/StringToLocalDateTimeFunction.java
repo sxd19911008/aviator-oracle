@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * string_to_local_datetime function
- * <p>将字符串解析为 LocalDateTime 对象，不涉及时区转换</p>
+ * <p>将字符串解析为 {@code LocalDateTime} 对象，不涉及时区转换</p>
  * <p>函数签名：{@code string_to_local_datetime(source, format)}</p>
  * <ul>
  *   <li>arg1 —— 待解析的日期字符串</li>
