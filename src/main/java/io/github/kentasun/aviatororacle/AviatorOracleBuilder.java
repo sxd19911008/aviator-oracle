@@ -69,12 +69,6 @@ public class AviatorOracleBuilder {
         // 浮点数使用 decimal 类型
         aviator.setOption(Options.ALWAYS_PARSE_FLOATING_POINT_NUMBER_INTO_DECIMAL, true);
 
-        // 语法糖配置：允许 policyInfo.applyDate 这种写法
-        aviator.setOption(Options.ENABLE_PROPERTY_SYNTAX_SUGAR, true);
-
-        // 容错配置：true：当访问对象属性为 null 时不抛异常，返回 null；false：直接报错。
-        aviator.setOption(Options.NIL_WHEN_PROPERTY_NOT_FOUND, false);
-
         // 设置全局脚本执行超时时间为 5 秒。默认值为 0，表示永不超时
         aviator.setOption(Options.EVAL_TIMEOUT_MS, 5000L);
 
